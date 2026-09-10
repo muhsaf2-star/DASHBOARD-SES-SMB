@@ -1,13 +1,11 @@
 <!DOCTYPE html>
+
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1.0" name="viewport"/>
 <title>Sales Performance Dashboard</title>
-
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-
 <style>
 *{
   box-sizing:border-box;
@@ -1428,7 +1426,6 @@ html,body{
 }
 
 </style>
-
 <style id="daily-chase-series-final">
 .device-series{margin-top:7px;padding:7px}
   .device-series-grid{gap:3px}
@@ -1439,8 +1436,6 @@ html,body{
   
 }
 </style>
-
-
 <style id="wow-store-compact">
 .store-wow-note{font-size:10px;color:#64748b}
 @media(max-width:700px){
@@ -1451,1161 +1446,734 @@ html,body{
   #page-store .store-week-table .money{white-space:nowrap}
 }
 </style>
-
 </head>
-
 <body>
-
 <!-- LOGIN -->
-
-<div id="loginScreen" class="login-screen">
-
-  <div class="login-box">
-
-    <div class="login-logo">↗</div>
-
-    <div class="login-title">
+<div class="login-screen" id="loginScreen">
+<div class="login-box">
+<div class="login-logo">↗</div>
+<div class="login-title">
       Sales Performance
     </div>
-
-    <div class="login-sub">
+<div class="login-sub">
       Dashboard SES SMB
     </div>
-
-    <input
-      id="loginUsername"
-      placeholder="Username"
-      autocomplete="username"
-    >
-
-    <input
-      id="loginPassword"
-      type="password"
-      placeholder="Password"
-      autocomplete="current-password"
-    >
-
-    <button
-      class="login-btn"
-      onclick="login()"
-    >
+<input autocomplete="username" id="loginUsername" placeholder="Username"/>
+<input autocomplete="current-password" id="loginPassword" placeholder="Password" type="password"/>
+<button class="login-btn" onclick="login()">
       Login
     </button>
-
-    <div id="loginError" class="login-error"></div>
-
-  </div>
-
+<div class="login-error" id="loginError"></div>
 </div>
-
-
+</div>
 <!-- APPLICATION -->
-
-<div id="app" class="app" style="display:none">
-
-  <!-- SIDEBAR -->
-
-  <aside id="sidebar" class="sidebar">
-
-    <div class="brand">
-
-      <div class="brand-icon">↗</div>
-
-      <div>
-        <div class="brand-title">Sales</div>
-        <div class="brand-sub">Performance</div>
-      </div>
-
-    </div>
-
-    <div class="menu">
-
-      <button
-        id="menu-overview"
-        class="active"
-        onclick="showPage('overview')"
-      >
-        <span class="menu-icon">▦</span>
+<div class="app" id="app" style="display:none">
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+<div class="brand">
+<div class="brand-icon">↗</div>
+<div>
+<div class="brand-title">Sales</div>
+<div class="brand-sub">Performance</div>
+</div>
+</div>
+<div class="menu">
+<button class="active" id="menu-overview" onclick="showPage('overview')">
+<span class="menu-icon">▦</span>
         Overview
       </button>
-
-      <button
-        id="menu-ero"
-        onclick="showPage('ero')"
-      >
-        <span class="menu-icon">♧</span>
+<button id="menu-ero" onclick="showPage('ero')">
+<span class="menu-icon">♧</span>
         Performa ERO
       </button>
-
-      <button
-        id="menu-store"
-        onclick="showPage('store')"
-      >
-        <span class="menu-icon">▤</span>
+<button id="menu-store" onclick="showPage('store')">
+<span class="menu-icon">▤</span>
         Performa Store
       </button>
-
-      <button
-        id="menu-sales"
-        onclick="showPage('sales')"
-      >
-        <span class="menu-icon">◔</span>
+<button id="menu-sales" onclick="showPage('sales')">
+<span class="menu-icon">◔</span>
         Kontribusi Sales
       </button>
-
-      <button
-        id="menu-top"
-        onclick="showPage('top')"
-      >
-        <span class="menu-icon">♜</span>
+<button id="menu-top" onclick="showPage('top')">
+<span class="menu-icon">♜</span>
         Top Sales
       </button>
-
-      <button
-        id="menu-target"
-        onclick="showPage('target')"
-      >
-        <span class="menu-icon">◎</span>
+<button id="menu-target" onclick="showPage('target')">
+<span class="menu-icon">◎</span>
         Target Management
       </button>
-
-      <button
-        id="menu-manage"
-        onclick="showPage('manage')"
-      >
-        <span class="menu-icon">♙</span>
+<button id="menu-manage" onclick="showPage('manage')">
+<span class="menu-icon">♙</span>
         Manage Sales
       </button>
-
-    </div>
-
-    <div class="sidebar-footer">
+</div>
+<div class="sidebar-footer">
       v1.0.0 • Sales Dashboard
     </div>
-
-  </aside>
-
-
-  <!-- MAIN -->
-
-  <main class="main">
-
-    <header class="topbar">
-
-      <button
-        class="mobile-menu"
-        onclick="toggleSidebar()"
-      >
+</aside>
+<!-- MAIN -->
+<main class="main">
+<header class="topbar">
+<button class="mobile-menu" onclick="toggleSidebar()">
         ☰
       </button>
-
-      <div class="user-badge">
-
-        <div class="user-circle" id="userInitial">
+<div class="user-badge">
+<div class="user-circle" id="userInitial">
           A
         </div>
-
-        <span id="userName">
+<span id="userName">
           Administrator
         </span>
-
-        <button
-          class="logout"
-          onclick="logout()"
-        >
+<button class="logout" onclick="logout()">
           Logout
         </button>
-
-      </div>
-
-    </header>
-
-
-    <section class="content">
-
-      <!-- ================= OVERVIEW ================= -->
-
-      <div id="page-overview" class="page">
-
-        <div class="page-head">
-
-          <div>
-            <h1 class="page-title">
+</div>
+</header>
+<section class="content">
+<!-- ================= OVERVIEW ================= -->
+<div class="page" id="page-overview">
+<div class="page-head">
+<div>
+<h1 class="page-title">
               Overview
             </h1>
-
-            <div class="page-subtitle">
+<div class="page-subtitle">
               Ringkasan performa toko
             </div>
-          </div>
-
-          <div class="month-badge">
+</div>
+<div class="month-badge">
             📅 <span id="overviewMonth"></span>
-          </div>
-
-        </div>
-
-
-
-        <div class="ero-motto">
-          <div class="ero-motto-title">🔥 HAI KALIAN SEMUA ERO SMB!</div>
-          <div class="ero-motto-text" id="eroMottoText">Jualan yang semangat ya! 💪🔥</div>
-        </div>
-
-        <div class="filters">
-
-          <button
-            class="filter-btn"
-            onclick="setPeriodMode('week',this)"
-          >
+</div>
+</div>
+<div class="ero-motto">
+<div class="ero-motto-title">🔥 HAI KALIAN SEMUA ERO SMB!</div>
+<div class="ero-motto-text" id="eroMottoText">Jualan yang semangat ya! 💪🔥</div>
+</div>
+<div class="filters">
+<button class="filter-btn" onclick="setPeriodMode('week',this)">
             Minggu Ini
           </button>
-
-          <button
-            class="filter-btn"
-            onclick="setPeriodMode('lastweek',this)"
-          >
+<button class="filter-btn" onclick="setPeriodMode('lastweek',this)">
             Minggu Lalu
           </button>
-
-          <button
-            class="filter-btn active"
-            onclick="setPeriodMode('month',this)"
-          >
+<button class="filter-btn active" onclick="setPeriodMode('month',this)">
             Bulan Ini
           </button>
-
-          <button
-            class="filter-btn"
-            onclick="setPeriodMode('year',this)"
-          >
+<button class="filter-btn" onclick="setPeriodMode('year',this)">
             Tahun Ini
           </button>
-
-          <button
-            class="filter-btn"
-            onclick="setPeriodMode('custom',this)"
-          >
+<button class="filter-btn" onclick="setPeriodMode('custom',this)">
             Custom
           </button>
+</div>
+<div class="card overview-main">
+<div class="card-title">
+            ↗   SALES ALL
 
-        </div>
-
-
-        <div class="card overview-main">
-
-          <div class="card-title">
-            ↗ &nbsp; SALES ALL
-
-            <span
-              id="overviewAch"
-              style="float:right;background:#ffe1e3;color:#ff3344;padding:6px 10px;border-radius:15px;font-size:12px"
-            >
+            <span id="overviewAch" style="float:right;background:#ffe1e3;color:#ff3344;padding:6px 10px;border-radius:15px;font-size:12px">
               0.0%
             </span>
-          </div>
-
-
-          <div class="metrics">
-
-            <div>
-              <div class="metric-label">
+</div>
+<div class="metrics">
+<div>
+<div class="metric-label">
                 Actual
               </div>
-
-              <div
-                class="metric-value blue"
-                id="overviewActual"
-              >
+<div class="metric-value blue" id="overviewActual">
                 Rp 0
               </div>
-            </div>
-
-            <div>
-              <div class="metric-label">
+</div>
+<div>
+<div class="metric-label">
                 Target
               </div>
-
-              <div
-                class="metric-value"
-                id="overviewTarget"
-              >
+<div class="metric-value" id="overviewTarget">
                 Rp 0
               </div>
-            </div>
-
-            <div>
-              <div class="metric-label">
+</div>
+<div>
+<div class="metric-label">
                 Estimasi
               </div>
-
-              <div
-                class="metric-value red"
-                id="overviewEst"
-              >
+<div class="metric-value red" id="overviewEst">
                 Rp 0
               </div>
-
-              <div
-                id="overviewEstPercent"
-                style="font-size:12px;color:#ff3344"
-              >
+<div id="overviewEstPercent" style="font-size:12px;color:#ff3344">
                 0.0%
               </div>
-            </div>
-
-            <div>
-              <div class="metric-label">
+</div>
+<div>
+<div class="metric-label">
                 Kekurangan
               </div>
-
-              <div
-                class="metric-value"
-                id="overviewShort"
-              >
+<div class="metric-value" id="overviewShort">
                 Rp 0
               </div>
-            </div>
-
-          </div>
-
-
-          <div class="progress">
-
-            <div
-              id="overviewProgress"
-              class="progress-bar"
-              style="width:0%"
-            ></div>
-
-          </div>
-
-        </div>
-
-
-        <div class="category-grid">
-
-          <div class="card category-card">
-
-            <div class="category-name">
+</div>
+</div>
+<div class="progress">
+<div class="progress-bar" id="overviewProgress" style="width:0%"></div>
+</div>
+</div>
+<div class="category-grid">
+<div class="card category-card">
+<div class="category-name">
               DEVICE
             </div>
-
-            <div class="two-col">
-
-              <div>
-                <div class="metric-label">Actual</div>
-                <div class="metric-value" id="deviceActual">
+<div class="two-col">
+<div>
+<div class="metric-label">Actual</div>
+<div class="metric-value" id="deviceActual">
                   Rp 0
                 </div>
-              </div>
-
-              <div>
-                <div class="metric-label">Target</div>
-                <div class="metric-value" id="deviceTarget">
+</div>
+<div>
+<div class="metric-label">Target</div>
+<div class="metric-value" id="deviceTarget">
                   Rp 0
                 </div>
-              </div>
-
-            </div>
-
-            <br>
-
-            <div class="two-col">
-
-              <div>
-                <div class="metric-label">Achievement</div>
-                <div class="metric-value red" id="deviceAch">
+</div>
+</div>
+<br/>
+<div class="two-col">
+<div>
+<div class="metric-label">Achievement</div>
+<div class="metric-value red" id="deviceAch">
                   0.0%
                 </div>
-              </div>
-
-              <div>
-                <div class="metric-label">Estimasi</div>
-                <div class="metric-value" id="deviceEst">
+</div>
+<div>
+<div class="metric-label">Estimasi</div>
+<div class="metric-value" id="deviceEst">
                   Rp 0
                 </div>
-                <div class="est-percent" id="deviceEstPercent">0.0%</div>
-              </div>
-
-            </div>
-
-            <hr>
-
-            <div class="metric-label">
+<div class="est-percent" id="deviceEstPercent">0.0%</div>
+</div>
+</div>
+<hr/>
+<div class="metric-label">
               Kekurangan
             </div>
-
-            <div
-              class="metric-value red"
-              id="deviceShort"
-            >
+<div class="metric-value red" id="deviceShort">
               Rp 0
             </div>
-
-            <div class="device-series" id="deviceSeriesBox"></div>
-
-          </div>
-
-
-          <div class="card category-card">
-
-            <div class="category-name">
+<div class="device-series" id="deviceSeriesBox"></div>
+</div>
+<div class="card category-card">
+<div class="category-name">
               ACCESSORIES
             </div>
-
-            <div class="two-col">
-
-              <div>
-                <div class="metric-label">Actual</div>
-                <div class="metric-value" id="accActual">
+<div class="two-col">
+<div>
+<div class="metric-label">Actual</div>
+<div class="metric-value" id="accActual">
                   Rp 0
                 </div>
-              </div>
-
-              <div>
-                <div class="metric-label">Target</div>
-                <div class="metric-value" id="accTarget">
+</div>
+<div>
+<div class="metric-label">Target</div>
+<div class="metric-value" id="accTarget">
                   Rp 0
                 </div>
-              </div>
-
-            </div>
-
-            <br>
-
-            <div class="two-col">
-
-              <div>
-                <div class="metric-label">Achievement</div>
-                <div class="metric-value red" id="accAch">
+</div>
+</div>
+<br/>
+<div class="two-col">
+<div>
+<div class="metric-label">Achievement</div>
+<div class="metric-value red" id="accAch">
                   0.0%
                 </div>
-              </div>
-
-              <div>
-                <div class="metric-label">Estimasi</div>
-                <div class="metric-value" id="accEst">
+</div>
+<div>
+<div class="metric-label">Estimasi</div>
+<div class="metric-value" id="accEst">
                   Rp 0
                 </div>
-                <div class="est-percent" id="accEstPercent">0.0%</div>
-              </div>
-
-            </div>
-
-            <hr>
-
-            <div class="metric-label">
+<div class="est-percent" id="accEstPercent">0.0%</div>
+</div>
+</div>
+<hr/>
+<div class="metric-label">
               Kekurangan
             </div>
-
-            <div
-              class="metric-value red"
-              id="accShort"
-            >
+<div class="metric-value red" id="accShort">
               Rp 0
             </div>
-
-          </div>
-
-
-          <div class="card category-card">
-
-            <div class="category-name">
+</div>
+<div class="card category-card">
+<div class="category-name">
               REPAIR CONTRACT
             </div>
-
-            <div class="two-col">
-
-              <div>
-                <div class="metric-label">Actual</div>
-                <div class="metric-value" id="repairActual">
+<div class="two-col">
+<div>
+<div class="metric-label">Actual</div>
+<div class="metric-value" id="repairActual">
                   Rp 0
                 </div>
-              </div>
-
-              <div>
-                <div class="metric-label">Target</div>
-                <div class="metric-value" id="repairTarget">
+</div>
+<div>
+<div class="metric-label">Target</div>
+<div class="metric-value" id="repairTarget">
                   Rp 0
                 </div>
-              </div>
-
-            </div>
-
-            <br>
-
-            <div class="two-col">
-
-              <div>
-                <div class="metric-label">Achievement</div>
-                <div class="metric-value red" id="repairAch">
+</div>
+</div>
+<br/>
+<div class="two-col">
+<div>
+<div class="metric-label">Achievement</div>
+<div class="metric-value red" id="repairAch">
                   0.0%
                 </div>
-              </div>
-
-              <div>
-                <div class="metric-label">Estimasi</div>
-                <div class="metric-value" id="repairEst">
+</div>
+<div>
+<div class="metric-label">Estimasi</div>
+<div class="metric-value" id="repairEst">
                   Rp 0
                 </div>
-                <div class="est-percent" id="repairEstPercent">0.0%</div>
-              </div>
-
-            </div>
-
-            <hr>
-
-            <div class="metric-label">
+<div class="est-percent" id="repairEstPercent">0.0%</div>
+</div>
+</div>
+<hr/>
+<div class="metric-label">
               Kekurangan
             </div>
-
-            <div
-              class="metric-value red"
-              id="repairShort"
-            >
+<div class="metric-value red" id="repairShort">
               Rp 0
             </div>
-
-          </div>
-
-
-          <div class="card category-card">
-
-            <div class="category-name">
+</div>
+<div class="card category-card">
+<div class="category-name">
               OPERATOR
             </div>
-
-            <div class="two-col">
-
-              <div>
-                <div class="metric-label">Actual</div>
-                <div class="metric-value" id="operatorActual">
+<div class="two-col">
+<div>
+<div class="metric-label">Actual</div>
+<div class="metric-value" id="operatorActual">
                   Rp 0
                 </div>
-              </div>
-
-              <div>
-                <div class="metric-label">Target</div>
-                <div class="metric-value" id="operatorTarget">
+</div>
+<div>
+<div class="metric-label">Target</div>
+<div class="metric-value" id="operatorTarget">
                   Rp 0
                 </div>
-              </div>
-
-            </div>
-
-            <br>
-
-            <div class="two-col">
-
-              <div>
-                <div class="metric-label">Achievement</div>
-                <div class="metric-value red" id="operatorAch">
+</div>
+</div>
+<br/>
+<div class="two-col">
+<div>
+<div class="metric-label">Achievement</div>
+<div class="metric-value red" id="operatorAch">
                   0.0%
                 </div>
-              </div>
-
-              <div>
-                <div class="metric-label">Estimasi</div>
-                <div class="metric-value" id="operatorEst">
+</div>
+<div>
+<div class="metric-label">Estimasi</div>
+<div class="metric-value" id="operatorEst">
                   Rp 0
                 </div>
-                <div class="est-percent" id="operatorEstPercent">0.0%</div>
-              </div>
+<div class="est-percent" id="operatorEstPercent">0.0%</div>
+</div>
+</div>
+<hr/>
+<div class="operator-box">
+<div class="operator-head">
+<span>Indosat</span>
+<span id="indosatAch">0.0%</span>
+</div>
+<div class="operator-grid">
+<div>
+<div class="operator-label">Target</div>
+<div class="operator-value" id="indosatTarget">Rp 0</div>
+</div>
+<div>
+<div class="operator-label">Actual</div>
+<div class="operator-value" id="indosatActual">Rp 0</div>
+</div>
+<div>
+<div class="operator-label">Estimasi</div>
+<div class="operator-value" id="indosatEst">Rp 0</div>
+<div class="operator-est-percent" id="indosatEstPercent">0.0%</div>
+</div>
+<div>
+<div class="operator-label">Kekurangan</div>
+<div class="operator-value operator-short" id="indosatShort">Rp 0</div>
+</div>
+</div>
+</div>
+<div class="operator-box">
+<div class="operator-head">
+<span>XL</span>
+<span id="xlAch">0.0%</span>
+</div>
+<div class="operator-grid">
+<div>
+<div class="operator-label">Target</div>
+<div class="operator-value" id="xlTarget">Rp 0</div>
+</div>
+<div>
+<div class="operator-label">Actual</div>
+<div class="operator-value" id="xlActual">Rp 0</div>
+</div>
+<div>
+<div class="operator-label">Estimasi</div>
+<div class="operator-value" id="xlEst">Rp 0</div>
+<div class="operator-est-percent" id="xlEstPercent">0.0%</div>
+</div>
+<div>
+<div class="operator-label">Kekurangan</div>
+<div class="operator-value operator-short" id="xlShort">Rp 0</div>
+</div>
+</div>
+</div>
+<div class="operator-box">
+<div class="operator-head">
+<span>Telkomsel</span>
+<span id="telkomselAch">0.0%</span>
+</div>
+<div class="operator-grid">
+<div>
+<div class="operator-label">Target</div>
+<div class="operator-value" id="telkomselTarget">Rp 0</div>
+</div>
+<div>
+<div class="operator-label">Actual</div>
+<div class="operator-value" id="telkomselActual">Rp 0</div>
+</div>
+<div>
+<div class="operator-label">Estimasi</div>
+<div class="operator-value" id="telkomselEst">Rp 0</div>
+<div class="operator-est-percent" id="telkomselEstPercent">0.0%</div>
+</div>
+<div>
+<div class="operator-label">Kekurangan</div>
+<div class="operator-value operator-short" id="telkomselShort">Rp 0</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="performance-highlight">
+<div class="highlight-card">
+<div class="highlight-title">🔥 TOP SALES</div>
+<div class="highlight-subtitle">Ranking berdasarkan achievement H-1</div>
+<div class="highlight-list" id="topSalesHighlight">
+<div class="highlight-empty">Belum ada data transaksi H-1</div>
+</div>
+</div>
+<div class="highlight-card">
+<div class="highlight-title">🏆 BEST CATEGORY</div>
+<div class="highlight-subtitle">Kategori dengan achievement tertinggi</div>
+<div class="highlight-list" id="bestCategoryHighlight">
+<div class="highlight-empty">Belum ada data transaksi H-1</div>
+</div>
+</div>
+<div class="highlight-card">
+<div class="highlight-title">⚡ QUICK ACTION</div>
+<div class="highlight-subtitle">Fokus yang perlu dikejar hari ini</div>
+<div class="highlight-list" id="quickActionHighlight">
+<div class="highlight-empty">Menunggu data H-1</div>
+</div>
+</div>
+</div></div>
+<!-- ================= PERFORMANCE HIGHLIGHT ================= -->
 
-            </div>
-
-            <hr>
-
-            <div class="operator-box">
-              <div class="operator-head">
-                <span>Indosat</span>
-                <span id="indosatAch">0.0%</span>
-              </div>
-              <div class="operator-grid">
-                <div>
-                  <div class="operator-label">Target</div>
-                  <div class="operator-value" id="indosatTarget">Rp 0</div>
-                </div>
-                <div>
-                  <div class="operator-label">Actual</div>
-                  <div class="operator-value" id="indosatActual">Rp 0</div>
-                </div>
-                <div>
-                  <div class="operator-label">Estimasi</div>
-                  <div class="operator-value" id="indosatEst">Rp 0</div>
-                  <div class="operator-est-percent" id="indosatEstPercent">0.0%</div>
-                </div>
-                <div>
-                  <div class="operator-label">Kekurangan</div>
-                  <div class="operator-value operator-short" id="indosatShort">Rp 0</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="operator-box">
-              <div class="operator-head">
-                <span>XL</span>
-                <span id="xlAch">0.0%</span>
-              </div>
-              <div class="operator-grid">
-                <div>
-                  <div class="operator-label">Target</div>
-                  <div class="operator-value" id="xlTarget">Rp 0</div>
-                </div>
-                <div>
-                  <div class="operator-label">Actual</div>
-                  <div class="operator-value" id="xlActual">Rp 0</div>
-                </div>
-                <div>
-                  <div class="operator-label">Estimasi</div>
-                  <div class="operator-value" id="xlEst">Rp 0</div>
-                  <div class="operator-est-percent" id="xlEstPercent">0.0%</div>
-                </div>
-                <div>
-                  <div class="operator-label">Kekurangan</div>
-                  <div class="operator-value operator-short" id="xlShort">Rp 0</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="operator-box">
-              <div class="operator-head">
-                <span>Telkomsel</span>
-                <span id="telkomselAch">0.0%</span>
-              </div>
-              <div class="operator-grid">
-                <div>
-                  <div class="operator-label">Target</div>
-                  <div class="operator-value" id="telkomselTarget">Rp 0</div>
-                </div>
-                <div>
-                  <div class="operator-label">Actual</div>
-                  <div class="operator-value" id="telkomselActual">Rp 0</div>
-                </div>
-                <div>
-                  <div class="operator-label">Estimasi</div>
-                  <div class="operator-value" id="telkomselEst">Rp 0</div>
-                  <div class="operator-est-percent" id="telkomselEstPercent">0.0%</div>
-                </div>
-                <div>
-                  <div class="operator-label">Kekurangan</div>
-                  <div class="operator-value operator-short" id="telkomselShort">Rp 0</div>
-                </div>
-              </div>
-            </div>
-
-          </div>
-
-        </div>
-
-      </div>
-
-
-
-        <!-- ================= PERFORMANCE HIGHLIGHT ================= -->
-        <div class="performance-highlight">
-          <div class="highlight-card">
-            <div class="highlight-title">🔥 TOP SALES</div>
-            <div class="highlight-subtitle">Ranking berdasarkan achievement H-1</div>
-            <div id="topSalesHighlight" class="highlight-list">
-              <div class="highlight-empty">Belum ada data transaksi H-1</div>
-            </div>
-          </div>
-          <div class="highlight-card">
-            <div class="highlight-title">🏆 BEST CATEGORY</div>
-            <div class="highlight-subtitle">Kategori dengan achievement tertinggi</div>
-            <div id="bestCategoryHighlight" class="highlight-list">
-              <div class="highlight-empty">Belum ada data transaksi H-1</div>
-            </div>
-          </div>
-          <div class="highlight-card">
-            <div class="highlight-title">⚡ QUICK ACTION</div>
-            <div class="highlight-subtitle">Fokus yang perlu dikejar hari ini</div>
-            <div id="quickActionHighlight" class="highlight-list">
-              <div class="highlight-empty">Menunggu data H-1</div>
-            </div>
-          </div>
-        </div>
-
-      <!-- ================= STORE ================= -->
-
-      <div id="page-ero" class="page" style="display:none">
-
-        <div class="page-head">
-          <div>
-            <h1 class="page-title">Performa ERO</h1>
-            <div class="page-subtitle">Performa ERO H-1 berdasarkan kategori</div>
-          </div>
-          <div class="month-badge">📅 <span id="storeMonth"></span></div>
-        </div>
-
-        <div class="filters store-filter-row">
-          <div class="store-mode">
-            <button id="storeModeAll" class="filter-btn active" onclick="setStoreMode('ALL')">Semua</button>
-            <button id="storeModeCat" class="filter-btn" onclick="setStoreMode('CATEGORY')">Per Kategori</button>
-          </div>
-
-          <select class="select" id="storeCategory" onchange="updateStoreTypeOptions();renderStore()">
-            <option value="ALL">Sales All</option>
-            <option value="Device">Device</option>
-            <option value="Accessories">Accessories</option>
-            <option value="Repair Contract">Repair Contract</option>
-            <option value="Operator">Operator</option>
-          </select>
-
-          <select class="select" id="storeType" onchange="renderStore()">
-            <option value="ALL">Semua</option>
-          </select>
-        </div>
-
-        <div class="store-kpis">
-          <div class="store-kpi"><div class="label">ACTUAL H-1</div><div class="value" id="storeActualKpi">Rp0</div></div>
-          <div class="store-kpi"><div class="label">TARGET</div><div class="value" id="storeTargetKpi">Rp0</div></div>
-          <div class="store-kpi"><div class="label">ACHIEVEMENT</div><div class="value" id="storeAchKpi">0%</div></div>
-          <div class="store-kpi"><div class="label">ESTIMASI H-1</div><div class="value" id="storeEstKpi">Rp0</div></div>
-        </div>
-
-        <div class="store-week-title">Breakdown Target per Sales</div>
-        <div class="page-subtitle" style="margin-bottom:8px">Setiap sales dapat melihat target, actual H-1, estimasi dan kekurangan per kategori.</div>
-        <div id="storeSalesBreakdown"></div>
+<!-- ================= STORE ================= -->
+<div class="page" id="page-ero" style="display:none">
+<div class="page-head">
+<div>
+<h1 class="page-title">Performa ERO</h1>
+<div class="page-subtitle">Performa ERO H-1 berdasarkan kategori</div>
+</div>
+<div class="month-badge">📅 <span id="storeMonth"></span></div>
+</div>
+<div class="filters store-filter-row">
+<div class="store-mode">
+<button class="filter-btn active" id="storeModeAll" onclick="setStoreMode('ALL')">Semua</button>
+<button class="filter-btn" id="storeModeCat" onclick="setStoreMode('CATEGORY')">Per Kategori</button>
+</div>
+<select class="select" id="storeCategory" onchange="updateStoreTypeOptions();renderStore()">
+<option value="ALL">Sales All</option>
+<option value="Device">Device</option>
+<option value="Accessories">Accessories</option>
+<option value="Repair Contract">Repair Contract</option>
+<option value="Operator">Operator</option>
+</select>
+<select class="select" id="storeType" onchange="renderStore()">
+<option value="ALL">Semua</option>
+</select>
+</div>
+<div class="store-kpis">
+<div class="store-kpi"><div class="label">ACTUAL H-1</div><div class="value" id="storeActualKpi">Rp0</div></div>
+<div class="store-kpi"><div class="label">TARGET</div><div class="value" id="storeTargetKpi">Rp0</div></div>
+<div class="store-kpi"><div class="label">ACHIEVEMENT</div><div class="value" id="storeAchKpi">0%</div></div>
+<div class="store-kpi"><div class="label">ESTIMASI H-1</div><div class="value" id="storeEstKpi">Rp0</div></div>
+</div>
+<div class="store-week-title">Breakdown Target per Sales</div>
+<div class="page-subtitle" style="margin-bottom:8px">Setiap sales dapat melihat target, actual H-1, estimasi dan kekurangan per kategori.</div>
+<div id="storeSalesBreakdown"></div>
 <!-- ================= SALES ================= -->
-
-      <div id="page-sales" class="page" style="display:none">
-
-        <div class="page-head">
-
-          <div>
-            <h1 class="page-title">
+<div class="page" id="page-sales" style="display:none">
+<div class="page-head">
+<div>
+<h1 class="page-title">
               Kontribusi Sales
             </h1>
-
-            <div class="page-subtitle">
-              Performa & kontribusi masing-masing sales
+<div class="page-subtitle">
+              Performa &amp; kontribusi masing-masing sales
             </div>
-          </div>
-
-          <div class="month-badge">
+</div>
+<div class="month-badge">
             📅 <span id="salesMonth"></span>
-          </div>
-
-        </div>
-
-        <div class="filters">
-
-          <button class="filter-btn active">
+</div>
+</div>
+<div class="filters">
+<button class="filter-btn active">
             Per Sales
           </button>
-
-          <select
-            class="select"
-            id="salesCategory"
-            onchange="renderSalesPerformance()"
-          >
-
-            <option value="ALL">
+<select class="select" id="salesCategory" onchange="renderSalesPerformance()">
+<option value="ALL">
               Sales All
             </option>
-
-            <option value="Device">
+<option value="Device">
               Device
             </option>
-
-            <option value="Accessories">
+<option value="Accessories">
               Accessories
             </option>
-
-            <option value="Repair Contract">
+<option value="Repair Contract">
               Repair Contract
             </option>
-
-            <option value="Operator">
+<option value="Operator">
               Operator
             </option>
-
-          </select>
-
-        </div>
-
-        <div class="card" style="padding:12px;margin-bottom:12px">
-
-          <b>
+</select>
+</div>
+<div class="card" style="padding:12px;margin-bottom:12px">
+<b>
             Time Gone:
           </b>
-
-          <span id="salesTimeGone">
+<span id="salesTimeGone">
             0%
           </span>
-
-          <div class="progress">
-            <div
-              id="salesTimeProgress"
-              class="progress-bar"
-              style="width:0%"
-            ></div>
-          </div>
-
-        </div>
-
-        <div class="table-card">
-
-          <table>
-
-            <thead>
-
-              <tr>
-                <th>SALES</th>
-                <th>TARGET</th>
-                <th>ACTUAL</th>
-                <th>ACH%</th>
-                <th>ESTIMASI</th>
-                <th>EST%</th>
-                <th>MELESET</th>
-                <th>KONTRIBUSI</th>
-              </tr>
-
-            </thead>
-
-            <tbody id="salesPerformanceTable"></tbody>
-
-          </table>
-
-        </div>
-
-      </div>
-      <!-- ================= TOP SALES ================= -->
-
-      <div id="page-top" class="page" style="display:none">
-
-        <div class="page-head">
-
-          <div>
-            <h1 class="page-title">
+<div class="progress">
+<div class="progress-bar" id="salesTimeProgress" style="width:0%"></div>
+</div>
+</div>
+<div class="table-card">
+<table>
+<thead>
+<tr>
+<th>SALES</th>
+<th>TARGET</th>
+<th>ACTUAL</th>
+<th>ACH%</th>
+<th>ESTIMASI</th>
+<th>EST%</th>
+<th>MELESET</th>
+<th>KONTRIBUSI</th>
+</tr>
+</thead>
+<tbody id="salesPerformanceTable"></tbody>
+</table>
+</div>
+</div>
+<!-- ================= TOP SALES ================= -->
+<div class="page" id="page-top" style="display:none">
+<div class="page-head">
+<div>
+<h1 class="page-title">
               Top Sales
             </h1>
-
-            <div class="page-subtitle">
+<div class="page-subtitle">
               Ranking sales terbaik
             </div>
-          </div>
-
-        </div>
-
-        <div class="top-grid" id="topCards"></div>
-
-        <div class="table-card">
-
-          <table>
-
-            <thead>
-
-              <tr>
-                <th>RANK</th>
-                <th>SALES</th>
-                <th>TARGET</th>
-                <th>ACTUAL</th>
-                <th>ACH%</th>
-                <th>ESTIMASI</th>
-                <th>EST%</th>
-              </tr>
-
-            </thead>
-
-            <tbody id="topTable"></tbody>
-
-          </table>
-
-        </div>
-
-      </div>
-
-
-      <!-- ================= TARGET ================= -->
-
-      <div id="page-target" class="page" style="display:none">
-
-        <div class="page-head">
-
-          <div>
-            <h1 class="page-title">
+</div>
+</div>
+<div class="top-grid" id="topCards"></div>
+<div class="table-card">
+<table>
+<thead>
+<tr>
+<th>RANK</th>
+<th>SALES</th>
+<th>TARGET</th>
+<th>ACTUAL</th>
+<th>ACH%</th>
+<th>ESTIMASI</th>
+<th>EST%</th>
+</tr>
+</thead>
+<tbody id="topTable"></tbody>
+</table>
+</div>
+</div>
+<!-- ================= TARGET ================= -->
+<div class="page" id="page-target" style="display:none">
+<div class="page-head">
+<div>
+<h1 class="page-title">
               Target Management
             </h1>
-
-            <div class="page-subtitle">
+<div class="page-subtitle">
               Target otomatis mengikuti Sales yang terdaftar di Manage Sales
             </div>
-          </div>
-
-          <div class="month-badge">
+</div>
+<div class="month-badge">
             📅 <span id="targetMonth"></span>
-          </div>
-
-        </div>
-
-        <div class="card" style="padding:18px;margin-bottom:14px">
-
-          <div class="card-title">
+</div>
+</div>
+<div class="card" style="padding:18px;margin-bottom:14px">
+<div class="card-title">
             TOTAL TARGET STORE
           </div>
-
-          <div class="metrics">
-
-            <div>
-              <div class="metric-label">Target All</div>
-              <div class="metric-value" id="targetTotalAll">
+<div class="metrics">
+<div>
+<div class="metric-label">Target All</div>
+<div class="metric-value" id="targetTotalAll">
                 Rp 0
               </div>
-            </div>
-
-            <div>
-              <div class="metric-label">Device</div>
-              <div class="metric-value" id="targetTotalDevice">
+</div>
+<div>
+<div class="metric-label">Device</div>
+<div class="metric-value" id="targetTotalDevice">
                 Rp 0
               </div>
-            </div>
-
-            <div>
-              <div class="metric-label">Accessories</div>
-              <div class="metric-value" id="targetTotalAcc">
+</div>
+<div>
+<div class="metric-label">Accessories</div>
+<div class="metric-value" id="targetTotalAcc">
                 Rp 0
               </div>
-            </div>
-
-            <div>
-              <div class="metric-label">Operator</div>
-              <div class="metric-value" id="targetTotalOperator">
+</div>
+<div>
+<div class="metric-label">Operator</div>
+<div class="metric-value" id="targetTotalOperator">
                 Rp 0
               </div>
-            </div>
-
-          </div>
-
-        </div>
-
-        <div class="form-card">
-
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px">
-
-            <b>
+</div>
+</div>
+</div>
+<div class="form-card">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px">
+<b>
               Target Per Sales
             </b>
-
-            <button
-              class="btn btn-primary"
-              onclick="saveAllTargets()"
-            >
+<button class="btn btn-primary" onclick="saveAllTargets()">
               💾 Save
             </button>
-
-          </div>
-
-          <div class="target-wrapper">
-
-            <table class="target-table">
-
-              <thead>
-
-                <tr>
-
-                  <th>SALES</th>
-
-                  <th>TARGET ALL</th>
-
-                  <th>DEVICE</th>
-
-                  <th>ACCESSORIES</th>
-
-                  <th>REPAIR CONTRACT</th>
-
-                  <th>OPERATOR</th>
-
-                  <th>INDOSAT</th>
-
-                  <th>XL</th>
-
-                  <th>TELKOMSEL</th>
-
-                </tr>
-
-              </thead>
-
-              <tbody id="targetTable"></tbody>
-
-            </table>
-
-          </div>
-
-        </div>
-
-      </div>
-
-      <!-- ================= MANAGE ================= -->
-
-      <div id="page-manage" class="page" style="display:none">
-
-        <div class="page-head">
-
-          <div>
-
-            <h1 class="page-title">
+</div>
+<div class="target-wrapper">
+<table class="target-table">
+<thead>
+<tr>
+<th>SALES</th>
+<th>TARGET ALL</th>
+<th>DEVICE</th>
+<th>ACCESSORIES</th>
+<th>REPAIR CONTRACT</th>
+<th>OPERATOR</th>
+<th>INDOSAT</th>
+<th>XL</th>
+<th>TELKOMSEL</th>
+</tr>
+</thead>
+<tbody id="targetTable"></tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- ================= MANAGE ================= -->
+<div class="page" id="page-manage" style="display:none">
+<div class="page-head">
+<div>
+<h1 class="page-title">
               Manage Sales
             </h1>
-
-            <div class="page-subtitle">
+<div class="page-subtitle">
               Daftar Sales yang terdaftar di sistem
             </div>
-
-          </div>
-
-          <button
-            class="btn btn-primary"
-            onclick="openSalesModal()"
-          >
+</div>
+<button class="btn btn-primary" onclick="openSalesModal()">
             + Tambah Sales
           </button>
-
-        </div>
-
-        <div class="table-card">
-
-          <table>
-
-            <thead>
-
-              <tr>
-                <th>NAMA SALES</th>
-                <th>STATUS</th>
-                <th>AKSI</th>
-              </tr>
-
-            </thead>
-
-            <tbody id="manageSalesTable"></tbody>
-
-          </table>
-
-        </div>
-
-      </div>
-
-    </section>
-
-  </main>
-
 </div>
-
-
+<div class="table-card">
+<table>
+<thead>
+<tr>
+<th>NAMA SALES</th>
+<th>STATUS</th>
+<th>AKSI</th>
+</tr>
+</thead>
+<tbody id="manageSalesTable"></tbody>
+</table>
+</div>
+</div>
+</div></section>
+</main>
+</div>
 <!-- SALES MODAL -->
-
-<div id="salesModal" class="modal">
-
-  <div class="modal-box">
-
-    <div class="modal-head">
-
-      <h3 id="salesModalTitle">
+<div class="modal" id="salesModal">
+<div class="modal-box">
+<div class="modal-head">
+<h3 id="salesModalTitle">
         Tambah Sales
       </h3>
-
-      <button
-        class="close"
-        onclick="closeSalesModal()"
-      >
+<button class="close" onclick="closeSalesModal()">
         ×
       </button>
-
-    </div>
-
-    <input
-      type="hidden"
-      id="editSalesId"
-    >
-
-    <div class="form-group">
-      <label>Nama Sales</label>
-
-      <input
-        id="salesNameInput"
-        placeholder="Nama lengkap"
-      >
-    </div>
-
-    <br>
-
-    <div class="form-group">
-      <label>NIK</label>
-
-      <input
-        id="salesNikInput"
-        placeholder="NIK"
-      >
-    </div>
-
-    <br>
-
-    <div class="form-group">
-
-      <label>Role</label>
-
-      <select id="salesRoleInput">
-
-        <option value="SALES">
+</div>
+<input id="editSalesId" type="hidden"/>
+<div class="form-group">
+<label>Nama Sales</label>
+<input id="salesNameInput" placeholder="Nama lengkap"/>
+</div>
+<br/>
+<div class="form-group">
+<label>NIK</label>
+<input id="salesNikInput" placeholder="NIK"/>
+</div>
+<br/>
+<div class="form-group">
+<label>Role</label>
+<select id="salesRoleInput">
+<option value="SALES">
           SALES
         </option>
-
-        <option value="SL">
+<option value="SL">
           SL
         </option>
-
-        <option value="TSH">
+<option value="TSH">
           TSH
         </option>
-
-        <option value="ADMIN">
+<option value="ADMIN">
           ADMIN
         </option>
-
-      </select>
-
-    </div>
-
-    <br>
-
-    <div class="form-group">
-
-      <label>Status</label>
-
-      <select id="salesStatusInput">
-
-        <option value="AKTIF">
+</select>
+</div>
+<br/>
+<div class="form-group">
+<label>Status</label>
+<select id="salesStatusInput">
+<option value="AKTIF">
           AKTIF
         </option>
-
-        <option value="NONAKTIF">
+<option value="NONAKTIF">
           NONAKTIF
         </option>
-
-      </select>
-
-    </div>
-
-    <br>
-
-    <button
-      class="btn btn-primary"
-      onclick="saveSales()"
-    >
+</select>
+</div>
+<br/>
+<button class="btn btn-primary" onclick="saveSales()">
       Simpan
     </button>
-
-  </div>
-
 </div>
-
-
-<div id="toast" class="toast"></div>
-
-
+</div>
+<div class="toast" id="toast"></div>
 <script>
 
 /* =====================================================
@@ -5630,6 +5198,5 @@ function showToast(message){
 }
 
 </script>
-
 </body>
 </html>
