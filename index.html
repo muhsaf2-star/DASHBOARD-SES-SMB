@@ -1440,6 +1440,18 @@ html,body{
 }
 </style>
 
+
+<style id="wow-store-compact">
+.store-wow-note{font-size:10px;color:#64748b}
+@media(max-width:700px){
+  #page-store .table-card{overflow-x:auto}
+  #page-store .store-week-table table{min-width:620px}
+  #page-store .store-week-table th,
+  #page-store .store-week-table td{padding:6px 7px;font-size:10px}
+  #page-store .store-week-table .money{white-space:nowrap}
+}
+</style>
+
 </head>
 
 <body>
@@ -1518,24 +1530,24 @@ html,body{
       </button>
 
       <button
+        id="menu-ero"
+        onclick="showPage('ero')"
+      >
+        <span class="menu-icon">♧</span>
+        Performa ERO
+      </button>
+
+      <button
         id="menu-store"
         onclick="showPage('store')"
       >
-        <span class="menu-icon">♧</span>
+        <span class="menu-icon">▤</span>
         Performa Store
       </button>
 
       <button
         id="menu-sales"
         onclick="showPage('sales')"
-      >
-        <span class="menu-icon">♧</span>
-        Performa Sales
-      </button>
-
-      <button
-        id="menu-contribution"
-        onclick="showPage('contribution')"
       >
         <span class="menu-icon">◔</span>
         Kontribusi Sales
@@ -2111,12 +2123,12 @@ html,body{
 
       <!-- ================= STORE ================= -->
 
-      <div id="page-store" class="page" style="display:none">
+      <div id="page-ero" class="page" style="display:none">
 
         <div class="page-head">
           <div>
-            <h1 class="page-title">Performa Store</h1>
-            <div class="page-subtitle">Performa H-1 & perbandingan 3 minggu terakhir</div>
+            <h1 class="page-title">Performa ERO</h1>
+            <div class="page-subtitle">Performa ERO H-1 berdasarkan kategori</div>
           </div>
           <div class="month-badge">📅 <span id="storeMonth"></span></div>
         </div>
@@ -2150,26 +2162,7 @@ html,body{
         <div class="store-week-title">Breakdown Target per Sales</div>
         <div class="page-subtitle" style="margin-bottom:8px">Setiap sales dapat melihat target, actual H-1, estimasi dan kekurangan per kategori.</div>
         <div id="storeSalesBreakdown"></div>
-
-        <div class="store-week-title">3 Minggu Terakhir — WoW & Gap Value</div>
-        <div class="table-card store-week-table">
-          <table>
-            <thead>
-              <tr>
-                <th>PERIODE</th>
-                <th>SALES</th>
-                <th>WoW</th>
-                <th>GAP VALUE</th>
-              </tr>
-            </thead>
-            <tbody id="storeWeeklyTable"></tbody>
-          </table>
-        </div>
-
-      </div>
-
-
-      <!-- ================= SALES ================= -->
+<!-- ================= SALES ================= -->
 
       <div id="page-sales" class="page" style="display:none">
 
@@ -2177,11 +2170,11 @@ html,body{
 
           <div>
             <h1 class="page-title">
-              Performa Sales
+              Kontribusi Sales
             </h1>
 
             <div class="page-subtitle">
-              Perbandingan performa setiap sales
+              Performa & kontribusi masing-masing sales
             </div>
           </div>
 
@@ -2261,6 +2254,7 @@ html,body{
                 <th>ESTIMASI</th>
                 <th>EST%</th>
                 <th>MELESET</th>
+                <th>KONTRIBUSI</th>
               </tr>
 
             </thead>
@@ -2272,50 +2266,6 @@ html,body{
         </div>
 
       </div>
-
-
-      <!-- ================= CONTRIBUTION ================= -->
-
-      <div id="page-contribution" class="page" style="display:none">
-
-        <div class="page-head">
-
-          <div>
-            <h1 class="page-title">
-              Kontribusi Sales
-            </h1>
-
-            <div class="page-subtitle">
-              Kontribusi masing-masing sales terhadap omzet
-            </div>
-          </div>
-
-        </div>
-
-        <div class="table-card">
-
-          <table>
-
-            <thead>
-
-              <tr>
-                <th>RANK</th>
-                <th>SALES</th>
-                <th>ACTUAL</th>
-                <th>KONTRIBUSI</th>
-              </tr>
-
-            </thead>
-
-            <tbody id="contributionTable"></tbody>
-
-          </table>
-
-        </div>
-
-      </div>
-
-
       <!-- ================= TOP SALES ================= -->
 
       <div id="page-top" class="page" style="display:none">
@@ -3127,14 +3077,14 @@ function showPage(page){
   if(page === "overview")
     renderOverview();
 
-  if(page === "store")
+  if(page === "ero")
     renderStore();
+
+  if(page === "store")
+    renderStoreWeeklyPage_();
 
   if(page === "sales")
     renderSalesPerformance();
-
-  if(page === "contribution")
-    renderContribution();
 
   if(page === "top")
     renderTopSales();
@@ -3527,6 +3477,9 @@ function renderSalesPerformance(){
   const rows =
     getSalesStats();
 
+  const totalActual =
+    rows.reduce((sum,r)=>sum + Number(r.actual || 0),0);
+
   tbody.innerHTML =
     rows.map(function(r){
 
@@ -3563,6 +3516,10 @@ function renderSalesPerformance(){
 
           <td>
             —
+          </td>
+
+          <td>
+            <b>${percent(totalActual > 0 ? r.actual / totalActual * 100 : 0)}</b>
           </td>
 
         </tr>
@@ -3706,7 +3663,6 @@ function renderStore(){
   setText("storeEstKpi",money(est));
 
   renderStoreSalesBreakdown_();
-  renderStoreWeekly_(tx);
 }
 
 function getStoreSalesCategoryActual_(salesId, category, type){
@@ -3819,6 +3775,96 @@ function renderStoreSalesBreakdown_(){
   }).join('');
 }
 
+
+function normalizeCategoryClient_(value){
+  const s=String(value||"").trim().toLowerCase();
+  if(s==="device")return "Device";
+  if(s==="accessories"||s==="accessory"||s==="acc")return "Accessories";
+  if(s==="repair contract"||s==="repaircontract"||s==="rc")return "Repair Contract";
+  if(s==="operator"||s==="op")return "Operator";
+  return String(value||"").trim();
+}
+
+function effectiveWeeklyAmountClient_(tx){
+  const amount=Number(tx&&tx.amount||0);
+  if(!isFinite(amount)||amount===0)return 0;
+  const cat=normalizeCategoryClient_(tx.category);
+  const sub=String(tx.subcategory||"").trim().toLowerCase();
+
+  if(cat==="Device"){
+    const s=normalizeSeriesClient_(tx);
+    return ["Series A","Series S","Series Z","Series Tab"].includes(s)?amount:0;
+  }
+  if(cat==="Operator"){
+    return ["indosat","xl","telkomsel"].includes(sub)?amount:0;
+  }
+  return amount;
+}
+
+function renderStoreWeeklyPage_(){
+  if(!dashboardData)return;
+
+  setText("storeWeekMonth",dashboardData.period||"");
+
+  const body=document.getElementById("storeWoWTable");
+  if(!body)return;
+
+  const weeks=(dashboardData.weekly&&dashboardData.weekly.weeks)||[];
+  const weeklyTx=(dashboardData.weeklyTransactions||[]);
+
+  if(weeks.length<3){
+    body.innerHTML='<tr><td colspan="6">Belum ada data 3 minggu terakhir.</td></tr>';
+    return;
+  }
+
+  const categories=["Sales All","Device","Accessories","Repair Contract","Operator"];
+
+  const weekValues=weeks.slice(-3).map(w=>{
+    const rows=weeklyTx.filter(t=>{
+      const d=parseDateClient_(t.date);
+      const start=parseDateClient_(w.start);
+      const end=parseDateClient_(w.end);
+      return d&&start&&end&&d>=start&&d<=end;
+    });
+    const vals={};
+    categories.forEach(c=>vals[c]=0);
+    rows.forEach(t=>{
+      const a=effectiveWeeklyAmountClient_(t);
+      const c=normalizeCategoryClient_(t.category);
+      if(categories.includes(c)) vals[c]+=a;
+      vals["Sales All"]+=a;
+    });
+    return vals;
+  });
+
+  body.innerHTML=categories.map(c=>{
+    const v1=weekValues[0][c]||0;
+    const v2=weekValues[1][c]||0;
+    const v3=weekValues[2][c]||0;
+    const growth=v2!==0?(v3-v2)/Math.abs(v2)*100:null;
+    const gap=v3-v2;
+
+    return `<tr>
+      <td><b>${escapeHtml(c)}</b></td>
+      <td class="money">${money(v1)}</td>
+      <td class="money">${money(v2)}</td>
+      <td class="money"><b>${money(v3)}</b></td>
+      <td>${growth===null?"—":formatWowClient_(growth)}</td>
+      <td class="money">${formatGapClient_(gap)}</td>
+    </tr>`;
+  }).join("");
+}
+
+function parseDateClient_(value){
+  if(!value)return null;
+  const s=String(value).substring(0,10);
+  const p=s.split("-");
+  if(p.length===3 && !isNaN(Number(p[0])) && !isNaN(Number(p[1])) && !isNaN(Number(p[2]))){
+    return new Date(Number(p[0]),Number(p[1])-1,Number(p[2]));
+  }
+  return null;
+}
+
 function renderStoreWeekly_(tx){
   const body=document.getElementById("storeWeeklyTable");
   if(!body)return;
@@ -3845,78 +3891,6 @@ function formatGapClient_(v){return (Number(v)>=0?"+":"-")+money(Math.abs(Number
 /* =====================================================
    CONTRIBUTION
 ===================================================== */
-
-function renderContribution(){
-
-  const tbody =
-    document.getElementById(
-      "contributionTable"
-    );
-
-  if(!tbody)
-    return;
-
-  const rows =
-    getSalesStats()
-      .sort(
-        (a,b)=>
-          b.actual-a.actual
-      );
-
-  const total =
-    rows.reduce(
-      (s,r)=>
-        s+r.actual,
-      0
-    );
-
-  tbody.innerHTML =
-    rows.map(
-      function(r,i){
-
-        const contribution =
-          total > 0
-          ? r.actual / total * 100
-          : 0;
-
-        return `
-          <tr>
-
-            <td>
-              #${i+1}
-            </td>
-
-            <td>
-              <b>${escapeHtml(r.name)}</b>
-            </td>
-
-            <td class="money">
-              ${money(r.actual)}
-            </td>
-
-            <td style="width:35%">
-
-              <div style="font-weight:700">
-                ${percent(contribution)}
-              </div>
-
-              <div class="progress">
-                <div
-                  class="progress-bar"
-                  style="width:${Math.min(contribution,100)}%"
-                ></div>
-              </div>
-
-            </td>
-
-          </tr>
-        `;
-
-      }
-    ).join("");
-
-}
-
 
 /* =====================================================
    TOP SALES
