@@ -520,6 +520,20 @@ button{
 .operator-short{
   color:#ff4d5a;
 }
+
+.est-percent{
+  font-size:11px;
+  color:#718096;
+  margin-top:2px;
+  font-weight:600;
+}
+
+.operator-est-percent{
+  font-size:10px;
+  color:#718096;
+  margin-top:1px;
+  font-weight:600;
+}
 .operator-grid{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
@@ -1787,6 +1801,7 @@ html,body{
                 <div class="metric-value" id="deviceEst">
                   Rp 0
                 </div>
+                <div class="est-percent" id="deviceEstPercent">0.0%</div>
               </div>
 
             </div>
@@ -1847,6 +1862,7 @@ html,body{
                 <div class="metric-value" id="accEst">
                   Rp 0
                 </div>
+                <div class="est-percent" id="accEstPercent">0.0%</div>
               </div>
 
             </div>
@@ -1907,6 +1923,7 @@ html,body{
                 <div class="metric-value" id="repairEst">
                   Rp 0
                 </div>
+                <div class="est-percent" id="repairEstPercent">0.0%</div>
               </div>
 
             </div>
@@ -1967,6 +1984,7 @@ html,body{
                 <div class="metric-value" id="operatorEst">
                   Rp 0
                 </div>
+                <div class="est-percent" id="operatorEstPercent">0.0%</div>
               </div>
 
             </div>
@@ -1990,6 +2008,7 @@ html,body{
                 <div>
                   <div class="operator-label">Estimasi</div>
                   <div class="operator-value" id="indosatEst">Rp 0</div>
+                  <div class="operator-est-percent" id="indosatEstPercent">0.0%</div>
                 </div>
                 <div>
                   <div class="operator-label">Kekurangan</div>
@@ -2015,6 +2034,7 @@ html,body{
                 <div>
                   <div class="operator-label">Estimasi</div>
                   <div class="operator-value" id="xlEst">Rp 0</div>
+                  <div class="operator-est-percent" id="xlEstPercent">0.0%</div>
                 </div>
                 <div>
                   <div class="operator-label">Kekurangan</div>
@@ -2040,6 +2060,7 @@ html,body{
                 <div>
                   <div class="operator-label">Estimasi</div>
                   <div class="operator-value" id="telkomselEst">Rp 0</div>
+                  <div class="operator-est-percent" id="telkomselEstPercent">0.0%</div>
                 </div>
                 <div>
                   <div class="operator-label">Kekurangan</div>
@@ -3234,6 +3255,11 @@ function renderOverview(){
     setText(prefix + "Target", money(target));
     setText(prefix + "Actual", money(actual));
     setText(prefix + "Est", money(estimation));
+    setHtml(prefix + "EstPercent", percent(
+      o.estimationPercent != null
+        ? Number(o.estimationPercent)
+        : (target > 0 ? estimation / target * 100 : 0)
+    ));
     setText(prefix + "Short", money(shortfall));
 
     setHtml(prefix + "Ach", percent(
@@ -3281,6 +3307,11 @@ function renderCategory(category,prefix){
   setText(
     prefix+"Est",
     money(c.estimation)
+  );
+
+  setHtml(
+    prefix+"EstPercent",
+    percent(c.estimationPercent)
   );
 
   setText(
