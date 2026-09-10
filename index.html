@@ -1381,6 +1381,38 @@ html,body{
   }
 }
 
+
+/* ================= PERFORMANCE HIGHLIGHT ================= */
+.performance-highlight{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:12px;margin-top:14px}
+.highlight-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px 16px;box-shadow:0 1px 2px rgba(16,24,40,.03)}
+.highlight-title{font-size:14px;font-weight:800;color:#172033}
+.highlight-subtitle{margin-top:3px;font-size:11px;color:#7a8495}
+.highlight-list{margin-top:10px}
+.highlight-row{display:grid;grid-template-columns:24px 1fr auto;align-items:center;gap:7px;padding:7px 0;border-bottom:1px solid #edf1f5}
+.highlight-row:last-child{border-bottom:0}
+.highlight-rank{font-weight:800;color:#087bea;font-size:12px}
+.highlight-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;font-weight:700}
+.highlight-meta{color:#7a8495;font-size:10px;margin-top:2px}
+.highlight-score{font-size:12px;font-weight:800;white-space:nowrap}
+.highlight-empty{font-size:11px;color:#8b95a5;padding:6px 0}
+.highlight-action{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0}
+.highlight-action-main{font-size:12px;font-weight:700}
+.highlight-action-value{font-size:11px;font-weight:800;white-space:nowrap}
+@media(max-width:700px){
+ .performance-highlight{grid-template-columns:1fr;gap:7px;margin-top:8px}
+ .highlight-card{padding:9px 10px}
+ .highlight-title{font-size:12px}
+ .highlight-subtitle{font-size:9px}
+ .highlight-list{margin-top:6px}
+ .highlight-row{padding:5px 0}
+ .highlight-name,.highlight-score{font-size:10px}
+ .highlight-meta{font-size:8px}
+ .highlight-empty{font-size:9px}
+ .highlight-action{padding:5px 0}
+ .highlight-action-main{font-size:10px}
+ .highlight-action-value{font-size:9px}
+}
+
 </style>
 </head>
 
@@ -2022,6 +2054,32 @@ html,body{
 
       </div>
 
+
+
+        <!-- ================= PERFORMANCE HIGHLIGHT ================= -->
+        <div class="performance-highlight">
+          <div class="highlight-card">
+            <div class="highlight-title">🔥 TOP SALES</div>
+            <div class="highlight-subtitle">Ranking berdasarkan achievement H-1</div>
+            <div id="topSalesHighlight" class="highlight-list">
+              <div class="highlight-empty">Belum ada data transaksi H-1</div>
+            </div>
+          </div>
+          <div class="highlight-card">
+            <div class="highlight-title">🏆 BEST CATEGORY</div>
+            <div class="highlight-subtitle">Kategori dengan achievement tertinggi</div>
+            <div id="bestCategoryHighlight" class="highlight-list">
+              <div class="highlight-empty">Belum ada data transaksi H-1</div>
+            </div>
+          </div>
+          <div class="highlight-card">
+            <div class="highlight-title">⚡ QUICK ACTION</div>
+            <div class="highlight-subtitle">Fokus yang perlu dikejar hari ini</div>
+            <div id="quickActionHighlight" class="highlight-list">
+              <div class="highlight-empty">Menunggu data H-1</div>
+            </div>
+          </div>
+        </div>
 
       <!-- ================= STORE ================= -->
 
@@ -3188,6 +3246,8 @@ function renderOverview(){
   renderOperator("Indosat", "indosat");
   renderOperator("XL", "xl");
   renderOperator("Telkomsel", "telkomsel");
+
+  renderPerformanceHighlight();
 }
 
 
@@ -3230,6 +3290,60 @@ function renderCategory(category,prefix){
 
 }
 
+
+
+function renderPerformanceHighlight(){
+  if(!dashboardData)return;
+
+  const tx=dashboardData.transactions||[];
+  const targetMap={};
+  (dashboardData.targets||[]).forEach(t=>targetMap[String(t.salesId)]=t);
+
+  const stats=salesList.map(s=>{
+    const rows=tx.filter(x=>String(x.salesId)===String(s.id));
+    const actual=rows.reduce((sum,x)=>sum+Number(x.amount||0),0);
+    const t=targetMap[String(s.id)]||{};
+    const target=Number(t.targetAll||0);
+    return {name:s.name,actual,target,ach:target>0?actual/target*100:0};
+  }).sort((a,b)=>b.ach-a.ach);
+
+  const topEl=document.getElementById("topSalesHighlight");
+  const top=stats.filter(x=>x.actual>0).slice(0,3);
+  if(topEl){
+    topEl.innerHTML=top.length?top.map((x,i)=>`
+      <div class="highlight-row">
+        <div class="highlight-rank">#${i+1}</div>
+        <div><div class="highlight-name">${escapeHtml(x.name)}</div><div class="highlight-meta">Actual ${money(x.actual)}</div></div>
+        <div class="highlight-score">${percent(x.ach)}</div>
+      </div>`).join(""):'<div class="highlight-empty">Belum ada transaksi H-1 untuk diranking.</div>';
+  }
+
+  const cats=["Device","Accessories","Repair Contract","Operator"].map(name=>{
+    const c=(dashboardData.categories||{})[name]||{};
+    return {name,actual:Number(c.actual||0),target:Number(c.target||0),ach:Number(c.achievement||0)};
+  }).sort((a,b)=>b.ach-a.ach);
+
+  const bestEl=document.getElementById("bestCategoryHighlight");
+  const best=cats.find(x=>x.actual>0);
+  if(bestEl){
+    bestEl.innerHTML=best?`
+      <div class="highlight-row">
+        <div class="highlight-rank">★</div>
+        <div><div class="highlight-name">${escapeHtml(best.name)}</div><div class="highlight-meta">Actual ${money(best.actual)} • Target ${money(best.target)}</div></div>
+        <div class="highlight-score">${percent(best.ach)}</div>
+      </div>`:'<div class="highlight-empty">Belum ada transaksi H-1.</div>';
+  }
+
+  const quickEl=document.getElementById("quickActionHighlight");
+  const focus=cats.filter(x=>x.target>0).sort((a,b)=>a.ach-b.ach)[0];
+  if(quickEl){
+    quickEl.innerHTML=focus?`
+      <div class="highlight-action">
+        <div><div class="highlight-action-main">Kejar ${escapeHtml(focus.name)}</div><div class="highlight-meta">Time Gone ${Math.round(Number(dashboardData.timeGone||0))}%</div></div>
+        <div class="highlight-action-value">${money(Math.max(focus.target-focus.actual,0))}</div>
+      </div>`:'<div class="highlight-empty">Target belum tersedia.</div>';
+  }
+}
 
 /* =====================================================
    SALES PERFORMANCE
