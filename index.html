@@ -333,6 +333,35 @@ button{
   .store-filter-row .select{min-width:130px;flex:1;}
 }
 
+
+/* ================= ERO MOTTO ================= */
+.ero-motto{
+  margin:0 0 14px;
+  padding:14px 18px;
+  border-radius:12px;
+  background:linear-gradient(135deg,#087bea,#0758b8);
+  color:#fff;
+  box-shadow:0 4px 12px rgba(8,123,234,.15);
+}
+.ero-motto-title{
+  font-size:16px;
+  font-weight:800;
+  letter-spacing:.1px;
+}
+.ero-motto-text{
+  margin-top:4px;
+  font-size:13px;
+  font-weight:600;
+  opacity:.96;
+  min-height:18px;
+  transition:opacity .2s ease;
+}
+@media(max-width:700px){
+  .ero-motto{padding:11px 13px;margin-bottom:10px;}
+  .ero-motto-title{font-size:13px;}
+  .ero-motto-text{font-size:11px;}
+}
+
 /* ================= CARDS ================= */
 
 .card{
@@ -1105,6 +1134,12 @@ tr:last-child td{
 
         </div>
 
+
+
+        <div class="ero-motto">
+          <div class="ero-motto-title">🔥 HAI KALIAN SEMUA ERO SMB!</div>
+          <div class="ero-motto-text" id="eroMottoText">Jualan yang semangat ya! 💪🔥</div>
+        </div>
 
         <div class="filters">
 
@@ -2298,6 +2333,35 @@ function logout(){
 }
 
 
+
+/* =====================================================
+   ERO MOTTO ROTATION
+===================================================== */
+const eroMottos = [
+  "Jualan yang semangat ya! 💪🔥",
+  "🎯 Kejar target, jangan kejar alasan!",
+  "🚀 Hari ini harus lebih baik dari kemarin!",
+  "💪 Gas terus, jangan kasih kendor!",
+  "🏆 Target bukan untuk dilihat, tapi untuk dicapai!",
+  "🔥 Satu customer hari ini bisa jadi penentu target!"
+];
+
+let eroMottoIndex = 0;
+
+function startEroMotto(){
+  const el = document.getElementById("eroMottoText");
+  if(!el) return;
+  el.textContent = eroMottos[0];
+  setInterval(() => {
+    el.style.opacity = "0";
+    setTimeout(() => {
+      eroMottoIndex = (eroMottoIndex + 1) % eroMottos.length;
+      el.textContent = eroMottos[eroMottoIndex];
+      el.style.opacity = "1";
+    }, 180);
+  }, 5000);
+}
+
 /* =====================================================
    START APP
 ===================================================== */
@@ -2323,6 +2387,8 @@ async function startApp(){
     currentUser.name
       .charAt(0)
       .toUpperCase();
+
+  startEroMotto();
 
   await loadAll();
 
