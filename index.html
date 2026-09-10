@@ -242,6 +242,64 @@ button{
   color:#536275;
 }
 
+
+.store-mode{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+}
+.store-mode .filter-btn{
+  min-width:92px;
+}
+.store-filter-row{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+.store-filter-row .select{
+  min-width:150px;
+}
+.store-kpis{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:10px;
+  margin:12px 0;
+}
+.store-kpi{
+  background:#fff;
+  border:1px solid #e7ebf2;
+  border-radius:10px;
+  padding:10px 12px;
+}
+.store-kpi .label{
+  font-size:11px;
+  color:#7a8495;
+  margin-bottom:4px;
+}
+.store-kpi .value{
+  font-size:18px;
+  font-weight:700;
+}
+.store-week-title{
+  font-weight:700;
+  margin:14px 0 8px;
+}
+.store-week-table{
+  overflow:auto;
+}
+.store-week-table table{
+  min-width:650px;
+}
+.gap-up{font-weight:700;}
+.gap-down{font-weight:700;}
+@media(max-width:700px){
+  .store-kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;}
+  .store-kpi{padding:8px 9px;}
+  .store-kpi .value{font-size:15px;}
+  .store-filter-row .select{min-width:130px;flex:1;}
+}
+
 /* ================= CARDS ================= */
 
 .card{
@@ -1430,64 +1488,42 @@ tr:last-child td{
       <div id="page-store" class="page" style="display:none">
 
         <div class="page-head">
-
           <div>
-            <h1 class="page-title">
-              Performa Store
-            </h1>
-
-            <div class="page-subtitle">
-              Perbandingan performa toko
-            </div>
+            <h1 class="page-title">Performa Store</h1>
+            <div class="page-subtitle">Performa H-1 & perbandingan 3 minggu terakhir</div>
           </div>
-
-          <div class="month-badge">
-            📅 <span id="storeMonth"></span>
-          </div>
-
+          <div class="month-badge">📅 <span id="storeMonth"></span></div>
         </div>
 
-        <div class="filters">
+        <div class="filters store-filter-row">
+          <div class="store-mode">
+            <button id="storeModeAll" class="filter-btn active" onclick="setStoreMode('ALL')">Semua</button>
+            <button id="storeModeCat" class="filter-btn" onclick="setStoreMode('CATEGORY')">Per Kategori</button>
+          </div>
 
-          <button class="filter-btn active">
-            Bulan Ini
-          </button>
-
-          <select
-            class="select"
-            id="storeCategory"
-            onchange="renderStore()"
-          >
-            <option value="ALL">
-              Sales All
-            </option>
-
-            <option value="Device">
-              Device
-            </option>
-
-            <option value="Accessories">
-              Accessories
-            </option>
-
-            <option value="Repair Contract">
-              Repair Contract
-            </option>
-
-            <option value="Operator">
-              Operator
-            </option>
-
+          <select class="select" id="storeCategory" onchange="updateStoreTypeOptions();renderStore()">
+            <option value="ALL">Sales All</option>
+            <option value="Device">Device</option>
+            <option value="Accessories">Accessories</option>
+            <option value="Repair Contract">Repair Contract</option>
+            <option value="Operator">Operator</option>
           </select>
 
+          <select class="select" id="storeType" onchange="renderStore()">
+            <option value="ALL">Semua</option>
+          </select>
+        </div>
+
+        <div class="store-kpis">
+          <div class="store-kpi"><div class="label">ACTUAL H-1</div><div class="value" id="storeActualKpi">Rp0</div></div>
+          <div class="store-kpi"><div class="label">TARGET</div><div class="value" id="storeTargetKpi">Rp0</div></div>
+          <div class="store-kpi"><div class="label">ACHIEVEMENT</div><div class="value" id="storeAchKpi">0%</div></div>
+          <div class="store-kpi"><div class="label">ESTIMASI H-1</div><div class="value" id="storeEstKpi">Rp0</div></div>
         </div>
 
         <div class="table-card">
-
           <table>
-
             <thead>
-
               <tr>
                 <th>PERIODE</th>
                 <th>ACTUAL</th>
@@ -1496,13 +1532,24 @@ tr:last-child td{
                 <th>ESTIMASI</th>
                 <th>EST%</th>
               </tr>
-
             </thead>
-
             <tbody id="storeTable"></tbody>
-
           </table>
+        </div>
 
+        <div class="store-week-title">3 Minggu Terakhir — WoW & Gap Value</div>
+        <div class="table-card store-week-table">
+          <table>
+            <thead>
+              <tr>
+                <th>PERIODE</th>
+                <th>SALES</th>
+                <th>WoW</th>
+                <th>GAP VALUE</th>
+              </tr>
+            </thead>
+            <tbody id="storeWeeklyTable"></tbody>
+          </table>
         </div>
 
       </div>
@@ -3089,55 +3136,137 @@ function renderSalesPerformance(){
    STORE
 ===================================================== */
 
-function renderStore(){
-
-  if(!dashboardData)
-    return;
-
-  const tbody =
-    document.getElementById(
-      "storeTable"
-    );
-
-  if(!tbody)
-    return;
-
-  const d =
-    dashboardData;
-
-  tbody.innerHTML = `
-
-    <tr>
-
-      <td>
-        Bulan Ini
-      </td>
-
-      <td class="money">
-        ${money(d.totalActual)}
-      </td>
-
-      <td class="money">
-        ${money(d.targetAll)}
-      </td>
-
-      <td class="percent-red">
-        ${percent(d.achievement)}
-      </td>
-
-      <td class="money">
-        ${money(d.estimation)}
-      </td>
-
-      <td class="percent-red">
-        ${percent(d.estimationPercent)}
-      </td>
-
-    </tr>
-
-  `;
-
+function setStoreMode(mode){
+  const allBtn=document.getElementById("storeModeAll");
+  const catBtn=document.getElementById("storeModeCat");
+  const cat=document.getElementById("storeCategory");
+  const type=document.getElementById("storeType");
+  if(allBtn) allBtn.classList.toggle("active",mode==="ALL");
+  if(catBtn) catBtn.classList.toggle("active",mode!=="ALL");
+  if(cat){
+    cat.style.display=mode==="ALL"?"none":"";
+    if(mode==="ALL") cat.value="ALL";
+  }
+  if(type){
+    type.style.display=mode==="ALL"?"none":"";
+  }
+  updateStoreTypeOptions();
+  renderStore();
 }
+
+function updateStoreTypeOptions(){
+  const cat=document.getElementById("storeCategory");
+  const type=document.getElementById("storeType");
+  if(!cat||!type)return;
+  const c=cat.value;
+  let opts=[{v:"ALL",t:"Semua"}];
+  if(c==="Device") opts.push(
+    {v:"A Series",t:"A Series"},{v:"S Series",t:"S Series"},
+    {v:"Z Series",t:"Z Series"},{v:"Tab Series",t:"Tab Series"}
+  );
+  if(c==="Operator") opts.push(
+    {v:"Indosat",t:"Indosat"},{v:"XL",t:"XL"},{v:"Telkomsel",t:"Telkomsel"}
+  );
+  type.innerHTML=opts.map(o=>`<option value="${o.v}">${o.t}</option>`).join("");
+}
+
+function normalizeSeriesClient_(tx){
+  const raw=String(tx.subcategory||tx.product||"").toLowerCase();
+  if(raw.includes("a series")||/^a\d/.test(raw)||raw.includes("galaxy a"))return "A Series";
+  if(raw.includes("s series")||/^s\d/.test(raw)||raw.includes("galaxy s"))return "S Series";
+  if(raw.includes("z series")||/^z\w/.test(raw)||raw.includes("fold")||raw.includes("flip"))return "Z Series";
+  if(raw.includes("tab"))return "Tab Series";
+  return String(tx.subcategory||"");
+}
+
+function getStoreFilteredTransactions(){
+  if(!dashboardData)return [];
+  const tx=dashboardData.transactions||[];
+  const cat=document.getElementById("storeCategory");
+  const type=document.getElementById("storeType");
+  const c=cat?cat.value:"ALL";
+  const t=type?type.value:"ALL";
+  if(c==="ALL")return tx;
+  return tx.filter(x=>{
+    if(String(x.category)!==c)return false;
+    if(t==="ALL")return true;
+    if(c==="Device")return normalizeSeriesClient_(x)===t;
+    if(c==="Operator")return String(x.subcategory||"")===t;
+    return String(x.subcategory||"")===t;
+  });
+}
+
+function getStoreTarget(){
+  if(!dashboardData)return 0;
+  const targets=dashboardData.targets||[];
+  const cat=document.getElementById("storeCategory");
+  const type=document.getElementById("storeType");
+  const c=cat?cat.value:"ALL";
+  const t=type?type.value:"ALL";
+  if(c==="ALL")return targets.reduce((s,x)=>s+Number(x.targetAll||0),0);
+  if(c==="Device")return targets.reduce((s,x)=>s+Number(x.device||0),0);
+  if(c==="Accessories")return targets.reduce((s,x)=>s+Number(x.accessories||0),0);
+  if(c==="Repair Contract")return targets.reduce((s,x)=>s+Number(x.repairContract||0),0);
+  if(c==="Operator"){
+    if(t==="Indosat")return targets.reduce((s,x)=>s+Number(x.indosat||0),0);
+    if(t==="XL")return targets.reduce((s,x)=>s+Number(x.xl||0),0);
+    if(t==="Telkomsel")return targets.reduce((s,x)=>s+Number(x.telkomsel||0),0);
+    return targets.reduce((s,x)=>s+Number(x.operator||0),0);
+  }
+  return 0;
+}
+
+function sumStore_(arr){return arr.reduce((s,x)=>s+Number(x.amount||0),0);}
+function storeWeekLabel_(w){return w.label||w.period||"-";}
+
+function renderStore(){
+  if(!dashboardData)return;
+  const tx=getStoreFilteredTransactions();
+  const target=getStoreTarget();
+  const actual=sumStore_(tx);
+  const days=Number(dashboardData.daysPassed||0);
+  const dim=Number(dashboardData.daysInMonth||0);
+  const est=days>0?actual/days*dim:0;
+  const ach=target>0?actual/target*100:0;
+  const estPct=target>0?est/target*100:0;
+
+  setText("storeMonth",dashboardData.period||"");
+  setText("storeActualKpi",money(actual));
+  setText("storeTargetKpi",money(target));
+  setText("storeAchKpi",percent(ach));
+  setText("storeEstKpi",money(est));
+
+  const tbody=document.getElementById("storeTable");
+  if(tbody)tbody.innerHTML=`<tr>
+    <td>H-1 (${days} hari)</td><td class="money">${money(actual)}</td>
+    <td class="money">${money(target)}</td><td>${percent(ach)}</td>
+    <td class="money">${money(est)}</td><td>${percent(estPct)}</td>
+  </tr>`;
+
+  renderStoreWeekly_(tx);
+}
+
+function renderStoreWeekly_(tx){
+  const body=document.getElementById("storeWeeklyTable");
+  if(!body)return;
+  const rows=(dashboardData.weekly&&dashboardData.weekly.rows)||[];
+  const deviceRows=(dashboardData.weekly&&dashboardData.weekly.deviceRows)||[];
+  const operatorRows=(dashboardData.weekly&&dashboardData.weekly.operatorRows)||[];
+  const cat=document.getElementById("storeCategory");
+  const type=document.getElementById("storeType");
+  const c=cat?cat.value:"ALL", t=type?type.value:"ALL";
+  let source=rows;
+  if(c==="Device")source=t==="ALL"?rows.filter(r=>r.name==="Device"):deviceRows.filter(r=>r.name===t);
+  else if(c==="Operator")source=t==="ALL"?rows.filter(r=>r.name==="Operator"):operatorRows.filter(r=>r.name===t);
+  else if(c!=="ALL")source=rows.filter(r=>r.name===c);
+  const r=source[0];
+  if(!r){body.innerHTML=`<tr><td colspan="4">Belum ada data weekly.</td></tr>`;return;}
+  const vals=r.values||[];
+  body.innerHTML=vals.map(v=>`<tr><td>${storeWeekLabel_(v)}</td><td class="money">${money(v.sales||0)}</td><td>${v.wow==null?"—":formatWowClient_(v.wow)}</td><td>${v.gap==null?"—":formatGapClient_(v.gap)}</td></tr>`).join("");
+}
+
+function formatWowClient_(v){return (Number(v)>=0?"+":"")+Number(v).toFixed(1)+"%";}
+function formatGapClient_(v){return (Number(v)>=0?"+":"-")+money(Math.abs(Number(v)));}
 
 
 /* =====================================================
