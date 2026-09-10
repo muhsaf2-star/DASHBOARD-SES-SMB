@@ -2472,7 +2472,7 @@ html,body{
         <div class="page-head">
           <div>
             <h1 class="page-title">Summary</h1>
-            <div class="page-subtitle">Prioritas ERO berdasarkan estimasi pencapaian menuju 100%</div>
+            <div class="page-subtitle">Prioritas ERO berdasarkan estimasi pencapaian menuju 100% • Operator dipecah per sub operator</div>
           </div>
           <div class="month-badge">📅 <span id="summaryMonth"></span></div>
         </div>
@@ -4282,15 +4282,29 @@ function summaryCategoryTarget_(t, category){
   if(category==='Sales All') return Number(t.targetAll||0);
   if(category==='Device') return Number(t.device||0);
   if(category==='Accessories') return Number(t.accessories||0);
-  if(category==='Repair Contract') return Number(t.repairContract||0);
-  if(category==='Operator') return Number(t.operator||0);
+  if(category==='Indosat') return Number(t.indosat||0);
+  if(category==='XL') return Number(t.xl||0);
+  if(category==='Telkomsel') return Number(t.telkomsel||0);
   return 0;
+}
+
+function summaryCategoryMatch_(x, category){
+  const raw=String(x.category||'').trim().toLowerCase();
+  if(category==='Sales All') return true;
+  if(category==='Device') return raw==='device';
+  if(category==='Accessories') return ['acc','accessory','accessories'].includes(raw);
+  if(['Indosat','XL','Telkomsel'].includes(category)){
+    return raw==='operator' && String(x.subcategory||'').trim().toLowerCase()===category.toLowerCase();
+  }
+  return false;
 }
 
 function renderSummary(){
   if(!dashboardData || !salesList || !salesList.length) return;
 
-  const categories=['Sales All','Device','Accessories','Repair Contract','Operator'];
+  // Summary sengaja TIDAK menampilkan Repair Contract dan Operator All.
+  // Operator hanya ditampilkan per sub-operator: Indosat, XL, Telkomsel.
+  const categories=['Sales All','Device','Accessories','Indosat','XL','Telkomsel'];
   const days=Number(dashboardData.daysPassed||0);
   const dim=Number(dashboardData.daysInMonth||0);
   const remaining=Math.max(dim-days,0);
@@ -4300,16 +4314,9 @@ function renderSummary(){
   setText('summaryMonth', formatMonth(dashboardData.period || getCurrentPeriod()));
 
   const calc=(s,cat)=>{
-    const actual=tx.filter(x=>String(x.salesId)===String(s.id)).reduce((sum,x)=>{
-      if(cat==='Sales All') return sum+Number(x.amount||0);
-      const raw=String(x.category||'').trim().toLowerCase();
-      const wanted=cat.toLowerCase();
-      const alias={acc:'accessories',accessory:'accessories',accessories:'accessories',device:'device',operator:'operator','repair contract':'repair contract',scp:'repair contract'};
-      if((alias[raw]||raw)!==(alias[wanted]||wanted)) return sum;
-      if(cat==='Device' && typeof normalizeSeriesClient_==='function') return sum+Number(x.amount||0);
-      if(cat==='Operator') return sum+Number(x.amount||0);
-      return sum+Number(x.amount||0);
-    },0);
+    const actual=tx.filter(x=>String(x.salesId)===String(s.id) && summaryCategoryMatch_(x,cat))
+      .reduce((sum,x)=>sum+Number(x.amount||0),0);
+
     const trow=(dashboardData.targets||[]).find(x=>String(x.salesId)===String(s.id))||{};
     const target=summaryCategoryTarget_(trow,cat);
     const est=days>0?actual/days*dim:0;
@@ -4328,7 +4335,10 @@ function renderSummary(){
     });
   });
 
-  const lowest=categories.map(cat=>rows.filter(r=>r.category===cat).sort((a,b)=>a.estPct-b.estPct || a.ach-b.ach)[0]).filter(Boolean);
+  const lowest=categories.map(cat=>
+    rows.filter(r=>r.category===cat).sort((a,b)=>a.estPct-b.estPct || a.ach-b.ach)[0]
+  ).filter(Boolean);
+
   const lowEl=document.getElementById('summaryLowestTable');
   if(lowEl){
     lowEl.innerHTML=lowest.map(r=>`<tr>
@@ -4347,15 +4357,17 @@ function renderSummary(){
     const daily=remaining>0?shortfall/remaining:shortfall;
     return {cat,target,actual,ach,shortfall,daily};
   });
+
   const catEl=document.getElementById('summaryCategoryTable');
   if(catEl){
     catEl.innerHTML=catTotals.map(r=>`<tr>
       <td><b>${escapeHtml(r.cat)}</b></td><td class="money">${money(r.target)}</td><td class="money">${money(r.actual)}</td>
       <td>${percent(r.ach)}</td><td class="money">${money(r.shortfall)}</td><td>${remaining} hari</td><td class="money">${money(r.daily)}</td>
-    </tr>`).join('');
+    </tr>`).join('') || '<tr><td colspan="7">Belum ada data.</td></tr>';
   }
 
-  const priority=rows.filter(r=>r.estPct<100).sort((a,b)=>a.estPct-b.estPct || b.shortfall-a.shortfall);
+  const priority=rows.filter(r=>r.estPct<100)
+    .sort((a,b)=>a.estPct-b.estPct || b.shortfall-a.shortfall);
   const priEl=document.getElementById('summaryPriorityTable');
   if(priEl){
     priEl.innerHTML=priority.slice(0,20).map((r,i)=>`<tr>
