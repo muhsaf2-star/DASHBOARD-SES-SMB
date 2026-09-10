@@ -322,7 +322,40 @@ button{
 .store-breakdown-wrap{overflow:auto;}
 .store-breakdown-total td{font-weight:700;background:#fafbfd;}
 @media(max-width:700px){
-  .store-breakdown th,.store-breakdown td{padding:7px 8px;font-size:11px;}
+  /* Tetap tabel yang sama, hanya dibuat lebih rapat agar muat di HP */
+  .store-breakdown-wrap{
+    overflow-x:hidden;
+  }
+
+  .store-breakdown table{
+    min-width:0;
+    width:100%;
+    table-layout:fixed;
+  }
+
+  .store-breakdown th,
+  .store-breakdown td{
+    padding:5px 4px;
+    font-size:9px;
+    white-space:normal;
+    line-height:1.2;
+  }
+
+  .store-breakdown th:first-child,
+  .store-breakdown td:first-child{
+    width:23%;
+    text-align:left;
+    overflow-wrap:anywhere;
+  }
+
+  .store-breakdown th:not(:first-child),
+  .store-breakdown td:not(:first-child){
+    width:12.83%;
+  }
+
+  .store-breakdown .store-sales-name{
+    font-size:9px;
+  }
 }
 .gap-up{font-weight:700;}
 .gap-down{font-weight:700;}
@@ -1106,6 +1139,117 @@ html,body{
   .store-breakdown-wrap td,
   .store-breakdown-wrap th{
     font-size:10px;
+  }
+}
+
+
+/* ================= MOBILE VERTICAL COMPACT V2 ================= */
+@media(max-width:700px){
+  .content{
+    padding-top:7px !important;
+    padding-bottom:14px !important;
+  }
+
+  .page-head{
+    margin-bottom:7px !important;
+  }
+
+  .page-title{
+    margin:0 0 2px !important;
+    line-height:1.15 !important;
+  }
+
+  .page-subtitle{
+    line-height:1.15 !important;
+  }
+
+  .filters{
+    margin-bottom:6px !important;
+    gap:4px !important;
+  }
+
+  .filter-btn{
+    padding:5px 8px !important;
+  }
+
+  .overview-main{
+    padding:8px !important;
+    margin-bottom:6px !important;
+  }
+
+  .metrics{
+    margin-top:7px !important;
+    gap:6px !important;
+  }
+
+  .metric{
+    padding:5px !important;
+  }
+
+  .metric-label{
+    margin-bottom:2px !important;
+  }
+
+  .metric-value{
+    line-height:1.1 !important;
+  }
+
+  .category-grid{
+    gap:6px !important;
+  }
+
+  .category-card{
+    padding:7px !important;
+  }
+
+  .category-name{
+    margin-bottom:6px !important;
+    line-height:1.1 !important;
+  }
+
+  .operator-box{
+    padding:5px !important;
+    margin-top:3px !important;
+  }
+
+  .operator-grid{
+    gap:2px 5px !important;
+  }
+
+  .operator-label{
+    margin-top:2px !important;
+  }
+
+  .store-breakdown-wrap{
+    margin-top:6px !important;
+  }
+
+  .store-breakdown{
+    margin-bottom:6px !important;
+  }
+
+  .store-breakdown .section-head,
+  .store-breakdown .breakdown-head{
+    padding:7px 9px !important;
+  }
+
+  .store-breakdown th,
+  .store-breakdown td{
+    padding:4px 3px !important;
+    line-height:1.12 !important;
+  }
+
+  .store-breakdown tbody tr{
+    height:0 !important;
+  }
+
+  .store-breakdown .store-sales-name{
+    line-height:1.1 !important;
+  }
+
+  .card,
+  .table-card{
+    margin-bottom:7px !important;
   }
 }
 
