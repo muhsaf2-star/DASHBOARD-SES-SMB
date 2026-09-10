@@ -1478,6 +1478,10 @@ html,body{
   .custom-period-box > div{flex:1 1 135px;}
   .custom-period-box .btn{flex:0 0 auto;}
 }
+
+.summary-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.summary-grid .card{padding:12px}
+@media(max-width:900px){.summary-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.summary-grid .metric-value{font-size:17px}.summary-grid .metric-label{font-size:9px}}
 </style>
 </head>
 
@@ -1578,6 +1582,14 @@ html,body{
       >
         <span class="menu-icon">🏆</span>
         Top ERO
+      </button>
+
+      <button
+        id="menu-summary"
+        onclick="showPage('summary')"
+      >
+        <span class="menu-icon">▤</span>
+        Summary
       </button>
 
       <button
@@ -2453,6 +2465,65 @@ html,body{
       </div>
 
 
+      <!-- ================= SUMMARY ================= -->
+
+      <div id="page-summary" class="page" style="display:none">
+
+        <div class="page-head">
+          <div>
+            <h1 class="page-title">Summary</h1>
+            <div class="page-subtitle">Prioritas ERO berdasarkan estimasi pencapaian menuju 100%</div>
+          </div>
+          <div class="month-badge">📅 <span id="summaryMonth"></span></div>
+        </div>
+
+        <div class="summary-grid" id="summaryKpis"></div>
+
+        <div class="table-card" style="margin-bottom:14px">
+          <div class="card-title" style="padding:14px 14px 8px">🔻 ERO TERENDAH PER KATEGORI</div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>KATEGORI</th><th>ERO</th><th>TARGET</th><th>ACTUAL H-1</th><th>ACH%</th><th>ESTIMASI</th><th>EST%</th><th>KURANG</th>
+                </tr>
+              </thead>
+              <tbody id="summaryLowestTable"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="table-card" style="margin-bottom:14px">
+          <div class="card-title" style="padding:14px 14px 8px">🎯 TARGET MENUJU 100%</div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>KATEGORI</th><th>TARGET</th><th>ACTUAL H-1</th><th>ACH%</th><th>SISA TARGET</th><th>SISA HARI</th><th>KEJAR / HARI</th>
+                </tr>
+              </thead>
+              <tbody id="summaryCategoryTable"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <div class="card-title" style="padding:14px 14px 8px">🚨 PRIORITY ERO — ESTIMASI &lt; 100%</div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>PRIORITAS</th><th>ERO</th><th>KATEGORI</th><th>ACH%</th><th>EST%</th><th>KURANG TARGET</th><th>KEJAR / HARI</th>
+                </tr>
+              </thead>
+              <tbody id="summaryPriorityTable"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+
       <!-- ================= TARGET ================= -->
 
       <div id="page-target" class="page" style="display:none">
@@ -3092,6 +3163,7 @@ async function loadAll(){
       renderStore();
       renderOutlook();
       if(currentPage === "top") renderTopEROPage();
+      if(currentPage === "summary") renderSummary();
 
     }
 
@@ -3179,6 +3251,7 @@ async function reloadDashboardPeriod_(){
       renderStore();
       renderSalesPerformance();
       renderOutlook();
+      if(typeof renderSummary === "function") renderSummary();
       if(typeof renderTargets === "function") renderTargets();
     }else{
       showToast((result && result.message) || "Gagal memuat filter");
@@ -3258,6 +3331,8 @@ function showPage(page){
   }
 
   if(page === "top") renderTopEROPage();
+
+  if(page === "summary") renderSummary();
 
   if(page === "overview")
     renderOverview();
@@ -4202,6 +4277,102 @@ function renderContribution(){
 
 }
 
+
+function summaryCategoryTarget_(t, category){
+  if(category==='Sales All') return Number(t.targetAll||0);
+  if(category==='Device') return Number(t.device||0);
+  if(category==='Accessories') return Number(t.accessories||0);
+  if(category==='Repair Contract') return Number(t.repairContract||0);
+  if(category==='Operator') return Number(t.operator||0);
+  return 0;
+}
+
+function renderSummary(){
+  if(!dashboardData || !salesList || !salesList.length) return;
+
+  const categories=['Sales All','Device','Accessories','Repair Contract','Operator'];
+  const days=Number(dashboardData.daysPassed||0);
+  const dim=Number(dashboardData.daysInMonth||0);
+  const remaining=Math.max(dim-days,0);
+  const tx=dashboardData.transactions||[];
+  const activeSales=(salesList||[]).filter(s=>String(s.status||'AKTIF').toUpperCase()!=='NONAKTIF');
+
+  setText('summaryMonth', formatMonth(dashboardData.period || getCurrentPeriod()));
+
+  const calc=(s,cat)=>{
+    const actual=tx.filter(x=>String(x.salesId)===String(s.id)).reduce((sum,x)=>{
+      if(cat==='Sales All') return sum+Number(x.amount||0);
+      const raw=String(x.category||'').trim().toLowerCase();
+      const wanted=cat.toLowerCase();
+      const alias={acc:'accessories',accessory:'accessories',accessories:'accessories',device:'device',operator:'operator','repair contract':'repair contract',scp:'repair contract'};
+      if((alias[raw]||raw)!==(alias[wanted]||wanted)) return sum;
+      if(cat==='Device' && typeof normalizeSeriesClient_==='function') return sum+Number(x.amount||0);
+      if(cat==='Operator') return sum+Number(x.amount||0);
+      return sum+Number(x.amount||0);
+    },0);
+    const trow=(dashboardData.targets||[]).find(x=>String(x.salesId)===String(s.id))||{};
+    const target=summaryCategoryTarget_(trow,cat);
+    const est=days>0?actual/days*dim:0;
+    const ach=target>0?actual/target*100:0;
+    const estPct=target>0?est/target*100:0;
+    const shortfall=Math.max(target-actual,0);
+    const daily=remaining>0?shortfall/remaining:shortfall;
+    return {s,actual,target,est,ach,estPct,shortfall,daily};
+  };
+
+  const rows=[];
+  categories.forEach(cat=>{
+    activeSales.forEach(s=>{
+      const r=calc(s,cat);
+      if(r.target>0 || r.actual!==0) rows.push(Object.assign({category:cat},r));
+    });
+  });
+
+  const lowest=categories.map(cat=>rows.filter(r=>r.category===cat).sort((a,b)=>a.estPct-b.estPct || a.ach-b.ach)[0]).filter(Boolean);
+  const lowEl=document.getElementById('summaryLowestTable');
+  if(lowEl){
+    lowEl.innerHTML=lowest.map(r=>`<tr>
+      <td><b>${escapeHtml(r.category)}</b></td><td><b>${escapeHtml(r.s.name||'-')}</b></td>
+      <td class="money">${money(r.target)}</td><td class="money">${money(r.actual)}</td><td>${percent(r.ach)}</td>
+      <td class="money">${money(r.est)}</td><td>${percent(r.estPct)}</td><td class="money">${money(r.shortfall)}</td>
+    </tr>`).join('') || '<tr><td colspan="8">Belum ada data.</td></tr>';
+  }
+
+  const catTotals=categories.map(cat=>{
+    const rs=rows.filter(r=>r.category===cat);
+    const target=rs.reduce((a,r)=>a+r.target,0);
+    const actual=rs.reduce((a,r)=>a+r.actual,0);
+    const ach=target>0?actual/target*100:0;
+    const shortfall=Math.max(target-actual,0);
+    const daily=remaining>0?shortfall/remaining:shortfall;
+    return {cat,target,actual,ach,shortfall,daily};
+  });
+  const catEl=document.getElementById('summaryCategoryTable');
+  if(catEl){
+    catEl.innerHTML=catTotals.map(r=>`<tr>
+      <td><b>${escapeHtml(r.cat)}</b></td><td class="money">${money(r.target)}</td><td class="money">${money(r.actual)}</td>
+      <td>${percent(r.ach)}</td><td class="money">${money(r.shortfall)}</td><td>${remaining} hari</td><td class="money">${money(r.daily)}</td>
+    </tr>`).join('');
+  }
+
+  const priority=rows.filter(r=>r.estPct<100).sort((a,b)=>a.estPct-b.estPct || b.shortfall-a.shortfall);
+  const priEl=document.getElementById('summaryPriorityTable');
+  if(priEl){
+    priEl.innerHTML=priority.slice(0,20).map((r,i)=>`<tr>
+      <td><b>#${i+1}</b></td><td><b>${escapeHtml(r.s.name||'-')}</b></td><td>${escapeHtml(r.category)}</td>
+      <td>${percent(r.ach)}</td><td>${percent(r.estPct)}</td><td class="money">${money(r.shortfall)}</td><td class="money">${money(r.daily)}</td>
+    </tr>`).join('') || '<tr><td colspan="7">🎉 Semua ERO sudah estimasi 100% atau lebih.</td></tr>';
+  }
+
+  const focus=priority[0];
+  const kpi=document.getElementById('summaryKpis');
+  if(kpi){
+    kpi.innerHTML=`<div class="card"><div class="metric-label">SISA HARI</div><div class="metric-value">${remaining}</div></div>
+      <div class="card"><div class="metric-label">ERO PERLU DIKEJAR</div><div class="metric-value">${priority.length}</div></div>
+      <div class="card"><div class="metric-label">PRIORITAS UTAMA</div><div class="metric-value" style="font-size:16px">${focus?escapeHtml(focus.s.name):'AMAN'}</div></div>
+      <div class="card"><div class="metric-label">KEJAR / HARI</div><div class="metric-value">${focus?money(focus.daily):'Rp 0'}</div></div>`;
+  }
+}
 
 function renderTopEROPage(){
   if(!dashboardData || !salesList || !salesList.length) return;
