@@ -488,12 +488,32 @@ tr:last-child td{
 }
 
 .percent-red{
-  color:#ff3344;
+  color:#e53935;
+  font-weight:700;
+}
+
+.percent-orange{
+  color:#f59e0b;
   font-weight:700;
 }
 
 .percent-green{
-  color:#0caf75;
+  color:#16a34a;
+  font-weight:700;
+}
+
+.store-shortfall-red{
+  color:#e53935;
+  font-weight:700;
+}
+
+.store-shortfall-orange{
+  color:#f59e0b;
+  font-weight:700;
+}
+
+.store-shortfall-green{
+  color:#16a34a;
   font-weight:700;
 }
 
@@ -3341,10 +3361,10 @@ function renderStoreSalesBreakdown_(){
                 <td>${percent(r.ach)}</td>
                 <td class="money">${money(r.est)}</td>
                 <td>${percent(r.estPct)}</td>
-                <td class="money ${r.shortfall>0?'store-shortfall':'store-over'}">${money(r.shortfall)}</td>
+                <td class="money ${shortfallClass_(r.shortfall,r.target)}">${money(r.shortfall)}</td>
               </tr>`).join('')}
               <tr class="store-breakdown-total">
-                <td>TOTAL</td><td class="money">${money(total.target)}</td><td class="money">${money(total.actual)}</td><td>${percent(totalAch)}</td><td class="money">${money(total.est)}</td><td>${percent(totalEstPct)}</td><td class="money">${money(total.shortfall)}</td>
+                <td>TOTAL</td><td class="money">${money(total.target)}</td><td class="money">${money(total.actual)}</td><td>${percent(totalAch)}</td><td class="money">${money(total.est)}</td><td>${percent(totalEstPct)}</td><td class="money ${shortfallClass_(total.shortfall,total.target)}">${money(total.shortfall)}</td>
               </tr>
             </tbody>
           </table>
@@ -4818,9 +4838,30 @@ function money(value){
 
 function percent(value){
 
-  return Number(
-    value || 0
-  ).toFixed(1) + "%";
+  const n = Number(value || 0);
+  const cls = n >= 100
+    ? "percent-green"
+    : n >= 90
+      ? "percent-orange"
+      : "percent-red";
+
+  return '<span class="' + cls + '">' + n.toFixed(1) + "%</span>";
+
+}
+
+function shortfallClass_(shortfall,target){
+
+  const s = Number(shortfall || 0);
+  const t = Number(target || 0);
+
+  if(s <= 0 || t <= 0)
+    return "store-shortfall-green";
+
+  const gapPct = s / t * 100;
+
+  return gapPct <= 10
+    ? "store-shortfall-orange"
+    : "store-shortfall-red";
 
 }
 
