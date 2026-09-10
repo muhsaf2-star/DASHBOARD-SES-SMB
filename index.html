@@ -1030,22 +1030,6 @@ tr:last-child td{
       </button>
 
       <button
-        id="menu-input"
-        onclick="showPage('input')"
-      >
-        <span class="menu-icon">⊕</span>
-        Input Data
-      </button>
-
-      <button
-        id="menu-import"
-        onclick="showPage('import')"
-      >
-        <span class="menu-icon">⇧</span>
-        Import Excel
-      </button>
-
-      <button
         id="menu-manage"
         onclick="showPage('manage')"
       >
@@ -1802,7 +1786,7 @@ tr:last-child td{
             </h1>
 
             <div class="page-subtitle">
-              Atur target sales per periode
+              Target otomatis mengikuti Sales yang terdaftar di Manage Sales
             </div>
           </div>
 
@@ -1909,250 +1893,6 @@ tr:last-child td{
 
       </div>
 
-
-      <!-- ================= INPUT ================= -->
-
-      <div id="page-input" class="page" style="display:none">
-
-        <div class="page-head">
-
-          <div>
-            <h1 class="page-title">
-              Input Data
-            </h1>
-
-            <div class="page-subtitle">
-              Input transaksi penjualan
-            </div>
-          </div>
-
-        </div>
-
-        <div class="form-card">
-
-          <div class="form-grid">
-
-            <div class="form-group">
-
-              <label>
-                Tanggal
-              </label>
-
-              <input
-                type="date"
-                id="inputDate"
-              >
-
-            </div>
-
-
-            <div class="form-group">
-
-              <label>
-                Sales
-              </label>
-
-              <select id="inputSales"></select>
-
-            </div>
-
-
-            <div class="form-group">
-
-              <label>
-                Kategori
-              </label>
-
-              <select
-                id="inputCategory"
-                onchange="updateSubcategory()"
-              >
-
-                <option value="Device">
-                  Device
-                </option>
-
-                <option value="Accessories">
-                  Accessories
-                </option>
-
-                <option value="Repair Contract">
-                  Repair Contract
-                </option>
-
-                <option value="Operator">
-                  Operator
-                </option>
-
-              </select>
-
-            </div>
-
-
-            <div class="form-group">
-
-              <label>
-                Subkategori
-              </label>
-
-              <select id="inputSubcategory">
-
-                <option value="">
-                  -
-                </option>
-
-              </select>
-
-            </div>
-
-
-            <div class="form-group">
-
-              <label>
-                Produk
-              </label>
-
-              <input
-                id="inputProduct"
-                placeholder="Nama produk"
-              >
-
-            </div>
-
-
-            <div class="form-group">
-
-              <label>
-                Qty
-              </label>
-
-              <input
-                type="number"
-                id="inputQty"
-                value="1"
-                min="1"
-              >
-
-            </div>
-
-
-            <div class="form-group">
-
-              <label>
-                Nominal
-              </label>
-
-              <input
-                type="number"
-                id="inputAmount"
-                placeholder="0"
-              >
-
-            </div>
-
-
-            <div class="form-group">
-
-              <label>
-                Customer
-              </label>
-
-              <input
-                id="inputCustomer"
-                placeholder="Nama customer"
-              >
-
-            </div>
-
-
-            <div class="form-group">
-
-              <label>
-                No HP
-              </label>
-
-              <input
-                id="inputPhone"
-                placeholder="Opsional"
-              >
-
-            </div>
-
-          </div>
-
-          <div style="margin-top:18px">
-
-            <button
-              class="btn btn-primary"
-              onclick="saveTransaction()"
-            >
-              + Simpan Transaksi
-            </button>
-
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <!-- ================= IMPORT ================= -->
-
-      <div id="page-import" class="page" style="display:none">
-
-        <div class="page-head">
-
-          <div>
-            <h1 class="page-title">
-              Import Excel
-            </h1>
-
-            <div class="page-subtitle">
-              Upload file Excel atau CSV untuk import data
-            </div>
-          </div>
-
-        </div>
-
-        <div class="upload-box">
-
-          <div class="upload-icon">
-            ⇧
-          </div>
-
-          <div class="upload-title">
-            Upload File Excel / CSV
-          </div>
-
-          <div class="upload-sub">
-            Format .xlsx, .xls, .csv
-          </div>
-
-          <input
-            type="file"
-            id="excelFile"
-            accept=".xlsx,.xls,.csv"
-            style="display:none"
-            onchange="processExcel(this)"
-          >
-
-          <button
-            class="btn btn-primary"
-            onclick="document.getElementById('excelFile').click()"
-          >
-            ⇧ Pilih File
-          </button>
-
-        </div>
-
-        <div
-          id="importPreview"
-          style="margin-top:15px"
-        ></div>
-
-      </div>
-
-
       <!-- ================= MANAGE ================= -->
 
       <div id="page-manage" class="page" style="display:none">
@@ -2166,7 +1906,7 @@ tr:last-child td{
             </h1>
 
             <div class="page-subtitle">
-              Kelola data sales toko
+              Daftar Sales yang terdaftar di sistem
             </div>
 
           </div>
@@ -2187,13 +1927,9 @@ tr:last-child td{
             <thead>
 
               <tr>
-
-                <th>NAMA</th>
-                <th>NIK</th>
-                <th>ROLE</th>
+                <th>NAMA SALES</th>
                 <th>STATUS</th>
                 <th>AKSI</th>
-
               </tr>
 
             </thead>
@@ -3908,15 +3644,6 @@ function renderManageSales(){
             </td>
 
             <td>
-              ${escapeHtml(s.nik || "-")}
-            </td>
-
-            <td>
-              ${escapeHtml(s.role || "SALES")}
-            </td>
-
-            <td>
-
               <span
                 style="
                   background:${active ? "#d7f8eb" : "#ffe1e3"};
