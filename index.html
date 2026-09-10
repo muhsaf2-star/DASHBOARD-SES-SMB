@@ -473,10 +473,27 @@ button{
   font-weight:700;
 }
 
-.operator-value{
-  font-size:13px;
+
+.operator-label{
+  font-size:10px;
+  color:#7a8495;
   margin-top:6px;
 }
+.operator-value{
+  font-size:12px;
+  margin-top:2px;
+  font-weight:600;
+}
+.operator-short{
+  color:#ff4d5a;
+}
+.operator-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:5px 10px;
+  margin-top:2px;
+}
+
 
 /* ================= TABLE ================= */
 
@@ -940,6 +957,126 @@ tr:last-child td{
   }
 
 }
+
+/* ================= MOBILE COMPACT ================= */
+html,body{
+  overflow-x:hidden;
+}
+
+@media(max-width:600px){
+  .content{
+    padding:10px 8px 24px;
+  }
+
+  .page-head{
+    margin-bottom:10px;
+  }
+
+  .page-title{
+    font-size:19px;
+  }
+
+  .page-subtitle{
+    font-size:12px;
+  }
+
+  .month-badge{
+    padding:6px 9px;
+    font-size:11px;
+  }
+
+  .filters{
+    gap:5px;
+    margin-bottom:8px;
+  }
+
+  .filter-btn{
+    padding:7px 10px;
+    font-size:11px;
+  }
+
+  .overview-main{
+    padding:10px;
+    margin-bottom:8px;
+  }
+
+  .metrics{
+    gap:8px;
+    margin-top:10px;
+  }
+
+  .metric-label{
+    font-size:10px;
+  }
+
+  .metric-value{
+    font-size:15px;
+  }
+
+  .category-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:7px;
+  }
+
+  .category-card{
+    padding:9px;
+    min-height:0;
+    border-top-width:3px;
+  }
+
+  .category-name{
+    font-size:12px;
+    margin-bottom:9px;
+  }
+
+  .two-col{
+    gap:7px;
+  }
+
+  .operator-box{
+    padding:7px;
+    margin-top:5px;
+    border-radius:6px;
+  }
+
+  .operator-head{
+    font-size:10px;
+  }
+
+  .operator-grid{
+    gap:3px 6px;
+  }
+
+  .operator-label{
+    font-size:8px;
+    margin-top:4px;
+  }
+
+  .operator-value{
+    font-size:9px;
+    margin-top:1px;
+  }
+
+  .store-kpis{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+
+  .store-kpi{
+    padding:7px 8px;
+  }
+
+  .store-kpi .value{
+    font-size:14px;
+  }
+
+  .store-breakdown-wrap,
+  .store-week-table,
+  .table-card{
+    max-width:100%;
+    overflow-x:auto;
+  }
+}
+
 </style>
 </head>
 
@@ -1501,51 +1638,78 @@ tr:last-child td{
             <hr>
 
             <div class="operator-box">
-
               <div class="operator-head">
                 <span>Indosat</span>
                 <span id="indosatAch">0.0%</span>
               </div>
-
-              <div
-                class="operator-value"
-                id="indosatActual"
-              >
-                Actual Rp 0
+              <div class="operator-grid">
+                <div>
+                  <div class="operator-label">Target</div>
+                  <div class="operator-value" id="indosatTarget">Rp 0</div>
+                </div>
+                <div>
+                  <div class="operator-label">Actual</div>
+                  <div class="operator-value" id="indosatActual">Rp 0</div>
+                </div>
+                <div>
+                  <div class="operator-label">Estimasi</div>
+                  <div class="operator-value" id="indosatEst">Rp 0</div>
+                </div>
+                <div>
+                  <div class="operator-label">Kekurangan</div>
+                  <div class="operator-value operator-short" id="indosatShort">Rp 0</div>
+                </div>
               </div>
-
             </div>
 
             <div class="operator-box">
-
               <div class="operator-head">
                 <span>XL</span>
                 <span id="xlAch">0.0%</span>
               </div>
-
-              <div
-                class="operator-value"
-                id="xlActual"
-              >
-                Actual Rp 0
+              <div class="operator-grid">
+                <div>
+                  <div class="operator-label">Target</div>
+                  <div class="operator-value" id="xlTarget">Rp 0</div>
+                </div>
+                <div>
+                  <div class="operator-label">Actual</div>
+                  <div class="operator-value" id="xlActual">Rp 0</div>
+                </div>
+                <div>
+                  <div class="operator-label">Estimasi</div>
+                  <div class="operator-value" id="xlEst">Rp 0</div>
+                </div>
+                <div>
+                  <div class="operator-label">Kekurangan</div>
+                  <div class="operator-value operator-short" id="xlShort">Rp 0</div>
+                </div>
               </div>
-
             </div>
 
             <div class="operator-box">
-
               <div class="operator-head">
                 <span>Telkomsel</span>
                 <span id="telkomselAch">0.0%</span>
               </div>
-
-              <div
-                class="operator-value"
-                id="telkomselActual"
-              >
-                Actual Rp 0
+              <div class="operator-grid">
+                <div>
+                  <div class="operator-label">Target</div>
+                  <div class="operator-value" id="telkomselTarget">Rp 0</div>
+                </div>
+                <div>
+                  <div class="operator-label">Actual</div>
+                  <div class="operator-value" id="telkomselActual">Rp 0</div>
+                </div>
+                <div>
+                  <div class="operator-label">Estimasi</div>
+                  <div class="operator-value" id="telkomselEst">Rp 0</div>
+                </div>
+                <div>
+                  <div class="operator-label">Kekurangan</div>
+                  <div class="operator-value operator-short" id="telkomselShort">Rp 0</div>
+                </div>
               </div>
-
             </div>
 
           </div>
@@ -2698,63 +2862,28 @@ function renderOverview(){
   const op =
     d.operators || {};
 
-  setText(
-    "indosatActual",
-    "Actual " +
-    money(
-      op.Indosat
-        ? op.Indosat.actual
-        : 0
-    )
-  );
+  const renderOperator = (key, prefix) => {
+    const o = op[key] || {};
+    const actual = Number(o.actual || 0);
+    const target = Number(o.target || 0);
+    const estimation = Number(o.estimation || 0);
+    const shortfall = Math.max(target - actual, 0);
 
-  setHtml(
-    "indosatAch",
-    percent(
-      op.Indosat
-        ? op.Indosat.achievement
-        : 0
-    )
-  );
+    setText(prefix + "Target", money(target));
+    setText(prefix + "Actual", money(actual));
+    setText(prefix + "Est", money(estimation));
+    setText(prefix + "Short", money(shortfall));
 
-  setText(
-    "xlActual",
-    "Actual " +
-    money(
-      op.XL
-        ? op.XL.actual
-        : 0
-    )
-  );
+    setHtml(prefix + "Ach", percent(
+      o.achievement != null
+        ? Number(o.achievement)
+        : (target > 0 ? actual / target * 100 : 0)
+    ));
+  };
 
-  setHtml(
-    "xlAch",
-    percent(
-      op.XL
-        ? op.XL.achievement
-        : 0
-    )
-  );
-
-  setText(
-    "telkomselActual",
-    "Actual " +
-    money(
-      op.Telkomsel
-        ? op.Telkomsel.actual
-        : 0
-    )
-  );
-
-  setHtml(
-    "telkomselAch",
-    percent(
-      op.Telkomsel
-        ? op.Telkomsel.achievement
-        : 0
-    )
-  );
-
+  renderOperator("Indosat", "indosat");
+  renderOperator("XL", "xl");
+  renderOperator("Telkomsel", "telkomsel");
 }
 
 
