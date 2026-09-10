@@ -1299,9 +1299,9 @@ html,body{
   .store-breakdown td,
   .store-week-table th,
   .store-week-table td{
-    padding:6px 4px !important;
-    font-size:9.5px !important;
-    line-height:1.15 !important;
+    padding:4px 2px !important;
+    font-size:8.5px !important;
+    line-height:1.08 !important;
     white-space:nowrap !important;
     overflow:hidden;
     text-overflow:clip;
@@ -1350,6 +1350,8 @@ html,body{
   .store-breakdown th,
   .store-breakdown td{
     text-align:right;
+    font-size:8.5px !important;
+    padding:4px 2px !important;
   }
 
   .store-breakdown th:first-child,
@@ -1427,6 +1429,50 @@ html,body{
  .highlight-action-value{font-size:9px}
 }
 
+
+/* ================= FINAL COMPACT / FILTER / OUTLOOK ================= */
+.custom-period-box{
+  display:flex;
+  align-items:end;
+  gap:8px;
+  margin:-8px 0 12px;
+  padding:9px 10px;
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:10px;
+}
+.custom-period-box label{
+  display:block;
+  font-size:10px;
+  color:#718096;
+  margin-bottom:4px;
+}
+.custom-period-box input{
+  height:34px;
+  border:1px solid #d8e0ea;
+  border-radius:7px;
+  padding:5px 8px;
+  font-size:12px;
+}
+.outlook-card{margin-bottom:12px;}
+.outlook-section-title{
+  padding:9px 11px;
+  font-weight:800;
+  font-size:11px;
+  color:#17324d;
+  background:#f7f9fc;
+  border-bottom:1px solid var(--border);
+}
+.outlook-card table{min-width:760px;}
+.outlook-card th,.outlook-card td{padding:7px 8px;font-size:10.5px;}
+@media(max-width:700px){
+  table{min-width:720px;}
+  th{font-size:9px;padding:7px 5px;}
+  td{font-size:10px;padding:7px 5px;}
+  .custom-period-box{flex-wrap:wrap;align-items:center;}
+  .custom-period-box > div{flex:1 1 135px;}
+  .custom-period-box .btn{flex:0 0 auto;}
+}
 </style>
 </head>
 
@@ -1510,7 +1556,7 @@ html,body{
         onclick="showPage('store')"
       >
         <span class="menu-icon">♧</span>
-        Performa Store
+        Performa ERO
       </button>
 
       <button
@@ -1522,11 +1568,11 @@ html,body{
       </button>
 
       <button
-        id="menu-contribution"
-        onclick="showPage('contribution')"
+        id="menu-outlook"
+        onclick="showPage('outlook')"
       >
         <span class="menu-icon">◔</span>
-        Kontribusi Sales
+        Outlook Kategori
       </button>
 
       <button
@@ -1624,9 +1670,9 @@ html,body{
 
           <button
             class="filter-btn"
-            onclick="setPeriodMode('day',this)"
+            onclick="setPeriodMode('lastweek',this)"
           >
-            Hari Ini
+            Minggu Lalu
           </button>
 
           <button
@@ -1657,6 +1703,18 @@ html,body{
             Custom
           </button>
 
+        </div>
+
+        <div id="customPeriodBox" class="custom-period-box" style="display:none">
+          <div>
+            <label>Tanggal Mulai</label>
+            <input type="date" id="customStartDate">
+          </div>
+          <div>
+            <label>Tanggal Akhir</label>
+            <input type="date" id="customEndDate">
+          </div>
+          <button class="btn primary" onclick="applyCustomPeriod()">Terapkan</button>
         </div>
 
 
@@ -2100,7 +2158,7 @@ html,body{
 
         <div class="page-head">
           <div>
-            <h1 class="page-title">Performa Store</h1>
+            <h1 class="page-title">Performa ERO</h1>
             <div class="page-subtitle">Performa H-1 & perbandingan 3 minggu terakhir</div>
           </div>
           <div class="month-badge">📅 <span id="storeMonth"></span></div>
@@ -2245,6 +2303,7 @@ html,body{
                 <th>ACH%</th>
                 <th>ESTIMASI</th>
                 <th>EST%</th>
+                <th>KONTRIBUSI</th>
                 <th>MELESET</th>
               </tr>
 
@@ -2259,94 +2318,50 @@ html,body{
       </div>
 
 
-      <!-- ================= CONTRIBUTION ================= -->
-
-      <div id="page-contribution" class="page" style="display:none">
-
+      <!-- ================= OUTLOOK KATEGORI ================= -->
+      <div id="page-outlook" class="page" style="display:none">
         <div class="page-head">
-
           <div>
-            <h1 class="page-title">
-              Kontribusi Sales
-            </h1>
-
-            <div class="page-subtitle">
-              Kontribusi masing-masing sales terhadap omzet
-            </div>
+            <h1 class="page-title">Outlook Kategori</h1>
+            <div class="page-subtitle">Week-on-Week kategori & 3 minggu terakhir berdasarkan Sales Name</div>
           </div>
-
+          <div class="month-badge">📊 WoW</div>
         </div>
 
-        <div class="table-card">
-
+        <div class="table-card outlook-card">
+          <div class="outlook-section-title">WEEK-ON-WEEK KATEGORI</div>
           <table>
-
             <thead>
-
               <tr>
-                <th>RANK</th>
-                <th>SALES</th>
-                <th>ACTUAL</th>
-                <th>KONTRIBUSI</th>
+                <th>KATEGORI</th>
+                <th id="outW1">MINGGU 1</th>
+                <th id="outW2">MINGGU 2</th>
+                <th id="outW3">MINGGU 3</th>
+                <th>WOW</th>
+                <th>GAP</th>
               </tr>
-
             </thead>
-
-            <tbody id="contributionTable"></tbody>
-
+            <tbody id="outlookCategoryTable"></tbody>
           </table>
-
         </div>
 
-      </div>
-
-
-      <!-- ================= TOP SALES ================= -->
-
-      <div id="page-top" class="page" style="display:none">
-
-        <div class="page-head">
-
-          <div>
-            <h1 class="page-title">
-              Top Sales
-            </h1>
-
-            <div class="page-subtitle">
-              Ranking sales terbaik
-            </div>
-          </div>
-
-        </div>
-
-        <div class="top-grid" id="topCards"></div>
-
-        <div class="table-card">
-
+        <div class="table-card outlook-card">
+          <div class="outlook-section-title">WEEK-ON-WEEK BY SALES NAME</div>
           <table>
-
             <thead>
-
               <tr>
-                <th>RANK</th>
                 <th>SALES</th>
-                <th>TARGET</th>
-                <th>ACTUAL</th>
-                <th>ACH%</th>
-                <th>ESTIMASI</th>
-                <th>EST%</th>
+                <th id="outSW1">MINGGU 1</th>
+                <th id="outSW2">MINGGU 2</th>
+                <th id="outSW3">MINGGU 3</th>
+                <th>WOW</th>
+                <th>GAP</th>
               </tr>
-
             </thead>
-
-            <tbody id="topTable"></tbody>
-
+            <tbody id="outlookSalesTable"></tbody>
           </table>
-
         </div>
-
       </div>
-
 
       <!-- ================= TARGET ================= -->
 
@@ -2662,6 +2677,8 @@ let targets = [];
 let currentPage = "overview";
 
 let periodMode = "month";
+let customStartDate = "";
+let customEndDate = "";
 
 
 /* =====================================================
@@ -2945,7 +2962,10 @@ async function loadAll(){
     const dashboard =
       await api({
         action:"dashboard",
-        period:getCurrentPeriod()
+        period:getCurrentPeriod(),
+        periodMode: periodMode,
+        startDate: customStartDate,
+        endDate: customEndDate
       });
 
     if(
@@ -2957,6 +2977,7 @@ async function loadAll(){
         dashboard.data;
 
       renderOverview();
+      renderOutlook();
 
     }
 
@@ -2978,8 +2999,8 @@ async function loadAll(){
       renderInputSales();
 
       renderSalesPerformance();
-
       renderStore();
+      renderOutlook();
 
     }
 
@@ -3033,31 +3054,67 @@ function getCurrentPeriod(){
 
 function setPeriodMode(mode,button){
 
-  periodMode =
-    mode;
+  periodMode = mode;
 
-  document
-    .querySelectorAll(".filter-btn")
-    .forEach(
-      x => x.classList.remove(
-        "active"
-      )
-    );
+  document.querySelectorAll(".filters .filter-btn").forEach(function(x){
+    x.classList.remove("active");
+  });
 
-  if(button){
+  if(button) button.classList.add("active");
 
-    button.classList.add(
-      "active"
-    );
+  const box=document.getElementById("customPeriodBox");
+  if(box) box.style.display = mode==="custom" ? "flex" : "none";
 
+  if(mode === "custom"){
+    return;
   }
 
-  showToast(
-    "Filter " +
-    mode +
-    " dipilih"
-  );
+  reloadDashboardPeriod_();
+}
 
+async function reloadDashboardPeriod_(){
+  try{
+    const result = await api({
+      action:"dashboard",
+      period:getCurrentPeriod(),
+      periodMode:periodMode,
+      startDate:customStartDate,
+      endDate:customEndDate
+    });
+
+    if(result && result.success){
+      dashboardData = result.data || null;
+      renderOverview();
+      renderStore();
+      renderSalesPerformance();
+      renderOutlook();
+      if(typeof renderTargets === "function") renderTargets();
+    }else{
+      showToast((result && result.message) || "Gagal memuat filter");
+    }
+  }catch(e){
+    showToast("Gagal memuat filter: " + e.message);
+  }
+}
+
+function applyCustomPeriod(){
+  const start=document.getElementById("customStartDate")?.value || "";
+  const end=document.getElementById("customEndDate")?.value || "";
+
+  if(!start || !end){
+    showToast("Pilih tanggal mulai dan tanggal akhir.");
+    return;
+  }
+  if(start > end){
+    showToast("Tanggal mulai tidak boleh lebih besar dari tanggal akhir.");
+    return;
+  }
+
+  customStartDate=start;
+  customEndDate=end;
+  periodMode="custom";
+
+  reloadDashboardPeriod_();
 }
 
 
@@ -3118,11 +3175,8 @@ function showPage(page){
   if(page === "sales")
     renderSalesPerformance();
 
-  if(page === "contribution")
-    renderContribution();
-
-  if(page === "top")
-    renderTopSales();
+  if(page === "outlook")
+    renderOutlook();
 
   if(page === "target")
     renderTargets();
@@ -3470,8 +3524,8 @@ function renderSalesPerformance(){
   if(!tbody)
     return;
 
-  const rows =
-    getSalesStats();
+  const rows = getSalesStats();
+  const totalActual = rows.reduce(function(sum,r){ return sum + Number(r.actual||0); },0);
 
   tbody.innerHTML =
     rows.map(function(r){
@@ -3505,6 +3559,10 @@ function renderSalesPerformance(){
 
           <td class="percent-red">
             ${percent(r.estPercent)}
+          </td>
+
+          <td>
+            ${totalActual !== 0 ? percent(Number(r.actual||0) / totalActual * 100) : percent(0)}
           </td>
 
           <td>
@@ -3546,6 +3604,92 @@ function renderSalesPerformance(){
 
 }
 
+
+/* =====================================================
+   OUTLOOK KATEGORI
+===================================================== */
+
+function effectiveClientAmount_(x){
+  return Number(x && x.amount || 0);
+}
+
+function outlookWeeks_(){
+  const weeks=(dashboardData && dashboardData.weeklyTransactions) || [];
+  return weeks.slice(-3);
+}
+
+function renderOutlook(){
+  if(!dashboardData) return;
+
+  const weeks=outlookWeeks_();
+  const catNames=["Sales All","Device","Accessories","Repair Contract","Operator"];
+
+  weeks.forEach(function(w,i){
+    const label=w.label || ((w.start||"")+" - "+(w.end||""));
+    setText("outW"+(i+1),label);
+    setText("outSW"+(i+1),label);
+  });
+
+  function sumRows(rows){
+    return (rows||[]).reduce(function(sum,x){ return sum + effectiveClientAmount_(x); },0);
+  }
+
+  const catRows=catNames.map(function(cat){
+    const vals=weeks.map(function(w){
+      const rows=(w.transactions||[]).filter(function(x){
+        if(cat==="Sales All") return true;
+        return String(x.category||"").trim().toLowerCase()===cat.toLowerCase();
+      });
+      return sumRows(rows);
+    });
+    while(vals.length<3) vals.unshift(0);
+    const prev=Number(vals[1]||0), curr=Number(vals[2]||0);
+    return {name:cat, vals:vals, wow:prev!==0?(curr-prev)/prev*100:null, gap:curr-prev};
+  });
+
+  const catEl=document.getElementById("outlookCategoryTable");
+  if(catEl){
+    catEl.innerHTML=catRows.map(function(r){
+      return `<tr>
+        <td><b>${escapeHtml(r.name)}</b></td>
+        <td class="money">${money(r.vals[0])}</td>
+        <td class="money">${money(r.vals[1])}</td>
+        <td class="money">${money(r.vals[2])}</td>
+        <td>${r.wow===null?"—":percent(r.wow)}</td>
+        <td class="${r.gap>=0?'gap-up':'gap-down'}">${money(r.gap)}</td>
+      </tr>`;
+    }).join("");
+  }
+
+  const activeSales=(salesList||[]).filter(function(s){
+    return String(s.status||"AKTIF").toUpperCase()!=="NONAKTIF";
+  });
+
+  const salesRows=activeSales.map(function(s){
+    const vals=weeks.map(function(w){
+      return sumRows((w.transactions||[]).filter(function(x){
+        return String(x.salesId)===String(s.id);
+      }));
+    });
+    while(vals.length<3) vals.unshift(0);
+    const prev=Number(vals[1]||0), curr=Number(vals[2]||0);
+    return {name:s.name, vals:vals, wow:prev!==0?(curr-prev)/prev*100:null, gap:curr-prev};
+  }).sort(function(a,b){ return b.vals[2]-a.vals[2]; });
+
+  const salesEl=document.getElementById("outlookSalesTable");
+  if(salesEl){
+    salesEl.innerHTML=salesRows.map(function(r){
+      return `<tr>
+        <td><b>${escapeHtml(r.name)}</b></td>
+        <td class="money">${money(r.vals[0])}</td>
+        <td class="money">${money(r.vals[1])}</td>
+        <td class="money">${money(r.vals[2])}</td>
+        <td>${r.wow===null?"—":percent(r.wow)}</td>
+        <td class="${r.gap>=0?'gap-up':'gap-down'}">${money(r.gap)}</td>
+      </tr>`;
+    }).join("");
+  }
+}
 
 /* =====================================================
    STORE
@@ -5247,11 +5391,7 @@ function money(value){
 }
 
 function compactNumber_(value){
-  const rounded = Math.round(value * 100) / 100;
-  return rounded.toLocaleString("id-ID", {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2
-  });
+  return String(Math.round(Number(value) || 0));
 }
 
 
