@@ -2346,6 +2346,37 @@ html,body{
         </div>
 
         <div class="table-card outlook-card">
+          <div class="outlook-section-title">CONTRIBUTION BY SERIES — DEVICE</div>
+          <table>
+            <thead>
+              <tr>
+                <th>SERIES</th>
+                <th>ACTUAL</th>
+                <th>CONTRIBUSI</th>
+              </tr>
+            </thead>
+            <tbody id="outlookSeriesContributionTable"></tbody>
+          </table>
+        </div>
+
+        <div class="table-card outlook-card">
+          <div class="outlook-section-title">WEEK-ON-WEEK BY SERIES — DEVICE</div>
+          <table>
+            <thead>
+              <tr>
+                <th>SERIES</th>
+                <th id="outSerW1">MINGGU 1</th>
+                <th id="outSerW2">MINGGU 2</th>
+                <th id="outSerW3">MINGGU 3</th>
+                <th>WOW</th>
+                <th>GAP</th>
+              </tr>
+            </thead>
+            <tbody id="outlookSeriesTable"></tbody>
+          </table>
+        </div>
+
+        <div class="table-card outlook-card">
           <div class="outlook-section-title">WEEK-ON-WEEK BY SALES NAME</div>
           <table>
             <thead>
@@ -3628,6 +3659,7 @@ function renderOutlook(){
     const label=w.label || ((w.start||"")+" - "+(w.end||""));
     setText("outW"+(i+1),label);
     setText("outSW"+(i+1),label);
+    setText("outSerW"+(i+1),label);
   });
 
   function sumRows(rows){
@@ -3650,6 +3682,46 @@ function renderOutlook(){
   const catEl=document.getElementById("outlookCategoryTable");
   if(catEl){
     catEl.innerHTML=catRows.map(function(r){
+      return `<tr>
+        <td><b>${escapeHtml(r.name)}</b></td>
+        <td class="money">${money(r.vals[0])}</td>
+        <td class="money">${money(r.vals[1])}</td>
+        <td class="money">${money(r.vals[2])}</td>
+        <td>${r.wow===null?"—":percent(r.wow)}</td>
+        <td class="${r.gap>=0?'gap-up':'gap-down'}">${money(r.gap)}</td>
+      </tr>`;
+    }).join("");
+  }
+
+  /* DEVICE SERIES: CONTRIBUTION + WOW */
+  const seriesNames=["Series A","Series S","Series Z","Series Tab"];
+  const seriesRows=seriesNames.map(function(series){
+    const vals=weeks.map(function(w){
+      return sumRows((w.transactions||[]).filter(function(x){
+        return String(x.category||"").trim().toLowerCase()==="device" && normalizeSeriesClient_(x)===series;
+      }));
+    });
+    while(vals.length<3) vals.unshift(0);
+    const prev=Number(vals[1]||0), curr=Number(vals[2]||0);
+    return {name:series, vals:vals, wow:prev!==0?(curr-prev)/prev*100:null, gap:curr-prev};
+  });
+
+  const latestDeviceTotal=seriesRows.reduce(function(s,r){return s+r.vals[2];},0);
+  const seriesContribEl=document.getElementById("outlookSeriesContributionTable");
+  if(seriesContribEl){
+    seriesContribEl.innerHTML=seriesRows.map(function(r){
+      const contribution=latestDeviceTotal!==0?(r.vals[2]/latestDeviceTotal*100):0;
+      return `<tr>
+        <td><b>${escapeHtml(r.name)}</b></td>
+        <td class="money">${money(r.vals[2])}</td>
+        <td>${percent(contribution)}</td>
+      </tr>`;
+    }).join("");
+  }
+
+  const seriesEl=document.getElementById("outlookSeriesTable");
+  if(seriesEl){
+    seriesEl.innerHTML=seriesRows.map(function(r){
       return `<tr>
         <td><b>${escapeHtml(r.name)}</b></td>
         <td class="money">${money(r.vals[0])}</td>
