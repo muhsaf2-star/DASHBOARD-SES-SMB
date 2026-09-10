@@ -1662,6 +1662,13 @@ html,body{
           </button>
 
           <button
+            class="filter-btn"
+            onclick="setPeriodMode('lastweek',this)"
+          >
+            Minggu Lalu
+          </button>
+
+          <button
             class="filter-btn active"
             onclick="setPeriodMode('month',this)"
           >
@@ -2921,6 +2928,9 @@ async function loadAll(){
       dashboardData =
         dashboard.data;
 
+      baseDashboardData_ =
+        JSON.parse(JSON.stringify(dashboard.data));
+
       renderOverview();
 
     }
@@ -2945,6 +2955,7 @@ async function loadAll(){
       renderSalesPerformance();
 
       renderStore();
+      if(currentPage === "ero") renderStore();
 
     }
 
@@ -2998,31 +3009,218 @@ function getCurrentPeriod(){
 
 function setPeriodMode(mode,button){
 
-  periodMode =
-    mode;
+  periodMode = mode;
 
   document
     .querySelectorAll(".filter-btn")
-    .forEach(
-      x => x.classList.remove(
-        "active"
-      )
-    );
+    .forEach(x => x.classList.remove("active"));
 
-  if(button){
+  if(button) button.classList.add("active");
 
-    button.classList.add(
-      "active"
-    );
+  showToast("Filter " + (mode==="lastweek" ? "minggu lalu" : mode) + " dipilih");
 
+  refreshPeriodView_();
+}
+
+
+/* =====================================================
+   PERIOD FILTER VIEW
+===================================================== */
+
+let allTransactionsCache_ = null;
+let baseDashboardData_ = null;
+
+function parseDateYmd_(v){
+  if(!v) return null;
+  const s=String(v).slice(0,10);
+  const p=s.split("-");
+  if(p.length!==3)return null;
+  const d=new Date(Number(p[0]),Number(p[1])-1,Number(p[2]));
+  return isNaN(d.getTime())?null:d;
+}
+
+function startOfMonday_(date){
+  const d=new Date(date);
+  d.setHours(0,0,0,0);
+  const day=d.getDay();
+  d.setDate(d.getDate() + (day===0 ? -6 : 1-day));
+  return d;
+}
+
+function endOfSunday_(date){
+  const d=startOfMonday_(date);
+  d.setDate(d.getDate()+6);
+  d.setHours(23,59,59,999);
+  return d;
+}
+
+function effectiveAmountClient_(x){
+  const amount=Number(x&&x.amount||0);
+  if(!isFinite(amount) || amount===0)return 0;
+
+  const cat=normalizeCategoryClient_(x.category);
+  const sub=String(x.subcategory||"").trim().toLowerCase();
+
+  // Sama dengan aturan backend: Device hanya series yang ada di master.
+  if(cat==="Device"){
+    const s=normalizeSeriesClient_(x);
+    return ["Series A","Series S","Series Z","Series Tab"].includes(s) ? amount : 0;
   }
 
-  showToast(
-    "Filter " +
-    mode +
-    " dipilih"
-  );
+  // Operator hanya subcategory yang dikenal.
+  if(cat==="Operator"){
+    return ["indosat","xl","telkomsel"].includes(sub) ? amount : 0;
+  }
 
+  // Accessories dan Repair Contract mengikuti category yang valid.
+  if(cat==="Accessories" || cat==="Repair Contract") return amount;
+
+  return 0;
+}
+
+function getPeriodRange_(mode){
+  const now=new Date();
+  now.setHours(0,0,0,0);
+
+  const yesterday=new Date(now);
+  yesterday.setDate(yesterday.getDate()-1);
+  yesterday.setHours(23,59,59,999);
+
+  if(mode==="week"){
+    const start=startOfMonday_(now);
+    return {start:start,end:yesterday};
+  }
+
+  if(mode==="lastweek"){
+    const end=endOfSunday_(now);
+    end.setDate(end.getDate()-7);
+    const start=new Date(end);
+    start.setDate(start.getDate()-6);
+    start.setHours(0,0,0,0);
+    return {start:start,end:end};
+  }
+
+  if(mode==="year"){
+    return {
+      start:new Date(now.getFullYear(),0,1),
+      end:yesterday
+    };
+  }
+
+  // Month default.
+  return {
+    start:new Date(now.getFullYear(),now.getMonth(),1),
+    end:yesterday
+  };
+}
+
+function cloneDashboardForPeriod_(base, mode, transactions){
+  const d=JSON.parse(JSON.stringify(base||{}));
+  d.transactions=transactions;
+
+  const now=new Date();
+  now.setHours(0,0,0,0);
+
+  if(mode==="month"){
+    return d;
+  }
+
+  // Untuk periode non-bulanan, target tetap target bulan berjalan,
+  // sementara Actual/achievement mengikuti transaksi yang dipilih.
+  d.totalActual=transactions.reduce((s,x)=>s+Number(x.amount||0),0);
+
+  const cats={};
+  ["Device","Accessories","Repair Contract","Operator"].forEach(c=>{
+    const actual=transactions
+      .filter(x=>normalizeCategoryClient_(x.category)===c)
+      .reduce((s,x)=>s+Number(x.amount||0),0);
+    const old=d.categories&&d.categories[c]||{};
+    const target=Number(old.target||0);
+    cats[c]={
+      actual:actual,
+      target:target,
+      achievement:target>0?actual/target*100:0,
+      estimation:actual,
+      estimationPercent:target>0?actual/target*100:0,
+      shortfall:Math.max(target-actual,0)
+    };
+  });
+  d.categories=cats;
+
+  const ops={};
+  ["Indosat","XL","Telkomsel"].forEach(op=>{
+    const actual=transactions
+      .filter(x=>String(x.subcategory||"").trim().toLowerCase()===op.toLowerCase())
+      .reduce((s,x)=>s+Number(x.amount||0),0);
+    const old=d.operators&&d.operators[op]||{};
+    const target=Number(old.target||0);
+    ops[op]={
+      actual:actual,
+      target:target,
+      achievement:target>0?actual/target*100:0,
+      estimation:actual,
+      estimationPercent:target>0?actual/target*100:0
+    };
+  });
+  d.operators=ops;
+
+  const targetAll=Number(d.targetAll||0);
+  d.achievement=targetAll>0?d.totalActual/targetAll*100:0;
+  d.estimation=d.totalActual;
+  d.estimationPercent=targetAll>0?d.totalActual/targetAll*100:0;
+  d.shortfall=Math.max(targetAll-d.totalActual,0);
+
+  return d;
+}
+
+async function refreshPeriodView_(){
+  try{
+    // Bulan Ini: kembali ke data dashboard H-1 asli dari backend.
+    if(periodMode==="month"){
+      const result=await api({
+        action:"dashboard",
+        period:getCurrentPeriod()
+      });
+      if(result&&result.success){
+        dashboardData=result.data;
+        baseDashboardData_=JSON.parse(JSON.stringify(result.data));
+        renderOverview();
+        renderSalesPerformance();
+        renderStore();
+        if(currentPage==="ero") renderStore();
+        if(currentPage==="top") renderTopSales();
+      }
+      return;
+    }
+
+    // Ambil seluruh transaksi supaya Minggu Lalu yang bisa melewati bulan
+    // tetap terbaca (contoh Senin minggu lalu bisa masih bulan sebelumnya).
+    if(!allTransactionsCache_){
+      const result=await api({action:"transactions"});
+      if(!result||!result.success) throw new Error(result&&result.message||"Gagal mengambil transaksi");
+      allTransactionsCache_=result.data||[];
+    }
+
+    const range=getPeriodRange_(periodMode);
+    const filtered=(allTransactionsCache_||[])
+      .filter(x=>{
+        const d=parseDateYmd_(x.date);
+        return d && d>=range.start && d<=range.end;
+      })
+      .map(x=>Object.assign({},x,{amount:effectiveAmountClient_(x)}));
+
+    const base=baseDashboardData_ || dashboardData;
+    dashboardData=cloneDashboardForPeriod_(base,periodMode,filtered);
+
+    renderOverview();
+    renderSalesPerformance();
+    renderStore();
+    if(currentPage==="ero") renderStore();
+    if(currentPage==="top") renderTopSales();
+
+  }catch(e){
+    showToast("Gagal filter data: "+e.message);
+  }
 }
 
 
@@ -3722,9 +3920,11 @@ function renderStoreSalesBreakdown_(){
     ? ['Sales All','Device','Accessories','Repair Contract','Operator']
     : [selectedCat==='ALL'?'Sales All':selectedCat];
 
-  const activeSales=(salesList||[]).filter(s=>String(s.status||'AKTIF').toUpperCase()!=='NONAKTIF');
+  // Tampilkan semua sales yang dikembalikan SALES_MASTER.
+  // Jangan memblokir berdasarkan variasi penulisan status (AKTIF/ACTIVE/1/dll).
+  const activeSales=(salesList||[]).filter(s => s && String(s.id||s.salesId||'').trim() !== '');
   if(!activeSales.length){
-    box.innerHTML='<div class="table-card" style="padding:14px">Belum ada sales aktif.</div>';
+    box.innerHTML='<div class="table-card" style="padding:14px">Belum ada data sales.</div>';
     return;
   }
 
