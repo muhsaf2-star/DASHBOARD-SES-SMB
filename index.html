@@ -1428,6 +1428,18 @@ html,body{
 }
 
 </style>
+
+<style id="daily-chase-series-final">
+.device-series{margin-top:7px;padding:7px}
+  .device-series-grid{gap:3px}
+  .device-series-item{padding:5px 3px}
+  .device-series-name{font-size:8px}
+  .device-series-value{font-size:9px}
+  .device-series-contrib{font-size:8px}
+  
+}
+</style>
+
 </head>
 
 <body>
@@ -1632,13 +1644,6 @@ html,body{
 
           <button
             class="filter-btn"
-            onclick="setPeriodMode('day',this)"
-          >
-            Hari Ini
-          </button>
-
-          <button
-            class="filter-btn"
             onclick="setPeriodMode('week',this)"
           >
             Minggu Ini
@@ -1818,6 +1823,8 @@ html,body{
             >
               Rp 0
             </div>
+
+            <div class="device-series" id="deviceSeriesBox"></div>
 
           </div>
 
@@ -3164,6 +3171,41 @@ function toggleSidebar(){
    OVERVIEW
 ===================================================== */
 
+
+function normalizeDeviceSeriesFront_(subcategory, product){
+  const s=String(subcategory||'').trim().toLowerCase();
+  const p=String(product||'').trim().toLowerCase();
+  const v=s+' '+p;
+  if(s==='series a'||s==='a series'||s.indexOf('series a')>=0||s.indexOf('a series')>=0||v.indexOf('galaxy a')>=0||/(^|\s)a\d/.test(v)) return 'Series A';
+  if(s==='series s'||s==='s series'||s.indexOf('series s')>=0||s.indexOf('s series')>=0||v.indexOf('galaxy s')>=0||/(^|\s)s\d/.test(v)) return 'Series S';
+  if(s==='series z'||s==='z series'||s.indexOf('series z')>=0||s.indexOf('z series')>=0||v.indexOf('galaxy z')>=0||v.indexOf('fold')>=0||v.indexOf('flip')>=0) return 'Series Z';
+  if(s==='series tab'||s==='tab series'||s.indexOf('series tab')>=0||s.indexOf('tab')>=0||v.indexOf('galaxy tab')>=0) return 'Series Tab';
+  return '';
+}
+
+
+function renderDeviceSeriesFront_(){
+  const el=document.getElementById('deviceSeriesBox');
+  if(!el||!dashboardData) return;
+  const tx=dashboardData.transactions||[];
+  const vals={'Series A':0,'Series S':0,'Series Z':0,'Series Tab':0};
+  tx.forEach(t=>{
+    if(String(t.category||'').trim().toLowerCase()!=='device') return;
+    const s=normalizeDeviceSeriesFront_(t.subcategory,t.product);
+    if(s&&Object.prototype.hasOwnProperty.call(vals,s)) vals[s]+=Number(t.amount||0);
+  });
+  const total=Number((dashboardData.categories||{}).Device?.actual||0);
+  el.innerHTML='<div class="device-series-title">Device — Value & Kontribusi</div>'+
+    '<div class="device-series-grid">'+
+    Object.keys(vals).map(s=>{
+      const pct=total!==0?(vals[s]/total*100):0;
+      return '<div class="device-series-item"><div class="device-series-name">'+s+
+        '</div><div class="device-series-value">'+money(vals[s])+
+        '</div><div class="device-series-contrib">'+pct.toFixed(1)+'%</div></div>';
+    }).join('')+'</div>';
+}
+
+
 function renderOverview(){
 
   if(!dashboardData)
@@ -3241,6 +3283,10 @@ function renderOverview(){
     "operator"
   );
 
+  renderDeviceSeriesFront_();
+renderDailyChaseFront_("accDailyChase", d.categories?.Accessories);
+renderDailyChaseFront_("operatorDailyChase", d.categories?.Operator);
+
 
   const op =
     d.operators || {};
@@ -3272,8 +3318,8 @@ function renderOverview(){
   renderOperator("Indosat", "indosat");
   renderOperator("XL", "xl");
   renderOperator("Telkomsel", "telkomsel");
-
-  renderPerformanceHighlight();
+renderOperatorDailyFront_("XL");
+renderPerformanceHighlight();
 }
 
 
