@@ -3667,7 +3667,27 @@ function getStoreSalesCategoryActual_(salesId, category, type){
   const tx=dashboardData.transactions||[];
   return sumStore_(tx.filter(x=>{
     if(String(x.salesId)!==String(salesId)) return false;
-    if(String(x.category||'')!==String(category)) return false;
+
+    // Sales All = seluruh transaksi valid milik sales tersebut.
+    // Jangan mencari category "Sales All" karena SALES_DATA tidak memiliki category itu.
+    if(category==='Sales All') return true;
+
+    // Gunakan normalisasi category agar data seperti accessories/ACCESSORIES tetap terbaca.
+    const rawCat=String(x.category||'').trim().toLowerCase();
+    const wantedCat=String(category||'').trim().toLowerCase();
+    const catAlias={
+      'device':'device',
+      'accessories':'accessories',
+      'accessory':'accessories',
+      'acc':'accessories',
+      'repair contract':'repair contract',
+      'repaircontract':'repair contract',
+      'rc':'repair contract',
+      'operator':'operator',
+      'op':'operator'
+    };
+    if((catAlias[rawCat]||rawCat)!==(catAlias[wantedCat]||wantedCat)) return false;
+
     if(!type || type==='ALL') return true;
     if(category==='Device') return normalizeSeriesClient_(x)===type;
     return String(x.subcategory||'').trim().toLowerCase()===String(type).trim().toLowerCase();
