@@ -1483,6 +1483,17 @@ html,body{
 .summary-grid .card{padding:12px}
 @media(max-width:900px){.summary-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.summary-grid .metric-value{font-size:17px}.summary-grid .metric-label{font-size:9px}}
 
+/* SUMMARY: tabel lebih rapat, terutama saat dibuka dari HP */
+#page-summary .table-wrap{overflow-x:auto;}
+#page-summary .table-wrap table{min-width:650px;}
+#page-summary th,#page-summary td{padding:6px 6px;font-size:9px;white-space:nowrap;}
+@media(max-width:600px){
+  #page-summary .table-wrap table{min-width:610px !important;}
+  #page-summary th{font-size:7.5px !important;padding:5px 4px !important;}
+  #page-summary td{font-size:8px !important;padding:5px 4px !important;}
+  #page-summary .card-title{font-size:15px !important;}
+}
+
 @media (max-width: 600px){
   /* DATA ERO: lebih kecil/rapat; Overview & Summary formatter tidak diubah */
   .top-page table th,.top-page table td,
@@ -4357,8 +4368,8 @@ function renderSummary(){
   if(lowEl){
     lowEl.innerHTML=lowest.map(r=>`<tr>
       <td><b>${escapeHtml(r.category)}</b></td><td><b>${escapeHtml(r.s.name||'-')}</b></td>
-      <td class="money">${money(r.target)}</td><td class="money">${money(r.actual)}</td><td>${percent(r.ach)}</td>
-      <td class="money">${money(r.est)}</td><td>${percent(r.estPct)}</td><td class="money">${money(r.shortfall)}</td>
+      <td class="money">${eroMoney(r.target)}</td><td class="money">${eroMoney(r.actual)}</td><td>${eroPercent(r.ach)}</td>
+      <td class="money">${eroMoney(r.est)}</td><td>${eroPercent(r.estPct)}</td><td class="money">${eroMoney(r.shortfall)}</td>
     </tr>`).join('') || '<tr><td colspan="8">Belum ada data.</td></tr>';
   }
 
@@ -4375,8 +4386,8 @@ function renderSummary(){
   const catEl=document.getElementById('summaryCategoryTable');
   if(catEl){
     catEl.innerHTML=catTotals.map(r=>`<tr>
-      <td><b>${escapeHtml(r.cat)}</b></td><td class="money">${money(r.target)}</td><td class="money">${money(r.actual)}</td>
-      <td>${percent(r.ach)}</td><td class="money">${money(r.shortfall)}</td><td>${remaining} hari</td><td class="money">${money(r.daily)}</td>
+      <td><b>${escapeHtml(r.cat)}</b></td><td class="money">${eroMoney(r.target)}</td><td class="money">${eroMoney(r.actual)}</td>
+      <td>${eroPercent(r.ach)}</td><td class="money">${eroMoney(r.shortfall)}</td><td>${remaining} hari</td><td class="money">${eroMoney(r.daily)}</td>
     </tr>`).join('') || '<tr><td colspan="7">Belum ada data.</td></tr>';
   }
 
@@ -4386,7 +4397,7 @@ function renderSummary(){
   if(priEl){
     priEl.innerHTML=priority.slice(0,20).map((r,i)=>`<tr>
       <td><b>#${i+1}</b></td><td><b>${escapeHtml(r.s.name||'-')}</b></td><td>${escapeHtml(r.category)}</td>
-      <td>${percent(r.ach)}</td><td>${percent(r.estPct)}</td><td class="money">${money(r.shortfall)}</td><td class="money">${money(r.daily)}</td>
+      <td>${eroPercent(r.ach)}</td><td>${eroPercent(r.estPct)}</td><td class="money">${eroMoney(r.shortfall)}</td><td class="money">${eroMoney(r.daily)}</td>
     </tr>`).join('') || '<tr><td colspan="7">🎉 Semua ERO sudah estimasi 100% atau lebih.</td></tr>';
   }
 
