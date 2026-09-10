@@ -1077,6 +1077,38 @@ html,body{
   }
 }
 
+
+/* ================= COMPACT MONEY ================= */
+.money-compact{
+  white-space:nowrap;
+}
+
+@media(max-width:600px){
+  .metric-value{
+    font-size:14px;
+  }
+
+  .category-card .value,
+  .category-card .metric-value{
+    font-size:13px;
+  }
+
+  .operator-value{
+    font-size:9px;
+  }
+
+  .store-kpi .value{
+    font-size:13px;
+  }
+
+  .table-card td,
+  .table-card th,
+  .store-breakdown-wrap td,
+  .store-breakdown-wrap th{
+    font-size:10px;
+  }
+}
+
 </style>
 </head>
 
@@ -4760,13 +4792,37 @@ function setHtml(id,value){
 
 
 function money(value){
+  const n = Number(value || 0);
 
-  return "Rp " +
-    Number(value || 0)
-      .toLocaleString(
-        "id-ID"
-      );
+  if (!Number.isFinite(n)) return "Rp 0";
 
+  const abs = Math.abs(n);
+  const sign = n < 0 ? "-" : "";
+
+  if (abs >= 1000000000) {
+    const v = n / 1000000000;
+    return "Rp " + sign + compactNumber_(v) + " M";
+  }
+
+  if (abs >= 1000000) {
+    const v = n / 1000000;
+    return "Rp " + sign + compactNumber_(v) + " jt";
+  }
+
+  if (abs >= 1000) {
+    const v = n / 1000;
+    return "Rp " + sign + compactNumber_(v) + " rb";
+  }
+
+  return "Rp " + n.toLocaleString("id-ID");
+}
+
+function compactNumber_(value){
+  const rounded = Math.round(value * 100) / 100;
+  return rounded.toLocaleString("id-ID", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2
+  });
 }
 
 
