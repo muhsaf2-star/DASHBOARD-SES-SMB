@@ -1508,29 +1508,19 @@ html,body{
   #topPageCards .top-name{font-size:14px !important;}
 }
 
-/* MOBILE: rapatkan kolom RANK -> ERO agar nama ERO lebih terbaca */
+/* MOBILE UI ONLY — rapatkan Rank dan ERO tanpa mengubah API/JavaScript */
 @media (max-width:600px){
-  /* Top ERO: RANK kecil, ERO diperlebar, kolom angka tetap rapat */
-  #topPageTable th:nth-child(1), #topPageTable td:nth-child(1){width:7% !important; text-align:left;}
-  #topPageTable th:nth-child(2), #topPageTable td:nth-child(2){width:27% !important; text-align:left;}
-  #topPageTable th:nth-child(n+3), #topPageTable td:nth-child(n+3){width:13.2% !important;}
+  #topPageTable th:nth-child(1), #topPageTable td:nth-child(1){width:7% !important;text-align:left;}
+  #topPageTable th:nth-child(2), #topPageTable td:nth-child(2){width:27% !important;text-align:left;}
 
-  /* Summary priority: RANK dekat dengan ERO */
-  #summaryPriorityTable th:nth-child(1), #summaryPriorityTable td:nth-child(1){width:7% !important; text-align:left;}
-  #summaryPriorityTable th:nth-child(2), #summaryPriorityTable td:nth-child(2){width:24% !important; text-align:left;}
-  #summaryPriorityTable th:nth-child(3), #summaryPriorityTable td:nth-child(3){width:16% !important; text-align:left;}
-  #summaryPriorityTable th:nth-child(n+4), #summaryPriorityTable td:nth-child(n+4){width:13.25% !important;}
+  #summaryPriorityTable th:nth-child(1), #summaryPriorityTable td:nth-child(1){width:7% !important;text-align:left;}
+  #summaryPriorityTable th:nth-child(2), #summaryPriorityTable td:nth-child(2){width:24% !important;text-align:left;}
+  #summaryPriorityTable th:nth-child(3), #summaryPriorityTable td:nth-child(3){width:16% !important;text-align:left;}
 
-  /* Summary ERO terendah: kategori + ERO dibuat lebih dekat dan nama lebih lega */
-  #summaryLowestTable th:nth-child(1), #summaryLowestTable td:nth-child(1){width:13% !important; text-align:left;}
-  #summaryLowestTable th:nth-child(2), #summaryLowestTable td:nth-child(2){width:24% !important; text-align:left;}
-  #summaryLowestTable th:nth-child(n+3), #summaryLowestTable td:nth-child(n+3){width:10.5% !important;}
+  #summaryLowestTable th:nth-child(1), #summaryLowestTable td:nth-child(1){width:13% !important;text-align:left;}
+  #summaryLowestTable th:nth-child(2), #summaryLowestTable td:nth-child(2){width:24% !important;text-align:left;}
 
-  /* Performa Sales: kolom nama diberi ruang lebih besar */
-  #salesPerformanceTable th:nth-child(1), #salesPerformanceTable td:nth-child(1){width:24% !important; text-align:left;}
-  #salesPerformanceTable th:nth-child(n+2), #salesPerformanceTable td:nth-child(n+2){width:10.86% !important;}
-
-  /* Semua tabel ERO tetap kecil, tetapi kolom nama tidak terlalu jauh dari kolom pertama */
+  #salesPerformanceTable th:nth-child(1), #salesPerformanceTable td:nth-child(1){width:24% !important;text-align:left;}
   .store-breakdown th:first-child, .store-breakdown td:first-child{width:24% !important;}
 }
 </style>
