@@ -701,6 +701,11 @@ tr:last-child td{
   outline:none;
 }
 
+/* ================= TOP ERO FILTER ================= */
+.top-ero-filter-wrap{margin:8px 0 10px;}
+.top-ero-filter{width:100%;height:30px;border:1px solid var(--border);border-radius:6px;background:#fff;padding:0 9px;font-size:11px;color:#172033;outline:none;}
+.top-ero-filter:focus{border-color:var(--blue);}
+
 /* ================= TOP SALES ================= */
 
 .top-grid{
@@ -2126,8 +2131,9 @@ html,body{
         <!-- ================= PERFORMANCE HIGHLIGHT ================= -->
         <div class="performance-highlight">
           <div class="highlight-card">
-            <div class="highlight-title">🔥 TOP SALES</div>
-            <div class="highlight-subtitle">Ranking berdasarkan achievement H-1</div>
+            <div class="highlight-title">🔥 TOP ERO</div>
+            <div class="highlight-subtitle">Ranking berdasarkan Achievement H-1</div>
+            <div class="top-ero-filter-wrap"><select id="topEroCategory" class="top-ero-filter" onchange="renderTopERO()"><option value="Sales All">Sales All</option><option value="Device">Device</option><option value="Accessories">Accessories</option><option value="Operator">Operator</option></select></div>
             <div id="topSalesHighlight" class="highlight-list">
               <div class="highlight-empty">Belum ada data transaksi H-1</div>
             </div>
@@ -3400,20 +3406,25 @@ function renderCategory(category,prefix){
 
 
 
+function renderTopERO(){
+  renderPerformanceHighlight();
+}
+
 function renderPerformanceHighlight(){
   if(!dashboardData)return;
 
   const tx=dashboardData.transactions||[];
-  const targetMap={};
-  (dashboardData.targets||[]).forEach(t=>targetMap[String(t.salesId)]=t);
+  const categoryEl=document.getElementById("topEroCategory");
+  const category=categoryEl ? categoryEl.value : "Sales All";
 
   const stats=salesList.map(s=>{
-    const rows=tx.filter(x=>String(x.salesId)===String(s.id));
-    const actual=rows.reduce((sum,x)=>sum+Number(x.amount||0),0);
-    const t=targetMap[String(s.id)]||{};
-    const target=Number(t.targetAll||0);
+    const actual=getStoreSalesCategoryActual_(s.id,category,"ALL");
+    const target=getStoreSalesTarget_(s.id,category);
     return {name:s.name,actual,target,ach:target>0?actual/target*100:0};
-  }).sort((a,b)=>b.ach-a.ach);
+  }).sort((a,b)=>{
+    if(b.ach!==a.ach)return b.ach-a.ach;
+    return b.actual-a.actual;
+  });
 
   const topEl=document.getElementById("topSalesHighlight");
   const top=stats.filter(x=>x.actual>0).slice(0,3);
