@@ -291,6 +291,39 @@ button{
 .store-week-table table{
   min-width:650px;
 }
+.store-week-table table{
+  min-width:650px;
+}
+.store-breakdown{
+  margin:0 0 12px;
+  background:#fff;
+  border:1px solid #e7ebf2;
+  border-radius:10px;
+  overflow:hidden;
+}
+.store-breakdown-head{
+  padding:10px 12px;
+  background:#f7f9fc;
+  border-bottom:1px solid #e7ebf2;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+.store-breakdown-head .title{font-weight:700;font-size:13px;}
+.store-breakdown-head .sub{font-size:11px;color:#7a8495;}
+.store-breakdown table{width:100%;border-collapse:collapse;min-width:780px;}
+.store-breakdown th,.store-breakdown td{padding:8px 9px;border-bottom:1px solid #edf0f5;font-size:12px;text-align:right;white-space:nowrap;}
+.store-breakdown th:first-child,.store-breakdown td:first-child{text-align:left;}
+.store-breakdown tbody tr:last-child td{border-bottom:0;}
+.store-sales-name{font-weight:700;}
+.store-shortfall{font-weight:700;}
+.store-over{font-weight:700;}
+.store-breakdown-wrap{overflow:auto;}
+.store-breakdown-total td{font-weight:700;background:#fafbfd;}
+@media(max-width:700px){
+  .store-breakdown th,.store-breakdown td{padding:7px 8px;font-size:11px;}
+}
 .gap-up{font-weight:700;}
 .gap-down{font-weight:700;}
 @media(max-width:700px){
@@ -1521,21 +1554,9 @@ tr:last-child td{
           <div class="store-kpi"><div class="label">ESTIMASI H-1</div><div class="value" id="storeEstKpi">Rp0</div></div>
         </div>
 
-        <div class="table-card">
-          <table>
-            <thead>
-              <tr>
-                <th>PERIODE</th>
-                <th>ACTUAL</th>
-                <th>TARGET</th>
-                <th>ACH%</th>
-                <th>ESTIMASI</th>
-                <th>EST%</th>
-              </tr>
-            </thead>
-            <tbody id="storeTable"></tbody>
-          </table>
-        </div>
+        <div class="store-week-title">Breakdown Target per Sales</div>
+        <div class="page-subtitle" style="margin-bottom:8px">Setiap sales dapat melihat target, actual H-1, estimasi dan kekurangan per kategori.</div>
+        <div id="storeSalesBreakdown"></div>
 
         <div class="store-week-title">3 Minggu Terakhir — WoW & Gap Value</div>
         <div class="table-card store-week-table">
@@ -2597,6 +2618,8 @@ async function loadAll(){
 
       renderSalesPerformance();
 
+      renderStore();
+
     }
 
     const targetResult =
@@ -3236,14 +3259,98 @@ function renderStore(){
   setText("storeAchKpi",percent(ach));
   setText("storeEstKpi",money(est));
 
-  const tbody=document.getElementById("storeTable");
-  if(tbody)tbody.innerHTML=`<tr>
-    <td>H-1 (${days} hari)</td><td class="money">${money(actual)}</td>
-    <td class="money">${money(target)}</td><td>${percent(ach)}</td>
-    <td class="money">${money(est)}</td><td>${percent(estPct)}</td>
-  </tr>`;
-
+  renderStoreSalesBreakdown_();
   renderStoreWeekly_(tx);
+}
+
+function getStoreSalesCategoryActual_(salesId, category, type){
+  const tx=dashboardData.transactions||[];
+  return sumStore_(tx.filter(x=>{
+    if(String(x.salesId)!==String(salesId)) return false;
+    if(String(x.category||'')!==String(category)) return false;
+    if(!type || type==='ALL') return true;
+    if(category==='Device') return normalizeSeriesClient_(x)===type;
+    return String(x.subcategory||'').trim().toLowerCase()===String(type).trim().toLowerCase();
+  }));
+}
+
+function getStoreSalesTarget_(salesId, category){
+  const t=(dashboardData.targets||[]).find(x=>String(x.salesId)===String(salesId))||{};
+  if(category==='Sales All') return Number(t.targetAll||0);
+  if(category==='Device') return Number(t.device||0);
+  if(category==='Accessories') return Number(t.accessories||0);
+  if(category==='Repair Contract') return Number(t.repairContract||0);
+  if(category==='Operator') return Number(t.operator||0);
+  return 0;
+}
+
+function renderStoreSalesBreakdown_(){
+  const box=document.getElementById('storeSalesBreakdown');
+  if(!box)return;
+
+  const days=Number(dashboardData.daysPassed||0);
+  const dim=Number(dashboardData.daysInMonth||0);
+  const catEl=document.getElementById('storeCategory');
+  const typeEl=document.getElementById('storeType');
+  const mode=document.getElementById('storeModeCat')?.classList.contains('active')?'CATEGORY':'ALL';
+  const selectedCat=catEl?.value||'ALL';
+  const selectedType=typeEl?.value||'ALL';
+
+  const categories=mode==='ALL'
+    ? ['Sales All','Device','Accessories','Repair Contract','Operator']
+    : [selectedCat==='ALL'?'Sales All':selectedCat];
+
+  const activeSales=(salesList||[]).filter(s=>String(s.status||'AKTIF').toUpperCase()!=='NONAKTIF');
+  if(!activeSales.length){
+    box.innerHTML='<div class="table-card" style="padding:14px">Belum ada sales aktif.</div>';
+    return;
+  }
+
+  box.innerHTML=categories.map(category=>{
+    const typeLabel=(mode==='CATEGORY' && selectedType!=='ALL') ? ' • '+escapeHtml(selectedType) : '';
+    const rows=activeSales.map(s=>{
+      const target=getStoreSalesTarget_(s.id,category);
+      const actual=getStoreSalesCategoryActual_(s.id,category, mode==='CATEGORY'?selectedType:'ALL');
+      const est=days>0?actual/days*dim:0;
+      const ach=target>0?actual/target*100:0;
+      const estPct=target>0?est/target*100:0;
+      const shortfall=Math.max(target-actual,0);
+      return {s,target,actual,est,ach,estPct,shortfall};
+    });
+
+    const total=rows.reduce((a,r)=>({target:a.target+r.target,actual:a.actual+r.actual,est:a.est+r.est,shortfall:a.shortfall+r.shortfall}),{target:0,actual:0,est:0,shortfall:0});
+    const totalAch=total.target>0?total.actual/total.target*100:0;
+    const totalEstPct=total.target>0?total.est/total.target*100:0;
+
+    return `
+      <div class="store-breakdown">
+        <div class="store-breakdown-head">
+          <div><div class="title">${escapeHtml(category)}${typeLabel}</div><div class="sub">Target dan pencapaian masing-masing sales • H-1</div></div>
+          <div class="sub">${rows.length} sales</div>
+        </div>
+        <div class="store-breakdown-wrap">
+          <table>
+            <thead><tr>
+              <th>SALES NAME</th><th>TARGET</th><th>ACTUAL H-1</th><th>ACH%</th><th>ESTIMASI</th><th>EST%</th><th>KEKURANGAN</th>
+            </tr></thead>
+            <tbody>
+              ${rows.map(r=>`<tr>
+                <td><span class="store-sales-name">${escapeHtml(r.s.name||'-')}</span></td>
+                <td class="money">${money(r.target)}</td>
+                <td class="money">${money(r.actual)}</td>
+                <td>${percent(r.ach)}</td>
+                <td class="money">${money(r.est)}</td>
+                <td>${percent(r.estPct)}</td>
+                <td class="money ${r.shortfall>0?'store-shortfall':'store-over'}">${money(r.shortfall)}</td>
+              </tr>`).join('')}
+              <tr class="store-breakdown-total">
+                <td>TOTAL</td><td class="money">${money(total.target)}</td><td class="money">${money(total.actual)}</td><td>${percent(totalAch)}</td><td class="money">${money(total.est)}</td><td>${percent(totalEstPct)}</td><td class="money">${money(total.shortfall)}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>`;
+  }).join('');
 }
 
 function renderStoreWeekly_(tx){
