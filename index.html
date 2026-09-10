@@ -2648,7 +2648,7 @@ function renderOverview(){
     money(d.estimation)
   );
 
-  setText(
+  setHtml(
     "overviewEstPercent",
     percent(d.estimationPercent)
   );
@@ -2658,7 +2658,7 @@ function renderOverview(){
     money(d.shortfall)
   );
 
-  setText(
+  setHtml(
     "overviewAch",
     percent(d.achievement)
   );
@@ -2708,7 +2708,7 @@ function renderOverview(){
     )
   );
 
-  setText(
+  setHtml(
     "indosatAch",
     percent(
       op.Indosat
@@ -2727,7 +2727,7 @@ function renderOverview(){
     )
   );
 
-  setText(
+  setHtml(
     "xlAch",
     percent(
       op.XL
@@ -2746,7 +2746,7 @@ function renderOverview(){
     )
   );
 
-  setText(
+  setHtml(
     "telkomselAch",
     percent(
       op.Telkomsel
@@ -2780,7 +2780,7 @@ function renderCategory(category,prefix){
     money(c.target)
   );
 
-  setText(
+  setHtml(
     prefix+"Ach",
     percent(c.achievement)
   );
@@ -3078,7 +3078,7 @@ function renderStore(){
   setText("storeMonth",dashboardData.period||"");
   setText("storeActualKpi",money(actual));
   setText("storeTargetKpi",money(target));
-  setText("storeAchKpi",percent(ach));
+  setHtml("storeAchKpi",percent(ach));
   setText("storeEstKpi",money(est));
 
   renderStoreSalesBreakdown_();
@@ -4613,6 +4613,18 @@ function setText(id,value){
 
   if(el)
     el.textContent =
+      value;
+
+}
+
+
+function setHtml(id,value){
+
+  const el =
+    document.getElementById(id);
+
+  if(el)
+    el.innerHTML =
       value;
 
 }
