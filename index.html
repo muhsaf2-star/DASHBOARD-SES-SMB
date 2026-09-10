@@ -3944,7 +3944,7 @@ function renderStoreSalesBreakdown_(){
       const estPct=target>0?est/target*100:0;
       const shortfall=Math.max(target-actual,0);
       return {s,target,actual,est,ach,estPct,shortfall};
-    });
+    }).sort((a,b)=>b.ach-a.ach);
 
     const total=rows.reduce((a,r)=>({target:a.target+r.target,actual:a.actual+r.actual,est:a.est+r.est,shortfall:a.shortfall+r.shortfall}),{target:0,actual:0,est:0,shortfall:0});
     const totalAch=total.target>0?total.actual/total.target*100:0;
@@ -3977,8 +3977,64 @@ function renderStoreSalesBreakdown_(){
             </tbody>
           </table>
         </div>
+        ${category==='Operator' && !(mode==='CATEGORY' && selectedType!=='ALL') ? renderOperatorEROBySubcategory_(activeSales, days, dim) : ''}
       </div>`;
   }).join('');
+}
+
+function getOperatorTarget_(salesId, subcategory){
+  const t=(dashboardData.targets||[]).find(x=>String(x.salesId)===String(salesId))||{};
+  const key=String(subcategory||'').toLowerCase();
+  if(key==='indosat') return Number(t.indosat||0);
+  if(key==='xl') return Number(t.xl||0);
+  if(key==='telkomsel') return Number(t.telkomsel||0);
+  return 0;
+}
+
+function renderOperatorEROBySubcategory_(activeSales, days, dim){
+  const subs=['Indosat','XL','Telkomsel'];
+  return `
+    <div style="margin-top:10px">
+      <div class="store-breakdown-head" style="border-top:1px solid #e5e7eb;padding-top:10px">
+        <div><div class="title">Operator by Sub Kategori</div><div class="sub">Ranking berdasarkan Achievement % • H-1</div></div>
+      </div>
+      ${subs.map(sub=>{
+        const rows=activeSales.map(s=>{
+          const target=getOperatorTarget_(s.id,sub);
+          const actual=getStoreSalesCategoryActual_(s.id,'Operator',sub);
+          const est=days>0?actual/days*dim:0;
+          const ach=target>0?actual/target*100:0;
+          const estPct=target>0?est/target*100:0;
+          const shortfall=Math.max(target-actual,0);
+          return {s,target,actual,est,ach,estPct,shortfall};
+        }).sort((a,b)=>b.ach-a.ach);
+        const total=rows.reduce((a,r)=>({target:a.target+r.target,actual:a.actual+r.actual,est:a.est+r.est,shortfall:a.shortfall+r.shortfall}),{target:0,actual:0,est:0,shortfall:0});
+        const totalAch=total.target>0?total.actual/total.target*100:0;
+        const top=rows[0], bottom=rows[rows.length-1];
+        return `
+          <div class="store-breakdown" style="margin-top:8px">
+            <div class="store-breakdown-head">
+              <div><div class="title">${sub}</div><div class="sub">Tertinggi: ${escapeHtml(top?.s?.name||'-')} • Terendah: ${escapeHtml(bottom?.s?.name||'-')}</div></div>
+              <div class="sub">Kurang total ${money(total.shortfall)}</div>
+            </div>
+            <div class="store-breakdown-wrap">
+              <table><thead><tr><th>SALES NAME</th><th>TARGET</th><th>ACTUAL H-1</th><th>ACH%</th><th>ESTIMASI</th><th>EST%</th><th>KEKURANGAN</th></tr></thead>
+              <tbody>
+                ${rows.map(r=>`<tr>
+                  <td><span class="store-sales-name">${escapeHtml(r.s.name||'-')}</span></td>
+                  <td class="money">${money(r.target)}</td>
+                  <td class="money">${money(r.actual)}</td>
+                  <td>${percent(r.ach)}</td>
+                  <td class="money">${money(r.est)}</td>
+                  <td>${percent(r.estPct)}</td>
+                  <td class="money ${shortfallClass_(r.shortfall,r.target)}">${money(r.shortfall)}</td>
+                </tr>`).join('')}
+                <tr class="store-breakdown-total"><td>TOTAL</td><td class="money">${money(total.target)}</td><td class="money">${money(total.actual)}</td><td>${percent(totalAch)}</td><td class="money">${money(total.est)}</td><td>${percent(total.target>0?total.est/total.target*100:0)}</td><td class="money ${shortfallClass_(total.shortfall,total.target)}">${money(total.shortfall)}</td></tr>
+              </tbody></table>
+            </div>
+          </div>`;
+      }).join('')}
+    </div>`;
 }
 
 function renderStoreWeekly_(tx){
