@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-
 <html lang="id">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width,initial-scale=1.0" name="viewport"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
 <title>Sales Performance Dashboard</title>
+
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
 <style>
 *{
   box-sizing:border-box;
@@ -1426,18 +1428,7 @@ html,body{
 }
 
 </style>
-<style id="daily-chase-series-final">
-.device-series{margin-top:7px;padding:7px}
-  .device-series-grid{gap:3px}
-  .device-series-item{padding:5px 3px}
-  .device-series-name{font-size:8px}
-  .device-series-value{font-size:9px}
-  .device-series-contrib{font-size:8px}
-  
-}
-</style>
-<style id="wow-store-compact">
-.store-wow-note{font-size:10px;color:#64748b}
+<style id="store-wow-final">
 @media(max-width:700px){
   #page-store .table-card{overflow-x:auto}
   #page-store .store-week-table table{min-width:620px}
@@ -1447,733 +1438,1209 @@ html,body{
 }
 </style>
 </head>
+
 <body>
+
 <!-- LOGIN -->
-<div class="login-screen" id="loginScreen">
-<div class="login-box">
-<div class="login-logo">↗</div>
-<div class="login-title">
+
+<div id="loginScreen" class="login-screen">
+
+  <div class="login-box">
+
+    <div class="login-logo">↗</div>
+
+    <div class="login-title">
       Sales Performance
     </div>
-<div class="login-sub">
+
+    <div class="login-sub">
       Dashboard SES SMB
     </div>
-<input autocomplete="username" id="loginUsername" placeholder="Username"/>
-<input autocomplete="current-password" id="loginPassword" placeholder="Password" type="password"/>
-<button class="login-btn" onclick="login()">
+
+    <input
+      id="loginUsername"
+      placeholder="Username"
+      autocomplete="username"
+    >
+
+    <input
+      id="loginPassword"
+      type="password"
+      placeholder="Password"
+      autocomplete="current-password"
+    >
+
+    <button
+      class="login-btn"
+      onclick="login()"
+    >
       Login
     </button>
-<div class="login-error" id="loginError"></div>
+
+    <div id="loginError" class="login-error"></div>
+
+  </div>
+
 </div>
-</div>
+
+
 <!-- APPLICATION -->
-<div class="app" id="app" style="display:none">
-<!-- SIDEBAR -->
-<aside class="sidebar" id="sidebar">
-<div class="brand">
-<div class="brand-icon">↗</div>
-<div>
-<div class="brand-title">Sales</div>
-<div class="brand-sub">Performance</div>
-</div>
-</div>
-<div class="menu">
-<button class="active" id="menu-overview" onclick="showPage('overview')">
-<span class="menu-icon">▦</span>
+
+<div id="app" class="app" style="display:none">
+
+  <!-- SIDEBAR -->
+
+  <aside id="sidebar" class="sidebar">
+
+    <div class="brand">
+
+      <div class="brand-icon">↗</div>
+
+      <div>
+        <div class="brand-title">Sales</div>
+        <div class="brand-sub">Performance</div>
+      </div>
+
+    </div>
+
+    <div class="menu">
+
+      <button
+        id="menu-overview"
+        class="active"
+        onclick="showPage('overview')"
+      >
+        <span class="menu-icon">▦</span>
         Overview
       </button>
-<button id="menu-ero" onclick="showPage('ero')">
-<span class="menu-icon">♧</span>
+
+      <button
+        id="menu-ero"
+        onclick="showPage('ero')"
+      >
+        <span class="menu-icon">♧</span>
         Performa ERO
       </button>
-<button id="menu-store" onclick="showPage('store')">
-<span class="menu-icon">▤</span>
+
+      <button
+        id="menu-store"
+        onclick="showPage('store')"
+      >
+        <span class="menu-icon">▤</span>
         Performa Store
       </button>
-<button id="menu-sales" onclick="showPage('sales')">
-<span class="menu-icon">◔</span>
+
+      <button
+        id="menu-sales"
+        onclick="showPage('sales')"
+      >
+        <span class="menu-icon">◔</span>
         Kontribusi Sales
       </button>
-<button id="menu-top" onclick="showPage('top')">
-<span class="menu-icon">♜</span>
+<button
+        id="menu-top"
+        onclick="showPage('top')"
+      >
+        <span class="menu-icon">♜</span>
         Top Sales
       </button>
-<button id="menu-target" onclick="showPage('target')">
-<span class="menu-icon">◎</span>
+
+      <button
+        id="menu-target"
+        onclick="showPage('target')"
+      >
+        <span class="menu-icon">◎</span>
         Target Management
       </button>
-<button id="menu-manage" onclick="showPage('manage')">
-<span class="menu-icon">♙</span>
+
+      <button
+        id="menu-manage"
+        onclick="showPage('manage')"
+      >
+        <span class="menu-icon">♙</span>
         Manage Sales
       </button>
-</div>
-<div class="sidebar-footer">
+
+    </div>
+
+    <div class="sidebar-footer">
       v1.0.0 • Sales Dashboard
     </div>
-</aside>
-<!-- MAIN -->
-<main class="main">
-<header class="topbar">
-<button class="mobile-menu" onclick="toggleSidebar()">
+
+  </aside>
+
+
+  <!-- MAIN -->
+
+  <main class="main">
+
+    <header class="topbar">
+
+      <button
+        class="mobile-menu"
+        onclick="toggleSidebar()"
+      >
         ☰
       </button>
-<div class="user-badge">
-<div class="user-circle" id="userInitial">
+
+      <div class="user-badge">
+
+        <div class="user-circle" id="userInitial">
           A
         </div>
-<span id="userName">
+
+        <span id="userName">
           Administrator
         </span>
-<button class="logout" onclick="logout()">
+
+        <button
+          class="logout"
+          onclick="logout()"
+        >
           Logout
         </button>
-</div>
-</header>
-<section class="content">
-<!-- ================= OVERVIEW ================= -->
-<div class="page" id="page-overview">
-<div class="page-head">
-<div>
-<h1 class="page-title">
+
+      </div>
+
+    </header>
+
+
+    <section class="content">
+
+      <!-- ================= OVERVIEW ================= -->
+
+      <div id="page-overview" class="page">
+
+        <div class="page-head">
+
+          <div>
+            <h1 class="page-title">
               Overview
             </h1>
-<div class="page-subtitle">
+
+            <div class="page-subtitle">
               Ringkasan performa toko
             </div>
-</div>
-<div class="month-badge">
+          </div>
+
+          <div class="month-badge">
             📅 <span id="overviewMonth"></span>
-</div>
-</div>
-<div class="ero-motto">
-<div class="ero-motto-title">🔥 HAI KALIAN SEMUA ERO SMB!</div>
-<div class="ero-motto-text" id="eroMottoText">Jualan yang semangat ya! 💪🔥</div>
-</div>
-<div class="filters">
-<button class="filter-btn" onclick="setPeriodMode('week',this)">
+          </div>
+
+        </div>
+
+
+
+        <div class="ero-motto">
+          <div class="ero-motto-title">🔥 HAI KALIAN SEMUA ERO SMB!</div>
+          <div class="ero-motto-text" id="eroMottoText">Jualan yang semangat ya! 💪🔥</div>
+        </div>
+
+        <div class="filters">
+<button
+            class="filter-btn"
+            onclick="setPeriodMode('week',this)"
+          >
             Minggu Ini
           </button>
-<button class="filter-btn" onclick="setPeriodMode('lastweek',this)">
-            Minggu Lalu
-          </button>
-<button class="filter-btn active" onclick="setPeriodMode('month',this)">
+
+          <button
+            class="filter-btn active"
+            onclick="setPeriodMode('month',this)"
+          >
             Bulan Ini
           </button>
-<button class="filter-btn" onclick="setPeriodMode('year',this)">
+
+          <button
+            class="filter-btn"
+            onclick="setPeriodMode('year',this)"
+          >
             Tahun Ini
           </button>
-<button class="filter-btn" onclick="setPeriodMode('custom',this)">
+
+          <button
+            class="filter-btn"
+            onclick="setPeriodMode('custom',this)"
+          >
             Custom
           </button>
-</div>
-<div class="card overview-main">
-<div class="card-title">
-            ↗   SALES ALL
 
-            <span id="overviewAch" style="float:right;background:#ffe1e3;color:#ff3344;padding:6px 10px;border-radius:15px;font-size:12px">
+        </div>
+
+
+        <div class="card overview-main">
+
+          <div class="card-title">
+            ↗ &nbsp; SALES ALL
+
+            <span
+              id="overviewAch"
+              style="float:right;background:#ffe1e3;color:#ff3344;padding:6px 10px;border-radius:15px;font-size:12px"
+            >
               0.0%
             </span>
-</div>
-<div class="metrics">
-<div>
-<div class="metric-label">
+          </div>
+
+
+          <div class="metrics">
+
+            <div>
+              <div class="metric-label">
                 Actual
               </div>
-<div class="metric-value blue" id="overviewActual">
+
+              <div
+                class="metric-value blue"
+                id="overviewActual"
+              >
                 Rp 0
               </div>
-</div>
-<div>
-<div class="metric-label">
+            </div>
+
+            <div>
+              <div class="metric-label">
                 Target
               </div>
-<div class="metric-value" id="overviewTarget">
+
+              <div
+                class="metric-value"
+                id="overviewTarget"
+              >
                 Rp 0
               </div>
-</div>
-<div>
-<div class="metric-label">
+            </div>
+
+            <div>
+              <div class="metric-label">
                 Estimasi
               </div>
-<div class="metric-value red" id="overviewEst">
+
+              <div
+                class="metric-value red"
+                id="overviewEst"
+              >
                 Rp 0
               </div>
-<div id="overviewEstPercent" style="font-size:12px;color:#ff3344">
+
+              <div
+                id="overviewEstPercent"
+                style="font-size:12px;color:#ff3344"
+              >
                 0.0%
               </div>
-</div>
-<div>
-<div class="metric-label">
+            </div>
+
+            <div>
+              <div class="metric-label">
                 Kekurangan
               </div>
-<div class="metric-value" id="overviewShort">
+
+              <div
+                class="metric-value"
+                id="overviewShort"
+              >
                 Rp 0
               </div>
-</div>
-</div>
-<div class="progress">
-<div class="progress-bar" id="overviewProgress" style="width:0%"></div>
-</div>
-</div>
-<div class="category-grid">
-<div class="card category-card">
-<div class="category-name">
+            </div>
+
+          </div>
+
+
+          <div class="progress">
+
+            <div
+              id="overviewProgress"
+              class="progress-bar"
+              style="width:0%"
+            ></div>
+
+          </div>
+
+        </div>
+
+
+        <div class="category-grid">
+
+          <div class="card category-card">
+
+            <div class="category-name">
               DEVICE
             </div>
-<div class="two-col">
-<div>
-<div class="metric-label">Actual</div>
-<div class="metric-value" id="deviceActual">
+
+            <div class="two-col">
+
+              <div>
+                <div class="metric-label">Actual</div>
+                <div class="metric-value" id="deviceActual">
                   Rp 0
                 </div>
-</div>
-<div>
-<div class="metric-label">Target</div>
-<div class="metric-value" id="deviceTarget">
+              </div>
+
+              <div>
+                <div class="metric-label">Target</div>
+                <div class="metric-value" id="deviceTarget">
                   Rp 0
                 </div>
-</div>
-</div>
-<br/>
-<div class="two-col">
-<div>
-<div class="metric-label">Achievement</div>
-<div class="metric-value red" id="deviceAch">
+              </div>
+
+            </div>
+
+            <br>
+
+            <div class="two-col">
+
+              <div>
+                <div class="metric-label">Achievement</div>
+                <div class="metric-value red" id="deviceAch">
                   0.0%
                 </div>
-</div>
-<div>
-<div class="metric-label">Estimasi</div>
-<div class="metric-value" id="deviceEst">
+              </div>
+
+              <div>
+                <div class="metric-label">Estimasi</div>
+                <div class="metric-value" id="deviceEst">
                   Rp 0
                 </div>
-<div class="est-percent" id="deviceEstPercent">0.0%</div>
-</div>
-</div>
-<hr/>
-<div class="metric-label">
+                <div class="est-percent" id="deviceEstPercent">0.0%</div>
+              </div>
+
+            </div>
+
+            <hr>
+
+            <div class="metric-label">
               Kekurangan
             </div>
-<div class="metric-value red" id="deviceShort">
+
+            <div
+              class="metric-value red"
+              id="deviceShort"
+            >
               Rp 0
             </div>
-<div class="device-series" id="deviceSeriesBox"></div>
-</div>
-<div class="card category-card">
-<div class="category-name">
+
+          </div>
+
+
+          <div class="card category-card">
+
+            <div class="category-name">
               ACCESSORIES
             </div>
-<div class="two-col">
-<div>
-<div class="metric-label">Actual</div>
-<div class="metric-value" id="accActual">
+
+            <div class="two-col">
+
+              <div>
+                <div class="metric-label">Actual</div>
+                <div class="metric-value" id="accActual">
                   Rp 0
                 </div>
-</div>
-<div>
-<div class="metric-label">Target</div>
-<div class="metric-value" id="accTarget">
+              </div>
+
+              <div>
+                <div class="metric-label">Target</div>
+                <div class="metric-value" id="accTarget">
                   Rp 0
                 </div>
-</div>
-</div>
-<br/>
-<div class="two-col">
-<div>
-<div class="metric-label">Achievement</div>
-<div class="metric-value red" id="accAch">
+              </div>
+
+            </div>
+
+            <br>
+
+            <div class="two-col">
+
+              <div>
+                <div class="metric-label">Achievement</div>
+                <div class="metric-value red" id="accAch">
                   0.0%
                 </div>
-</div>
-<div>
-<div class="metric-label">Estimasi</div>
-<div class="metric-value" id="accEst">
+              </div>
+
+              <div>
+                <div class="metric-label">Estimasi</div>
+                <div class="metric-value" id="accEst">
                   Rp 0
                 </div>
-<div class="est-percent" id="accEstPercent">0.0%</div>
-</div>
-</div>
-<hr/>
-<div class="metric-label">
+                <div class="est-percent" id="accEstPercent">0.0%</div>
+              </div>
+
+            </div>
+
+            <hr>
+
+            <div class="metric-label">
               Kekurangan
             </div>
-<div class="metric-value red" id="accShort">
+
+            <div
+              class="metric-value red"
+              id="accShort"
+            >
               Rp 0
             </div>
-</div>
-<div class="card category-card">
-<div class="category-name">
+
+          </div>
+
+
+          <div class="card category-card">
+
+            <div class="category-name">
               REPAIR CONTRACT
             </div>
-<div class="two-col">
-<div>
-<div class="metric-label">Actual</div>
-<div class="metric-value" id="repairActual">
+
+            <div class="two-col">
+
+              <div>
+                <div class="metric-label">Actual</div>
+                <div class="metric-value" id="repairActual">
                   Rp 0
                 </div>
-</div>
-<div>
-<div class="metric-label">Target</div>
-<div class="metric-value" id="repairTarget">
+              </div>
+
+              <div>
+                <div class="metric-label">Target</div>
+                <div class="metric-value" id="repairTarget">
                   Rp 0
                 </div>
-</div>
-</div>
-<br/>
-<div class="two-col">
-<div>
-<div class="metric-label">Achievement</div>
-<div class="metric-value red" id="repairAch">
+              </div>
+
+            </div>
+
+            <br>
+
+            <div class="two-col">
+
+              <div>
+                <div class="metric-label">Achievement</div>
+                <div class="metric-value red" id="repairAch">
                   0.0%
                 </div>
-</div>
-<div>
-<div class="metric-label">Estimasi</div>
-<div class="metric-value" id="repairEst">
+              </div>
+
+              <div>
+                <div class="metric-label">Estimasi</div>
+                <div class="metric-value" id="repairEst">
                   Rp 0
                 </div>
-<div class="est-percent" id="repairEstPercent">0.0%</div>
-</div>
-</div>
-<hr/>
-<div class="metric-label">
+                <div class="est-percent" id="repairEstPercent">0.0%</div>
+              </div>
+
+            </div>
+
+            <hr>
+
+            <div class="metric-label">
               Kekurangan
             </div>
-<div class="metric-value red" id="repairShort">
+
+            <div
+              class="metric-value red"
+              id="repairShort"
+            >
               Rp 0
             </div>
-</div>
-<div class="card category-card">
-<div class="category-name">
+
+          </div>
+
+
+          <div class="card category-card">
+
+            <div class="category-name">
               OPERATOR
             </div>
-<div class="two-col">
-<div>
-<div class="metric-label">Actual</div>
-<div class="metric-value" id="operatorActual">
+
+            <div class="two-col">
+
+              <div>
+                <div class="metric-label">Actual</div>
+                <div class="metric-value" id="operatorActual">
                   Rp 0
                 </div>
-</div>
-<div>
-<div class="metric-label">Target</div>
-<div class="metric-value" id="operatorTarget">
+              </div>
+
+              <div>
+                <div class="metric-label">Target</div>
+                <div class="metric-value" id="operatorTarget">
                   Rp 0
                 </div>
-</div>
-</div>
-<br/>
-<div class="two-col">
-<div>
-<div class="metric-label">Achievement</div>
-<div class="metric-value red" id="operatorAch">
+              </div>
+
+            </div>
+
+            <br>
+
+            <div class="two-col">
+
+              <div>
+                <div class="metric-label">Achievement</div>
+                <div class="metric-value red" id="operatorAch">
                   0.0%
                 </div>
-</div>
-<div>
-<div class="metric-label">Estimasi</div>
-<div class="metric-value" id="operatorEst">
+              </div>
+
+              <div>
+                <div class="metric-label">Estimasi</div>
+                <div class="metric-value" id="operatorEst">
                   Rp 0
                 </div>
-<div class="est-percent" id="operatorEstPercent">0.0%</div>
-</div>
-</div>
-<hr/>
-<div class="operator-box">
-<div class="operator-head">
-<span>Indosat</span>
-<span id="indosatAch">0.0%</span>
-</div>
-<div class="operator-grid">
-<div>
-<div class="operator-label">Target</div>
-<div class="operator-value" id="indosatTarget">Rp 0</div>
-</div>
-<div>
-<div class="operator-label">Actual</div>
-<div class="operator-value" id="indosatActual">Rp 0</div>
-</div>
-<div>
-<div class="operator-label">Estimasi</div>
-<div class="operator-value" id="indosatEst">Rp 0</div>
-<div class="operator-est-percent" id="indosatEstPercent">0.0%</div>
-</div>
-<div>
-<div class="operator-label">Kekurangan</div>
-<div class="operator-value operator-short" id="indosatShort">Rp 0</div>
-</div>
-</div>
-</div>
-<div class="operator-box">
-<div class="operator-head">
-<span>XL</span>
-<span id="xlAch">0.0%</span>
-</div>
-<div class="operator-grid">
-<div>
-<div class="operator-label">Target</div>
-<div class="operator-value" id="xlTarget">Rp 0</div>
-</div>
-<div>
-<div class="operator-label">Actual</div>
-<div class="operator-value" id="xlActual">Rp 0</div>
-</div>
-<div>
-<div class="operator-label">Estimasi</div>
-<div class="operator-value" id="xlEst">Rp 0</div>
-<div class="operator-est-percent" id="xlEstPercent">0.0%</div>
-</div>
-<div>
-<div class="operator-label">Kekurangan</div>
-<div class="operator-value operator-short" id="xlShort">Rp 0</div>
-</div>
-</div>
-</div>
-<div class="operator-box">
-<div class="operator-head">
-<span>Telkomsel</span>
-<span id="telkomselAch">0.0%</span>
-</div>
-<div class="operator-grid">
-<div>
-<div class="operator-label">Target</div>
-<div class="operator-value" id="telkomselTarget">Rp 0</div>
-</div>
-<div>
-<div class="operator-label">Actual</div>
-<div class="operator-value" id="telkomselActual">Rp 0</div>
-</div>
-<div>
-<div class="operator-label">Estimasi</div>
-<div class="operator-value" id="telkomselEst">Rp 0</div>
-<div class="operator-est-percent" id="telkomselEstPercent">0.0%</div>
-</div>
-<div>
-<div class="operator-label">Kekurangan</div>
-<div class="operator-value operator-short" id="telkomselShort">Rp 0</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="performance-highlight">
-<div class="highlight-card">
-<div class="highlight-title">🔥 TOP SALES</div>
-<div class="highlight-subtitle">Ranking berdasarkan achievement H-1</div>
-<div class="highlight-list" id="topSalesHighlight">
-<div class="highlight-empty">Belum ada data transaksi H-1</div>
-</div>
-</div>
-<div class="highlight-card">
-<div class="highlight-title">🏆 BEST CATEGORY</div>
-<div class="highlight-subtitle">Kategori dengan achievement tertinggi</div>
-<div class="highlight-list" id="bestCategoryHighlight">
-<div class="highlight-empty">Belum ada data transaksi H-1</div>
-</div>
-</div>
-<div class="highlight-card">
-<div class="highlight-title">⚡ QUICK ACTION</div>
-<div class="highlight-subtitle">Fokus yang perlu dikejar hari ini</div>
-<div class="highlight-list" id="quickActionHighlight">
-<div class="highlight-empty">Menunggu data H-1</div>
-</div>
-</div>
-</div></div>
-<!-- ================= PERFORMANCE HIGHLIGHT ================= -->
+                <div class="est-percent" id="operatorEstPercent">0.0%</div>
+              </div>
 
-<!-- ================= STORE ================= -->
-<div class="page" id="page-ero" style="display:none">
-<div class="page-head">
-<div>
-<h1 class="page-title">Performa ERO</h1>
-<div class="page-subtitle">Performa ERO H-1 berdasarkan kategori</div>
-</div>
-<div class="month-badge">📅 <span id="storeMonth"></span></div>
-</div>
-<div class="filters store-filter-row">
-<div class="store-mode">
-<button class="filter-btn active" id="storeModeAll" onclick="setStoreMode('ALL')">Semua</button>
-<button class="filter-btn" id="storeModeCat" onclick="setStoreMode('CATEGORY')">Per Kategori</button>
-</div>
-<select class="select" id="storeCategory" onchange="updateStoreTypeOptions();renderStore()">
-<option value="ALL">Sales All</option>
-<option value="Device">Device</option>
-<option value="Accessories">Accessories</option>
-<option value="Repair Contract">Repair Contract</option>
-<option value="Operator">Operator</option>
-</select>
-<select class="select" id="storeType" onchange="renderStore()">
-<option value="ALL">Semua</option>
-</select>
-</div>
-<div class="store-kpis">
-<div class="store-kpi"><div class="label">ACTUAL H-1</div><div class="value" id="storeActualKpi">Rp0</div></div>
-<div class="store-kpi"><div class="label">TARGET</div><div class="value" id="storeTargetKpi">Rp0</div></div>
-<div class="store-kpi"><div class="label">ACHIEVEMENT</div><div class="value" id="storeAchKpi">0%</div></div>
-<div class="store-kpi"><div class="label">ESTIMASI H-1</div><div class="value" id="storeEstKpi">Rp0</div></div>
-</div>
-<div class="store-week-title">Breakdown Target per Sales</div>
-<div class="page-subtitle" style="margin-bottom:8px">Setiap sales dapat melihat target, actual H-1, estimasi dan kekurangan per kategori.</div>
-<div id="storeSalesBreakdown"></div>
-<!-- ================= SALES ================= -->
-<div class="page" id="page-sales" style="display:none">
-<div class="page-head">
-<div>
-<h1 class="page-title">
-              Kontribusi Sales
-            </h1>
-<div class="page-subtitle">
-              Performa &amp; kontribusi masing-masing sales
             </div>
-</div>
-<div class="month-badge">
+
+            <hr>
+
+            <div class="operator-box">
+              <div class="operator-head">
+                <span>Indosat</span>
+                <span id="indosatAch">0.0%</span>
+              </div>
+              <div class="operator-grid">
+                <div>
+                  <div class="operator-label">Target</div>
+                  <div class="operator-value" id="indosatTarget">Rp 0</div>
+                </div>
+                <div>
+                  <div class="operator-label">Actual</div>
+                  <div class="operator-value" id="indosatActual">Rp 0</div>
+                </div>
+                <div>
+                  <div class="operator-label">Estimasi</div>
+                  <div class="operator-value" id="indosatEst">Rp 0</div>
+                  <div class="operator-est-percent" id="indosatEstPercent">0.0%</div>
+                </div>
+                <div>
+                  <div class="operator-label">Kekurangan</div>
+                  <div class="operator-value operator-short" id="indosatShort">Rp 0</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="operator-box">
+              <div class="operator-head">
+                <span>XL</span>
+                <span id="xlAch">0.0%</span>
+              </div>
+              <div class="operator-grid">
+                <div>
+                  <div class="operator-label">Target</div>
+                  <div class="operator-value" id="xlTarget">Rp 0</div>
+                </div>
+                <div>
+                  <div class="operator-label">Actual</div>
+                  <div class="operator-value" id="xlActual">Rp 0</div>
+                </div>
+                <div>
+                  <div class="operator-label">Estimasi</div>
+                  <div class="operator-value" id="xlEst">Rp 0</div>
+                  <div class="operator-est-percent" id="xlEstPercent">0.0%</div>
+                </div>
+                <div>
+                  <div class="operator-label">Kekurangan</div>
+                  <div class="operator-value operator-short" id="xlShort">Rp 0</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="operator-box">
+              <div class="operator-head">
+                <span>Telkomsel</span>
+                <span id="telkomselAch">0.0%</span>
+              </div>
+              <div class="operator-grid">
+                <div>
+                  <div class="operator-label">Target</div>
+                  <div class="operator-value" id="telkomselTarget">Rp 0</div>
+                </div>
+                <div>
+                  <div class="operator-label">Actual</div>
+                  <div class="operator-value" id="telkomselActual">Rp 0</div>
+                </div>
+                <div>
+                  <div class="operator-label">Estimasi</div>
+                  <div class="operator-value" id="telkomselEst">Rp 0</div>
+                  <div class="operator-est-percent" id="telkomselEstPercent">0.0%</div>
+                </div>
+                <div>
+                  <div class="operator-label">Kekurangan</div>
+                  <div class="operator-value operator-short" id="telkomselShort">Rp 0</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+
+        <!-- ================= PERFORMANCE HIGHLIGHT ================= -->
+        <div class="performance-highlight">
+          <div class="highlight-card">
+            <div class="highlight-title">🔥 TOP SALES</div>
+            <div class="highlight-subtitle">Ranking berdasarkan achievement H-1</div>
+            <div id="topSalesHighlight" class="highlight-list">
+              <div class="highlight-empty">Belum ada data transaksi H-1</div>
+            </div>
+          </div>
+          <div class="highlight-card">
+            <div class="highlight-title">🏆 BEST CATEGORY</div>
+            <div class="highlight-subtitle">Kategori dengan achievement tertinggi</div>
+            <div id="bestCategoryHighlight" class="highlight-list">
+              <div class="highlight-empty">Belum ada data transaksi H-1</div>
+            </div>
+          </div>
+          <div class="highlight-card">
+            <div class="highlight-title">⚡ QUICK ACTION</div>
+            <div class="highlight-subtitle">Fokus yang perlu dikejar hari ini</div>
+            <div id="quickActionHighlight" class="highlight-list">
+              <div class="highlight-empty">Menunggu data H-1</div>
+            </div>
+          </div>
+        </div>
+
+      <!-- ================= STORE ================= -->
+
+      <div id="page-ero" class="page" style="display:none">
+
+        <div class="page-head">
+          <div>
+            <h1 class="page-title">Performa ERO</h1>
+            <div class="page-subtitle">Performa ERO H-1 berdasarkan kategori</div>
+          </div>
+          <div class="month-badge">📅 <span id="storeMonth"></span></div>
+        </div>
+
+        <div class="filters store-filter-row">
+          <div class="store-mode">
+            <button id="storeModeAll" class="filter-btn active" onclick="setStoreMode('ALL')">Semua</button>
+            <button id="storeModeCat" class="filter-btn" onclick="setStoreMode('CATEGORY')">Per Kategori</button>
+          </div>
+
+          <select class="select" id="storeCategory" onchange="updateStoreTypeOptions();renderStore()">
+            <option value="ALL">Sales All</option>
+            <option value="Device">Device</option>
+            <option value="Accessories">Accessories</option>
+            <option value="Repair Contract">Repair Contract</option>
+            <option value="Operator">Operator</option>
+          </select>
+
+          <select class="select" id="storeType" onchange="renderStore()">
+            <option value="ALL">Semua</option>
+          </select>
+        </div>
+
+        <div class="store-kpis">
+          <div class="store-kpi"><div class="label">ACTUAL H-1</div><div class="value" id="storeActualKpi">Rp0</div></div>
+          <div class="store-kpi"><div class="label">TARGET</div><div class="value" id="storeTargetKpi">Rp0</div></div>
+          <div class="store-kpi"><div class="label">ACHIEVEMENT</div><div class="value" id="storeAchKpi">0%</div></div>
+          <div class="store-kpi"><div class="label">ESTIMASI H-1</div><div class="value" id="storeEstKpi">Rp0</div></div>
+        </div>
+
+        <div class="store-week-title">Breakdown Target per Sales</div>
+        <div class="page-subtitle" style="margin-bottom:8px">Setiap sales dapat melihat target, actual H-1, estimasi dan kekurangan per kategori.</div>
+        <div id="storeSalesBreakdown"></div>
+
+        <div class="store-week-title">3 Minggu Terakhir — WoW & Gap Value</div>
+        <div class="table-card store-week-table">
+          <table>
+            <thead>
+              <tr>
+                <th>PERIODE</th>
+                <th>SALES</th>
+                <th>WoW</th>
+                <th>GAP VALUE</th>
+              </tr>
+            </thead>
+            <tbody id="storeWeeklyTable"></tbody>
+          </table>
+        </div>
+
+      </div>
+
+
+
+
+      <!-- ================= STORE WEEKLY ================= -->
+
+      <div id="page-store" class="page" style="display:none">
+
+        <div class="page-head">
+          <div>
+            <h1 class="page-title">Performa Store</h1>
+            <div class="page-subtitle">Week on Week — 3 minggu terakhir</div>
+          </div>
+          <div class="month-badge">📅 <span id="storeWeekMonth"></span></div>
+        </div>
+
+        <div class="card" style="padding:12px;margin-bottom:12px">
+          <div class="card-title">PERFORMA WEEK ON WEEK</div>
+          <div style="font-size:11px;color:#64748b">
+            Data 3 minggu terakhir. Growth dan Gap membandingkan minggu terakhir dengan minggu sebelumnya.
+          </div>
+        </div>
+
+        <div class="table-card store-week-table">
+          <table>
+            <thead>
+              <tr>
+                <th>KATEGORI</th>
+                <th>MINGGU -3</th>
+                <th>MINGGU -2</th>
+                <th>MINGGU TERAKHIR</th>
+                <th>GROWTH</th>
+                <th>GAP</th>
+              </tr>
+            </thead>
+            <tbody id="storeWoWTable"></tbody>
+          </table>
+        </div>
+
+      </div>
+
+      <!-- ================= SALES ================= -->
+
+      <div id="page-sales" class="page" style="display:none">
+
+        <div class="page-head">
+
+          <div>
+            <h1 class="page-title">
+              Performa Sales
+            </h1>
+
+            <div class="page-subtitle">
+              Perbandingan performa setiap sales
+            </div>
+          </div>
+
+          <div class="month-badge">
             📅 <span id="salesMonth"></span>
-</div>
-</div>
-<div class="filters">
-<button class="filter-btn active">
+          </div>
+
+        </div>
+
+        <div class="filters">
+
+          <button class="filter-btn active">
             Per Sales
           </button>
-<select class="select" id="salesCategory" onchange="renderSalesPerformance()">
-<option value="ALL">
+
+          <select
+            class="select"
+            id="salesCategory"
+            onchange="renderSalesPerformance()"
+          >
+
+            <option value="ALL">
               Sales All
             </option>
-<option value="Device">
+
+            <option value="Device">
               Device
             </option>
-<option value="Accessories">
+
+            <option value="Accessories">
               Accessories
             </option>
-<option value="Repair Contract">
+
+            <option value="Repair Contract">
               Repair Contract
             </option>
-<option value="Operator">
+
+            <option value="Operator">
               Operator
             </option>
-</select>
-</div>
-<div class="card" style="padding:12px;margin-bottom:12px">
-<b>
+
+          </select>
+
+        </div>
+
+        <div class="card" style="padding:12px;margin-bottom:12px">
+
+          <b>
             Time Gone:
           </b>
-<span id="salesTimeGone">
+
+          <span id="salesTimeGone">
             0%
           </span>
-<div class="progress">
-<div class="progress-bar" id="salesTimeProgress" style="width:0%"></div>
-</div>
-</div>
-<div class="table-card">
-<table>
-<thead>
-<tr>
-<th>SALES</th>
-<th>TARGET</th>
-<th>ACTUAL</th>
-<th>ACH%</th>
-<th>ESTIMASI</th>
-<th>EST%</th>
-<th>MELESET</th>
-<th>KONTRIBUSI</th>
-</tr>
-</thead>
-<tbody id="salesPerformanceTable"></tbody>
-</table>
-</div>
-</div>
+
+          <div class="progress">
+            <div
+              id="salesTimeProgress"
+              class="progress-bar"
+              style="width:0%"
+            ></div>
+          </div>
+
+        </div>
+
+        <div class="table-card">
+
+          <table>
+
+            <thead>
+
+              <tr>
+                <th>SALES</th>
+                <th>TARGET</th>
+                <th>ACTUAL</th>
+                <th>ACH%</th>
+                <th>ESTIMASI</th>
+                <th>EST%</th>
+                <th>MELESET</th>
+                <th>KONTRIBUSI</th>
+              </tr>
+
+            </thead>
+
+            <tbody id="salesPerformanceTable"></tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+
+      <!-- ================= CONTRIBUTION ================= -->
 <!-- ================= TOP SALES ================= -->
-<div class="page" id="page-top" style="display:none">
-<div class="page-head">
-<div>
-<h1 class="page-title">
+
+      <div id="page-top" class="page" style="display:none">
+
+        <div class="page-head">
+
+          <div>
+            <h1 class="page-title">
               Top Sales
             </h1>
-<div class="page-subtitle">
+
+            <div class="page-subtitle">
               Ranking sales terbaik
             </div>
-</div>
-</div>
-<div class="top-grid" id="topCards"></div>
-<div class="table-card">
-<table>
-<thead>
-<tr>
-<th>RANK</th>
-<th>SALES</th>
-<th>TARGET</th>
-<th>ACTUAL</th>
-<th>ACH%</th>
-<th>ESTIMASI</th>
-<th>EST%</th>
-</tr>
-</thead>
-<tbody id="topTable"></tbody>
-</table>
-</div>
-</div>
-<!-- ================= TARGET ================= -->
-<div class="page" id="page-target" style="display:none">
-<div class="page-head">
-<div>
-<h1 class="page-title">
+          </div>
+
+        </div>
+
+        <div class="top-grid" id="topCards"></div>
+
+        <div class="table-card">
+
+          <table>
+
+            <thead>
+
+              <tr>
+                <th>RANK</th>
+                <th>SALES</th>
+                <th>TARGET</th>
+                <th>ACTUAL</th>
+                <th>ACH%</th>
+                <th>ESTIMASI</th>
+                <th>EST%</th>
+              </tr>
+
+            </thead>
+
+            <tbody id="topTable"></tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+
+      <!-- ================= TARGET ================= -->
+
+      <div id="page-target" class="page" style="display:none">
+
+        <div class="page-head">
+
+          <div>
+            <h1 class="page-title">
               Target Management
             </h1>
-<div class="page-subtitle">
+
+            <div class="page-subtitle">
               Target otomatis mengikuti Sales yang terdaftar di Manage Sales
             </div>
-</div>
-<div class="month-badge">
+          </div>
+
+          <div class="month-badge">
             📅 <span id="targetMonth"></span>
-</div>
-</div>
-<div class="card" style="padding:18px;margin-bottom:14px">
-<div class="card-title">
+          </div>
+
+        </div>
+
+        <div class="card" style="padding:18px;margin-bottom:14px">
+
+          <div class="card-title">
             TOTAL TARGET STORE
           </div>
-<div class="metrics">
-<div>
-<div class="metric-label">Target All</div>
-<div class="metric-value" id="targetTotalAll">
+
+          <div class="metrics">
+
+            <div>
+              <div class="metric-label">Target All</div>
+              <div class="metric-value" id="targetTotalAll">
                 Rp 0
               </div>
-</div>
-<div>
-<div class="metric-label">Device</div>
-<div class="metric-value" id="targetTotalDevice">
+            </div>
+
+            <div>
+              <div class="metric-label">Device</div>
+              <div class="metric-value" id="targetTotalDevice">
                 Rp 0
               </div>
-</div>
-<div>
-<div class="metric-label">Accessories</div>
-<div class="metric-value" id="targetTotalAcc">
+            </div>
+
+            <div>
+              <div class="metric-label">Accessories</div>
+              <div class="metric-value" id="targetTotalAcc">
                 Rp 0
               </div>
-</div>
-<div>
-<div class="metric-label">Operator</div>
-<div class="metric-value" id="targetTotalOperator">
+            </div>
+
+            <div>
+              <div class="metric-label">Operator</div>
+              <div class="metric-value" id="targetTotalOperator">
                 Rp 0
               </div>
-</div>
-</div>
-</div>
-<div class="form-card">
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px">
-<b>
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="form-card">
+
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px">
+
+            <b>
               Target Per Sales
             </b>
-<button class="btn btn-primary" onclick="saveAllTargets()">
+
+            <button
+              class="btn btn-primary"
+              onclick="saveAllTargets()"
+            >
               💾 Save
             </button>
-</div>
-<div class="target-wrapper">
-<table class="target-table">
-<thead>
-<tr>
-<th>SALES</th>
-<th>TARGET ALL</th>
-<th>DEVICE</th>
-<th>ACCESSORIES</th>
-<th>REPAIR CONTRACT</th>
-<th>OPERATOR</th>
-<th>INDOSAT</th>
-<th>XL</th>
-<th>TELKOMSEL</th>
-</tr>
-</thead>
-<tbody id="targetTable"></tbody>
-</table>
-</div>
-</div>
-</div>
-<!-- ================= MANAGE ================= -->
-<div class="page" id="page-manage" style="display:none">
-<div class="page-head">
-<div>
-<h1 class="page-title">
+
+          </div>
+
+          <div class="target-wrapper">
+
+            <table class="target-table">
+
+              <thead>
+
+                <tr>
+
+                  <th>SALES</th>
+
+                  <th>TARGET ALL</th>
+
+                  <th>DEVICE</th>
+
+                  <th>ACCESSORIES</th>
+
+                  <th>REPAIR CONTRACT</th>
+
+                  <th>OPERATOR</th>
+
+                  <th>INDOSAT</th>
+
+                  <th>XL</th>
+
+                  <th>TELKOMSEL</th>
+
+                </tr>
+
+              </thead>
+
+              <tbody id="targetTable"></tbody>
+
+            </table>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- ================= MANAGE ================= -->
+
+      <div id="page-manage" class="page" style="display:none">
+
+        <div class="page-head">
+
+          <div>
+
+            <h1 class="page-title">
               Manage Sales
             </h1>
-<div class="page-subtitle">
+
+            <div class="page-subtitle">
               Daftar Sales yang terdaftar di sistem
             </div>
-</div>
-<button class="btn btn-primary" onclick="openSalesModal()">
+
+          </div>
+
+          <button
+            class="btn btn-primary"
+            onclick="openSalesModal()"
+          >
             + Tambah Sales
           </button>
+
+        </div>
+
+        <div class="table-card">
+
+          <table>
+
+            <thead>
+
+              <tr>
+                <th>NAMA SALES</th>
+                <th>STATUS</th>
+                <th>AKSI</th>
+              </tr>
+
+            </thead>
+
+            <tbody id="manageSalesTable"></tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
 </div>
-<div class="table-card">
-<table>
-<thead>
-<tr>
-<th>NAMA SALES</th>
-<th>STATUS</th>
-<th>AKSI</th>
-</tr>
-</thead>
-<tbody id="manageSalesTable"></tbody>
-</table>
-</div>
-</div>
-</div></section>
-</main>
-</div>
+
+
 <!-- SALES MODAL -->
-<div class="modal" id="salesModal">
-<div class="modal-box">
-<div class="modal-head">
-<h3 id="salesModalTitle">
+
+<div id="salesModal" class="modal">
+
+  <div class="modal-box">
+
+    <div class="modal-head">
+
+      <h3 id="salesModalTitle">
         Tambah Sales
       </h3>
-<button class="close" onclick="closeSalesModal()">
+
+      <button
+        class="close"
+        onclick="closeSalesModal()"
+      >
         ×
       </button>
-</div>
-<input id="editSalesId" type="hidden"/>
-<div class="form-group">
-<label>Nama Sales</label>
-<input id="salesNameInput" placeholder="Nama lengkap"/>
-</div>
-<br/>
-<div class="form-group">
-<label>NIK</label>
-<input id="salesNikInput" placeholder="NIK"/>
-</div>
-<br/>
-<div class="form-group">
-<label>Role</label>
-<select id="salesRoleInput">
-<option value="SALES">
+
+    </div>
+
+    <input
+      type="hidden"
+      id="editSalesId"
+    >
+
+    <div class="form-group">
+      <label>Nama Sales</label>
+
+      <input
+        id="salesNameInput"
+        placeholder="Nama lengkap"
+      >
+    </div>
+
+    <br>
+
+    <div class="form-group">
+      <label>NIK</label>
+
+      <input
+        id="salesNikInput"
+        placeholder="NIK"
+      >
+    </div>
+
+    <br>
+
+    <div class="form-group">
+
+      <label>Role</label>
+
+      <select id="salesRoleInput">
+
+        <option value="SALES">
           SALES
         </option>
-<option value="SL">
+
+        <option value="SL">
           SL
         </option>
-<option value="TSH">
+
+        <option value="TSH">
           TSH
         </option>
-<option value="ADMIN">
+
+        <option value="ADMIN">
           ADMIN
         </option>
-</select>
-</div>
-<br/>
-<div class="form-group">
-<label>Status</label>
-<select id="salesStatusInput">
-<option value="AKTIF">
+
+      </select>
+
+    </div>
+
+    <br>
+
+    <div class="form-group">
+
+      <label>Status</label>
+
+      <select id="salesStatusInput">
+
+        <option value="AKTIF">
           AKTIF
         </option>
-<option value="NONAKTIF">
+
+        <option value="NONAKTIF">
           NONAKTIF
         </option>
-</select>
-</div>
-<br/>
-<button class="btn btn-primary" onclick="saveSales()">
+
+      </select>
+
+    </div>
+
+    <br>
+
+    <button
+      class="btn btn-primary"
+      onclick="saveSales()"
+    >
       Simpan
     </button>
+
+  </div>
+
 </div>
-</div>
-<div class="toast" id="toast"></div>
+
+
+<div id="toast" class="toast"></div>
+
+
 <script>
 
 /* =====================================================
@@ -2496,9 +2963,6 @@ async function loadAll(){
       dashboardData =
         dashboard.data;
 
-      baseDashboardData_ =
-        JSON.parse(JSON.stringify(dashboard.data));
-
       renderOverview();
 
     }
@@ -2523,7 +2987,6 @@ async function loadAll(){
       renderSalesPerformance();
 
       renderStore();
-      if(currentPage === "ero") renderStore();
 
     }
 
@@ -2577,218 +3040,31 @@ function getCurrentPeriod(){
 
 function setPeriodMode(mode,button){
 
-  periodMode = mode;
+  periodMode =
+    mode;
 
   document
     .querySelectorAll(".filter-btn")
-    .forEach(x => x.classList.remove("active"));
+    .forEach(
+      x => x.classList.remove(
+        "active"
+      )
+    );
 
-  if(button) button.classList.add("active");
+  if(button){
 
-  showToast("Filter " + (mode==="lastweek" ? "minggu lalu" : mode) + " dipilih");
+    button.classList.add(
+      "active"
+    );
 
-  refreshPeriodView_();
-}
-
-
-/* =====================================================
-   PERIOD FILTER VIEW
-===================================================== */
-
-let allTransactionsCache_ = null;
-let baseDashboardData_ = null;
-
-function parseDateYmd_(v){
-  if(!v) return null;
-  const s=String(v).slice(0,10);
-  const p=s.split("-");
-  if(p.length!==3)return null;
-  const d=new Date(Number(p[0]),Number(p[1])-1,Number(p[2]));
-  return isNaN(d.getTime())?null:d;
-}
-
-function startOfMonday_(date){
-  const d=new Date(date);
-  d.setHours(0,0,0,0);
-  const day=d.getDay();
-  d.setDate(d.getDate() + (day===0 ? -6 : 1-day));
-  return d;
-}
-
-function endOfSunday_(date){
-  const d=startOfMonday_(date);
-  d.setDate(d.getDate()+6);
-  d.setHours(23,59,59,999);
-  return d;
-}
-
-function effectiveAmountClient_(x){
-  const amount=Number(x&&x.amount||0);
-  if(!isFinite(amount) || amount===0)return 0;
-
-  const cat=normalizeCategoryClient_(x.category);
-  const sub=String(x.subcategory||"").trim().toLowerCase();
-
-  // Sama dengan aturan backend: Device hanya series yang ada di master.
-  if(cat==="Device"){
-    const s=normalizeSeriesClient_(x);
-    return ["Series A","Series S","Series Z","Series Tab"].includes(s) ? amount : 0;
   }
 
-  // Operator hanya subcategory yang dikenal.
-  if(cat==="Operator"){
-    return ["indosat","xl","telkomsel"].includes(sub) ? amount : 0;
-  }
+  showToast(
+    "Filter " +
+    mode +
+    " dipilih"
+  );
 
-  // Accessories dan Repair Contract mengikuti category yang valid.
-  if(cat==="Accessories" || cat==="Repair Contract") return amount;
-
-  return 0;
-}
-
-function getPeriodRange_(mode){
-  const now=new Date();
-  now.setHours(0,0,0,0);
-
-  const yesterday=new Date(now);
-  yesterday.setDate(yesterday.getDate()-1);
-  yesterday.setHours(23,59,59,999);
-
-  if(mode==="week"){
-    const start=startOfMonday_(now);
-    return {start:start,end:yesterday};
-  }
-
-  if(mode==="lastweek"){
-    const end=endOfSunday_(now);
-    end.setDate(end.getDate()-7);
-    const start=new Date(end);
-    start.setDate(start.getDate()-6);
-    start.setHours(0,0,0,0);
-    return {start:start,end:end};
-  }
-
-  if(mode==="year"){
-    return {
-      start:new Date(now.getFullYear(),0,1),
-      end:yesterday
-    };
-  }
-
-  // Month default.
-  return {
-    start:new Date(now.getFullYear(),now.getMonth(),1),
-    end:yesterday
-  };
-}
-
-function cloneDashboardForPeriod_(base, mode, transactions){
-  const d=JSON.parse(JSON.stringify(base||{}));
-  d.transactions=transactions;
-
-  const now=new Date();
-  now.setHours(0,0,0,0);
-
-  if(mode==="month"){
-    return d;
-  }
-
-  // Untuk periode non-bulanan, target tetap target bulan berjalan,
-  // sementara Actual/achievement mengikuti transaksi yang dipilih.
-  d.totalActual=transactions.reduce((s,x)=>s+Number(x.amount||0),0);
-
-  const cats={};
-  ["Device","Accessories","Repair Contract","Operator"].forEach(c=>{
-    const actual=transactions
-      .filter(x=>normalizeCategoryClient_(x.category)===c)
-      .reduce((s,x)=>s+Number(x.amount||0),0);
-    const old=d.categories&&d.categories[c]||{};
-    const target=Number(old.target||0);
-    cats[c]={
-      actual:actual,
-      target:target,
-      achievement:target>0?actual/target*100:0,
-      estimation:actual,
-      estimationPercent:target>0?actual/target*100:0,
-      shortfall:Math.max(target-actual,0)
-    };
-  });
-  d.categories=cats;
-
-  const ops={};
-  ["Indosat","XL","Telkomsel"].forEach(op=>{
-    const actual=transactions
-      .filter(x=>String(x.subcategory||"").trim().toLowerCase()===op.toLowerCase())
-      .reduce((s,x)=>s+Number(x.amount||0),0);
-    const old=d.operators&&d.operators[op]||{};
-    const target=Number(old.target||0);
-    ops[op]={
-      actual:actual,
-      target:target,
-      achievement:target>0?actual/target*100:0,
-      estimation:actual,
-      estimationPercent:target>0?actual/target*100:0
-    };
-  });
-  d.operators=ops;
-
-  const targetAll=Number(d.targetAll||0);
-  d.achievement=targetAll>0?d.totalActual/targetAll*100:0;
-  d.estimation=d.totalActual;
-  d.estimationPercent=targetAll>0?d.totalActual/targetAll*100:0;
-  d.shortfall=Math.max(targetAll-d.totalActual,0);
-
-  return d;
-}
-
-async function refreshPeriodView_(){
-  try{
-    // Bulan Ini: kembali ke data dashboard H-1 asli dari backend.
-    if(periodMode==="month"){
-      const result=await api({
-        action:"dashboard",
-        period:getCurrentPeriod()
-      });
-      if(result&&result.success){
-        dashboardData=result.data;
-        baseDashboardData_=JSON.parse(JSON.stringify(result.data));
-        renderOverview();
-        renderSalesPerformance();
-        renderStore();
-        if(currentPage==="ero") renderStore();
-        if(currentPage==="top") renderTopSales();
-      }
-      return;
-    }
-
-    // Ambil seluruh transaksi supaya Minggu Lalu yang bisa melewati bulan
-    // tetap terbaca (contoh Senin minggu lalu bisa masih bulan sebelumnya).
-    if(!allTransactionsCache_){
-      const result=await api({action:"transactions"});
-      if(!result||!result.success) throw new Error(result&&result.message||"Gagal mengambil transaksi");
-      allTransactionsCache_=result.data||[];
-    }
-
-    const range=getPeriodRange_(periodMode);
-    const filtered=(allTransactionsCache_||[])
-      .filter(x=>{
-        const d=parseDateYmd_(x.date);
-        return d && d>=range.start && d<=range.end;
-      })
-      .map(x=>Object.assign({},x,{amount:effectiveAmountClient_(x)}));
-
-    const base=baseDashboardData_ || dashboardData;
-    dashboardData=cloneDashboardForPeriod_(base,periodMode,filtered);
-
-    renderOverview();
-    renderSalesPerformance();
-    renderStore();
-    if(currentPage==="ero") renderStore();
-    if(currentPage==="top") renderTopSales();
-
-  }catch(e){
-    showToast("Gagal filter data: "+e.message);
-  }
 }
 
 
@@ -2887,41 +3163,6 @@ function toggleSidebar(){
    OVERVIEW
 ===================================================== */
 
-
-function normalizeDeviceSeriesFront_(subcategory, product){
-  const s=String(subcategory||'').trim().toLowerCase();
-  const p=String(product||'').trim().toLowerCase();
-  const v=s+' '+p;
-  if(s==='series a'||s==='a series'||s.indexOf('series a')>=0||s.indexOf('a series')>=0||v.indexOf('galaxy a')>=0||/(^|\s)a\d/.test(v)) return 'Series A';
-  if(s==='series s'||s==='s series'||s.indexOf('series s')>=0||s.indexOf('s series')>=0||v.indexOf('galaxy s')>=0||/(^|\s)s\d/.test(v)) return 'Series S';
-  if(s==='series z'||s==='z series'||s.indexOf('series z')>=0||s.indexOf('z series')>=0||v.indexOf('galaxy z')>=0||v.indexOf('fold')>=0||v.indexOf('flip')>=0) return 'Series Z';
-  if(s==='series tab'||s==='tab series'||s.indexOf('series tab')>=0||s.indexOf('tab')>=0||v.indexOf('galaxy tab')>=0) return 'Series Tab';
-  return '';
-}
-
-
-function renderDeviceSeriesFront_(){
-  const el=document.getElementById('deviceSeriesBox');
-  if(!el||!dashboardData) return;
-  const tx=dashboardData.transactions||[];
-  const vals={'Series A':0,'Series S':0,'Series Z':0,'Series Tab':0};
-  tx.forEach(t=>{
-    if(String(t.category||'').trim().toLowerCase()!=='device') return;
-    const s=normalizeDeviceSeriesFront_(t.subcategory,t.product);
-    if(s&&Object.prototype.hasOwnProperty.call(vals,s)) vals[s]+=Number(t.amount||0);
-  });
-  const total=Number((dashboardData.categories||{}).Device?.actual||0);
-  el.innerHTML='<div class="device-series-title">Device — Value & Kontribusi</div>'+
-    '<div class="device-series-grid">'+
-    Object.keys(vals).map(s=>{
-      const pct=total!==0?(vals[s]/total*100):0;
-      return '<div class="device-series-item"><div class="device-series-name">'+s+
-        '</div><div class="device-series-value">'+money(vals[s])+
-        '</div><div class="device-series-contrib">'+pct.toFixed(1)+'%</div></div>';
-    }).join('')+'</div>';
-}
-
-
 function renderOverview(){
 
   if(!dashboardData)
@@ -2999,8 +3240,8 @@ function renderOverview(){
     "operator"
   );
 
-  renderDeviceSeriesFront_();
-const op =
+
+  const op =
     d.operators || {};
 
   const renderOperator = (key, prefix) => {
@@ -3030,7 +3271,8 @@ const op =
   renderOperator("Indosat", "indosat");
   renderOperator("XL", "xl");
   renderOperator("Telkomsel", "telkomsel");
-renderPerformanceHighlight();
+
+  renderPerformanceHighlight();
 }
 
 
@@ -3424,6 +3666,7 @@ function renderStore(){
   setText("storeEstKpi",money(est));
 
   renderStoreSalesBreakdown_();
+  renderStoreWeekly_(tx);
 }
 
 function getStoreSalesCategoryActual_(salesId, category, type){
@@ -3483,11 +3726,9 @@ function renderStoreSalesBreakdown_(){
     ? ['Sales All','Device','Accessories','Repair Contract','Operator']
     : [selectedCat==='ALL'?'Sales All':selectedCat];
 
-  // Tampilkan semua sales yang dikembalikan SALES_MASTER.
-  // Jangan memblokir berdasarkan variasi penulisan status (AKTIF/ACTIVE/1/dll).
-  const activeSales=(salesList||[]).filter(s => s && String(s.id||s.salesId||'').trim() !== '');
+  const activeSales=(salesList||[]).filter(s=>String(s.status||'AKTIF').toUpperCase()!=='NONAKTIF');
   if(!activeSales.length){
-    box.innerHTML='<div class="table-card" style="padding:14px">Belum ada data sales.</div>';
+    box.innerHTML='<div class="table-card" style="padding:14px">Belum ada sales aktif.</div>';
     return;
   }
 
@@ -3539,76 +3780,42 @@ function renderStoreSalesBreakdown_(){
 }
 
 
-function normalizeCategoryClient_(value){
-  const s=String(value||"").trim().toLowerCase();
-  if(s==="device")return "Device";
-  if(s==="accessories"||s==="accessory"||s==="acc")return "Accessories";
-  if(s==="repair contract"||s==="repaircontract"||s==="rc")return "Repair Contract";
-  if(s==="operator"||s==="op")return "Operator";
-  return String(value||"").trim();
-}
-
-function effectiveWeeklyAmountClient_(tx){
-  const amount=Number(tx&&tx.amount||0);
-  if(!isFinite(amount)||amount===0)return 0;
-  const cat=normalizeCategoryClient_(tx.category);
-  const sub=String(tx.subcategory||"").trim().toLowerCase();
-
-  if(cat==="Device"){
-    const s=normalizeSeriesClient_(tx);
-    return ["Series A","Series S","Series Z","Series Tab"].includes(s)?amount:0;
-  }
-  if(cat==="Operator"){
-    return ["indosat","xl","telkomsel"].includes(sub)?amount:0;
-  }
-  return amount;
-}
-
 function renderStoreWeeklyPage_(){
-  if(!dashboardData)return;
-
-  setText("storeWeekMonth",dashboardData.period||"");
-
   const body=document.getElementById("storeWoWTable");
-  if(!body)return;
+  if(!body || !dashboardData)return;
 
-  const weeks=(dashboardData.weekly&&dashboardData.weekly.weeks)||[];
-  const weeklyTx=(dashboardData.weeklyTransactions||[]);
+  setText("storeWeekMonth", dashboardData.period || "");
 
-  if(weeks.length<3){
-    body.innerHTML='<tr><td colspan="6">Belum ada data 3 minggu terakhir.</td></tr>';
+  const rows=(dashboardData.weekly && dashboardData.weekly.rows) || [];
+  const deviceRows=(dashboardData.weekly && dashboardData.weekly.deviceRows) || [];
+  const operatorRows=(dashboardData.weekly && dashboardData.weekly.operatorRows) || [];
+
+  const cats=["Sales All","Device","Accessories","Repair Contract","Operator"];
+
+  if(!rows.length){
+    body.innerHTML='<tr><td colspan="6">Belum ada data weekly.</td></tr>';
     return;
   }
 
-  const categories=["Sales All","Device","Accessories","Repair Contract","Operator"];
+  function findRow(name){
+    if(name==="Device") return rows.find(r=>r.name==="Device");
+    if(name==="Operator") return rows.find(r=>r.name==="Operator");
+    return rows.find(r=>r.name===name);
+  }
 
-  const weekValues=weeks.slice(-3).map(w=>{
-    const rows=weeklyTx.filter(t=>{
-      const d=parseDateClient_(t.date);
-      const start=parseDateClient_(w.start);
-      const end=parseDateClient_(w.end);
-      return d&&start&&end&&d>=start&&d<=end;
-    });
-    const vals={};
-    categories.forEach(c=>vals[c]=0);
-    rows.forEach(t=>{
-      const a=effectiveWeeklyAmountClient_(t);
-      const c=normalizeCategoryClient_(t.category);
-      if(categories.includes(c)) vals[c]+=a;
-      vals["Sales All"]+=a;
-    });
-    return vals;
-  });
+  body.innerHTML=cats.map(name=>{
+    const r=findRow(name);
+    const vals=r&&r.values?r.values:[];
+    const last3=vals.slice(-3);
 
-  body.innerHTML=categories.map(c=>{
-    const v1=weekValues[0][c]||0;
-    const v2=weekValues[1][c]||0;
-    const v3=weekValues[2][c]||0;
+    const v1=Number(last3[0]&&last3[0].sales||0);
+    const v2=Number(last3[1]&&last3[1].sales||0);
+    const v3=Number(last3[2]&&last3[2].sales||0);
     const growth=v2!==0?(v3-v2)/Math.abs(v2)*100:null;
     const gap=v3-v2;
 
     return `<tr>
-      <td><b>${escapeHtml(c)}</b></td>
+      <td><b>${escapeHtml(name)}</b></td>
       <td class="money">${money(v1)}</td>
       <td class="money">${money(v2)}</td>
       <td class="money"><b>${money(v3)}</b></td>
@@ -3618,14 +3825,12 @@ function renderStoreWeeklyPage_(){
   }).join("");
 }
 
-function parseDateClient_(value){
-  if(!value)return null;
-  const s=String(value).substring(0,10);
-  const p=s.split("-");
-  if(p.length===3 && !isNaN(Number(p[0])) && !isNaN(Number(p[1])) && !isNaN(Number(p[2]))){
-    return new Date(Number(p[0]),Number(p[1])-1,Number(p[2]));
-  }
-  return null;
+function formatWowClient_(v){
+  return (Number(v)>=0?"+":"")+Number(v).toFixed(1)+"%";
+}
+function formatGapClient_(v){
+  const n=Number(v)||0;
+  return (n>=0?"+":"-")+money(Math.abs(n));
 }
 
 function renderStoreWeekly_(tx){
@@ -3654,6 +3859,78 @@ function formatGapClient_(v){return (Number(v)>=0?"+":"-")+money(Math.abs(Number
 /* =====================================================
    CONTRIBUTION
 ===================================================== */
+
+function renderContribution(){
+
+  const tbody =
+    document.getElementById(
+      "contributionTable"
+    );
+
+  if(!tbody)
+    return;
+
+  const rows =
+    getSalesStats()
+      .sort(
+        (a,b)=>
+          b.actual-a.actual
+      );
+
+  const total =
+    rows.reduce(
+      (s,r)=>
+        s+r.actual,
+      0
+    );
+
+  tbody.innerHTML =
+    rows.map(
+      function(r,i){
+
+        const contribution =
+          total > 0
+          ? r.actual / total * 100
+          : 0;
+
+        return `
+          <tr>
+
+            <td>
+              #${i+1}
+            </td>
+
+            <td>
+              <b>${escapeHtml(r.name)}</b>
+            </td>
+
+            <td class="money">
+              ${money(r.actual)}
+            </td>
+
+            <td style="width:35%">
+
+              <div style="font-weight:700">
+                ${percent(contribution)}
+              </div>
+
+              <div class="progress">
+                <div
+                  class="progress-bar"
+                  style="width:${Math.min(contribution,100)}%"
+                ></div>
+              </div>
+
+            </td>
+
+          </tr>
+        `;
+
+      }
+    ).join("");
+
+}
+
 
 /* =====================================================
    TOP SALES
@@ -5198,5 +5475,6 @@ function showToast(message){
 }
 
 </script>
+
 </body>
 </html>
