@@ -1482,6 +1482,20 @@ html,body{
 .summary-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:14px}
 .summary-grid .card{padding:12px}
 @media(max-width:900px){.summary-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.summary-grid .metric-value{font-size:17px}.summary-grid .metric-label{font-size:9px}}
+
+@media (max-width: 600px){
+  /* DATA ERO: lebih kecil/rapat; Overview & Summary formatter tidak diubah */
+  .top-page table th,.top-page table td,
+  #topPageTable th,#topPageTable td,
+  #salesPerformanceTable th,#salesPerformanceTable td{
+    font-size:8px !important;
+    padding:5px 4px !important;
+    white-space:nowrap;
+  }
+  #topPageCards .top-card{padding:12px 8px !important;}
+  #topPageCards .top-amount{font-size:21px !important;}
+  #topPageCards .top-name{font-size:14px !important;}
+}
 </style>
 </head>
 
@@ -3715,27 +3729,27 @@ function renderSalesPerformance(){
           </td>
 
           <td class="money">
-            ${money(r.target)}
+            ${eroMoney(r.target)}
           </td>
 
           <td class="money">
-            ${money(r.actual)}
+            ${eroMoney(r.actual)}
           </td>
 
           <td class="percent-red">
-            ${percent(r.achievement)}
+            ${eroPercent(r.achievement)}
           </td>
 
           <td class="money">
-            ${money(r.estimation)}
+            ${eroMoney(r.estimation)}
           </td>
 
           <td class="percent-red">
-            ${percent(r.estPercent)}
+            ${eroPercent(r.estPercent)}
           </td>
 
           <td>
-            ${totalActual !== 0 ? percent(Number(r.actual||0) / totalActual * 100) : percent(0)}
+            ${totalActual !== 0 ? eroPercent(Number(r.actual||0) / totalActual * 100) : eroPercent(0)}
           </td>
 
           <td>
@@ -4106,15 +4120,15 @@ function renderStoreSalesBreakdown_(){
             <tbody>
               ${rows.map(r=>`<tr>
                 <td><span class="store-sales-name">${escapeHtml(r.s.name||'-')}</span></td>
-                <td class="money">${money(r.target)}</td>
-                <td class="money">${money(r.actual)}</td>
-                <td>${percent(r.ach)}</td>
-                <td class="money">${money(r.est)}</td>
-                <td>${percent(r.estPct)}</td>
-                <td class="money ${shortfallClass_(r.shortfall,r.target)}">${money(r.shortfall)}</td>
+                <td class="money">${eroMoney(r.target)}</td>
+                <td class="money">${eroMoney(r.actual)}</td>
+                <td>${eroPercent(r.ach)}</td>
+                <td class="money">${eroMoney(r.est)}</td>
+                <td>${eroPercent(r.estPct)}</td>
+                <td class="money ${shortfallClass_(r.shortfall,r.target)}">${eroMoney(r.shortfall)}</td>
               </tr>`).join('')}
               <tr class="store-breakdown-total">
-                <td>TOTAL</td><td class="money">${money(total.target)}</td><td class="money">${money(total.actual)}</td><td>${percent(totalAch)}</td><td class="money">${money(total.est)}</td><td>${percent(totalEstPct)}</td><td class="money ${shortfallClass_(total.shortfall,total.target)}">${money(total.shortfall)}</td>
+                <td>TOTAL</td><td class="money">${eroMoney(total.target)}</td><td class="money">${eroMoney(total.actual)}</td><td>${eroPercent(totalAch)}</td><td class="money">${eroMoney(total.est)}</td><td>${eroPercent(totalEstPct)}</td><td class="money ${shortfallClass_(total.shortfall,total.target)}">${eroMoney(total.shortfall)}</td>
               </tr>
             </tbody>
           </table>
@@ -4157,21 +4171,21 @@ function renderOperatorEROBySubcategory_(activeSales, days, dim){
           <div class="store-breakdown" style="margin-top:8px">
             <div class="store-breakdown-head">
               <div><div class="title">${sub}</div><div class="sub">Tertinggi: ${escapeHtml(top?.s?.name||'-')} • Terendah: ${escapeHtml(bottom?.s?.name||'-')}</div></div>
-              <div class="sub">Kurang total ${money(total.shortfall)}</div>
+              <div class="sub">Kurang total ${eroMoney(total.shortfall)}</div>
             </div>
             <div class="store-breakdown-wrap">
               <table><thead><tr><th>SALES NAME</th><th>TARGET</th><th>ACTUAL H-1</th><th>ACH%</th><th>ESTIMASI</th><th>EST%</th><th>KEKURANGAN</th></tr></thead>
               <tbody>
                 ${rows.map(r=>`<tr>
                   <td><span class="store-sales-name">${escapeHtml(r.s.name||'-')}</span></td>
-                  <td class="money">${money(r.target)}</td>
-                  <td class="money">${money(r.actual)}</td>
-                  <td>${percent(r.ach)}</td>
-                  <td class="money">${money(r.est)}</td>
-                  <td>${percent(r.estPct)}</td>
-                  <td class="money ${shortfallClass_(r.shortfall,r.target)}">${money(r.shortfall)}</td>
+                  <td class="money">${eroMoney(r.target)}</td>
+                  <td class="money">${eroMoney(r.actual)}</td>
+                  <td>${eroPercent(r.ach)}</td>
+                  <td class="money">${eroMoney(r.est)}</td>
+                  <td>${eroPercent(r.estPct)}</td>
+                  <td class="money ${shortfallClass_(r.shortfall,r.target)}">${eroMoney(r.shortfall)}</td>
                 </tr>`).join('')}
-                <tr class="store-breakdown-total"><td>TOTAL</td><td class="money">${money(total.target)}</td><td class="money">${money(total.actual)}</td><td>${percent(totalAch)}</td><td class="money">${money(total.est)}</td><td>${percent(total.target>0?total.est/total.target*100:0)}</td><td class="money ${shortfallClass_(total.shortfall,total.target)}">${money(total.shortfall)}</td></tr>
+                <tr class="store-breakdown-total"><td>TOTAL</td><td class="money">${eroMoney(total.target)}</td><td class="money">${eroMoney(total.actual)}</td><td>${eroPercent(totalAch)}</td><td class="money">${eroMoney(total.est)}</td><td>${eroPercent(total.target>0?total.est/total.target*100:0)}</td><td class="money ${shortfallClass_(total.shortfall,total.target)}">${eroMoney(total.shortfall)}</td></tr>
               </tbody></table>
             </div>
           </div>`;
@@ -4410,8 +4424,8 @@ function renderTopEROPage(){
       <div class="top-card rank${i+1}">
         <div class="medal">${medals[i]}</div>
         <div class="top-name">${escapeHtml(r.s.name||"-")}</div>
-        <div class="top-amount">${money(r.actual)}</div>
-        <div class="badge">Ach ${percent(r.ach)}</div>
+        <div class="top-amount">${eroMoney(r.actual)}</div>
+        <div class="badge">Ach ${eroPercent(r.ach)}</div>
       </div>`).join("") || '<div class="highlight-empty">Belum ada data untuk diranking.</div>';
   }
 
@@ -4421,11 +4435,11 @@ function renderTopEROPage(){
       <tr>
         <td>#${i+1}</td>
         <td><b>${escapeHtml(r.s.name||"-")}</b></td>
-        <td class="money">${money(r.target)}</td>
-        <td class="money">${money(r.actual)}</td>
-        <td>${percent(r.ach)}</td>
-        <td class="money">${money(r.est)}</td>
-        <td>${percent(r.estPct)}</td>
+        <td class="money">${eroMoney(r.target)}</td>
+        <td class="money">${eroMoney(r.actual)}</td>
+        <td>${eroPercent(r.ach)}</td>
+        <td class="money">${eroMoney(r.est)}</td>
+        <td>${eroPercent(r.estPct)}</td>
       </tr>`).join("") || '<tr><td colspan="7">Belum ada data.</td></tr>';
   }
   setText("topEroMonth", formatMonth(dashboardData.period || getCurrentPeriod()));
@@ -4477,15 +4491,15 @@ function renderTopSales(){
               </div>
 
               <div class="top-amount">
-                ${money(r.actual)}
+                ${eroMoney(r.actual)}
               </div>
 
               <div class="badge">
-                Ach ${percent(r.achievement)}
+                Ach ${eroPercent(r.achievement)}
               </div>
 
               <div style="font-size:12px;margin-top:8px;color:#64748b">
-                Est ${money(r.estimation)}
+                Est ${eroMoney(r.estimation)}
               </div>
 
             </div>
@@ -4525,23 +4539,23 @@ function renderTopSales(){
             </td>
 
             <td class="money">
-              ${money(r.target)}
+              ${eroMoney(r.target)}
             </td>
 
             <td class="money">
-              ${money(r.actual)}
+              ${eroMoney(r.actual)}
             </td>
 
             <td class="percent-red">
-              ${percent(r.achievement)}
+              ${eroPercent(r.achievement)}
             </td>
 
             <td class="money">
-              ${money(r.estimation)}
+              ${eroMoney(r.estimation)}
             </td>
 
             <td class="percent-red">
-              ${percent(r.estPercent)}
+              ${eroPercent(r.estPercent)}
             </td>
 
           </tr>
@@ -5823,6 +5837,26 @@ function compactNumber_(value){
   });
 }
 
+
+// Formatter khusus DATA ERO (bukan Overview/Summary):
+// nominal dibulatkan ke angka terdekat, persen ke bilangan bulat.
+function eroMoney(value){
+  const n = Number(value || 0);
+  if (!Number.isFinite(n)) return "Rp 0";
+  const abs = Math.abs(n);
+  const sign = n < 0 ? "-" : "";
+  const fmt = v => Math.round(v).toLocaleString("id-ID");
+  if (abs >= 1000000000) return "Rp " + sign + fmt(abs / 1000000000) + " M";
+  if (abs >= 1000000) return "Rp " + sign + fmt(abs / 1000000) + " jt";
+  if (abs >= 1000) return "Rp " + sign + fmt(abs / 1000) + " rb";
+  return "Rp " + sign + Math.round(abs).toLocaleString("id-ID");
+}
+
+function eroPercent(value){
+  const n = Number(value || 0);
+  const cls = n >= 100 ? "percent-green" : n >= 90 ? "percent-orange" : "percent-red";
+  return '<span class="' + cls + '">' + Math.round(n) + "%</span>";
+}
 
 // Formatter khusus OVERVIEW: maksimal 1 angka desimal.
 // Menu lain tetap menggunakan money() yang sudah ada.
