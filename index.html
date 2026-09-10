@@ -3553,8 +3553,8 @@ function updateStoreTypeOptions(){
   const c=cat.value;
   let opts=[{v:"ALL",t:"Semua"}];
   if(c==="Device") opts.push(
-    {v:"A Series",t:"A Series"},{v:"S Series",t:"S Series"},
-    {v:"Z Series",t:"Z Series"},{v:"Tab Series",t:"Tab Series"}
+    {v:"Series A",t:"Series A"},{v:"Series S",t:"Series S"},
+    {v:"Series Z",t:"Series Z"},{v:"Series Tab",t:"Series Tab"}
   );
   if(c==="Operator") opts.push(
     {v:"Indosat",t:"Indosat"},{v:"XL",t:"XL"},{v:"Telkomsel",t:"Telkomsel"}
@@ -3564,10 +3564,10 @@ function updateStoreTypeOptions(){
 
 function normalizeSeriesClient_(tx){
   const raw=String(tx.subcategory||tx.product||"").toLowerCase();
-  if(raw.includes("a series")||/^a\d/.test(raw)||raw.includes("galaxy a"))return "A Series";
-  if(raw.includes("s series")||/^s\d/.test(raw)||raw.includes("galaxy s"))return "S Series";
-  if(raw.includes("z series")||/^z\w/.test(raw)||raw.includes("fold")||raw.includes("flip"))return "Z Series";
-  if(raw.includes("tab"))return "Tab Series";
+  if(raw.includes("series a")||raw.includes("a series")||/^a\d/.test(raw)||raw.includes("galaxy a"))return "Series A";
+  if(raw.includes("series s")||raw.includes("s series")||/^s\d/.test(raw)||raw.includes("galaxy s"))return "Series S";
+  if(raw.includes("series z")||raw.includes("z series")||/^z\w/.test(raw)||raw.includes("fold")||raw.includes("flip"))return "Series Z";
+  if(raw.includes("series tab")||raw.includes("tab series")||raw.includes("tab"))return "Series Tab";
   return String(tx.subcategory||"");
 }
 
