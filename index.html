@@ -3432,11 +3432,7 @@ function renderOverview(){
   );
 
   renderDeviceSeriesFront_();
-renderDailyChaseFront_("accDailyChase", d.categories?.Accessories);
-renderDailyChaseFront_("operatorDailyChase", d.categories?.Operator);
-
-
-  const op =
+const op =
     d.operators || {};
 
   const renderOperator = (key, prefix) => {
@@ -3466,7 +3462,6 @@ renderDailyChaseFront_("operatorDailyChase", d.categories?.Operator);
   renderOperator("Indosat", "indosat");
   renderOperator("XL", "xl");
   renderOperator("Telkomsel", "telkomsel");
-renderOperatorDailyFront_("XL");
 renderPerformanceHighlight();
 }
 
