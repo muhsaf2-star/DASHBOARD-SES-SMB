@@ -1253,6 +1253,134 @@ html,body{
   }
 }
 
+
+/* ================= MOBILE TABLE COMPACT - ALL MENUS =================
+   Tetap mempertahankan bentuk tabel asli. Hanya lebar kolom, padding,
+   dan ukuran teks yang dibuat konsisten agar seluruh tabel muat di HP.
+*/
+@media(max-width:700px){
+
+  .table-card{
+    width:100%;
+    max-width:100%;
+    overflow:hidden !important;
+  }
+
+  .table-card table,
+  .target-table,
+  .store-breakdown table,
+  .store-week-table table{
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    table-layout:fixed !important;
+    border-collapse:collapse;
+  }
+
+  .table-card th,
+  .table-card td,
+  .target-table th,
+  .target-table td,
+  .store-breakdown th,
+  .store-breakdown td,
+  .store-week-table th,
+  .store-week-table td{
+    padding:6px 4px !important;
+    font-size:9.5px !important;
+    line-height:1.15 !important;
+    white-space:nowrap !important;
+    overflow:hidden;
+    text-overflow:clip;
+    vertical-align:middle;
+  }
+
+  /* Kolom pertama lebih lebar untuk nama sales / label */
+  .table-card th:first-child,
+  .table-card td:first-child,
+  .target-table th:first-child,
+  .target-table td:first-child,
+  .store-breakdown th:first-child,
+  .store-breakdown td:first-child,
+  .store-week-table th:first-child,
+  .store-week-table td:first-child{
+    width:23% !important;
+    text-align:left;
+  }
+
+  /* Tabel 7 kolom: SALES NAME | TARGET | ACTUAL | ACH | EST | EST% | KEKURANGAN */
+  .store-breakdown th:nth-child(2),
+  .store-breakdown td:nth-child(2){
+    width:16% !important;
+  }
+  .store-breakdown th:nth-child(3),
+  .store-breakdown td:nth-child(3){
+    width:13% !important;
+  }
+  .store-breakdown th:nth-child(4),
+  .store-breakdown td:nth-child(4){
+    width:9% !important;
+  }
+  .store-breakdown th:nth-child(5),
+  .store-breakdown td:nth-child(5){
+    width:13% !important;
+  }
+  .store-breakdown th:nth-child(6),
+  .store-breakdown td:nth-child(6){
+    width:9% !important;
+  }
+  .store-breakdown th:nth-child(7),
+  .store-breakdown td:nth-child(7){
+    width:17% !important;
+  }
+
+  .store-breakdown th,
+  .store-breakdown td{
+    text-align:right;
+  }
+
+  .store-breakdown th:first-child,
+  .store-breakdown td:first-child{
+    text-align:left;
+  }
+
+  /* Nama panjang tetap satu baris dan dipotong rapi, bukan membuat tabel melebar */
+  .store-breakdown .store-sales-name,
+  .table-card td:first-child{
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  /* Semua nominal compact tetap satu baris: Rp 679,2 jt / Rp 5,28 M */
+  .money,
+  .money-compact,
+  .percent-red,
+  .percent-green,
+  .percent-orange{
+    white-space:nowrap !important;
+  }
+
+  /* Input Target Management tetap memenuhi sel */
+  .target-table input{
+    width:100% !important;
+    min-width:0 !important;
+    padding:5px 3px !important;
+    font-size:9px !important;
+  }
+
+  /* Jarak antar tabel/card konsisten */
+  .table-card,
+  .store-breakdown,
+  .store-week-table{
+    margin-bottom:8px !important;
+  }
+
+  /* Sedikit lebih longgar dari V2 agar tetap nyaman dibaca */
+  .table-card + .table-card,
+  .store-breakdown + .store-breakdown{
+    margin-top:6px !important;
+  }
+}
+
 </style>
 </head>
 
