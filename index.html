@@ -1,0 +1,4716 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>Sales Performance Dashboard</title>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+:root{
+  --blue:#087bea;
+  --blue-dark:#06213d;
+  --blue-soft:#eaf4ff;
+  --bg:#f5f7fa;
+  --border:#d9e1e8;
+  --text:#172033;
+  --muted:#64748b;
+  --green:#16c784;
+  --red:#ff4d5a;
+  --orange:#ff8a00;
+}
+
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+
+button,
+input,
+select{
+  font-family:inherit;
+}
+
+button{
+  cursor:pointer;
+}
+
+.app{
+  display:flex;
+  min-height:100vh;
+}
+
+/* ================= SIDEBAR ================= */
+
+.sidebar{
+  width:272px;
+  background:var(--blue-dark);
+  color:white;
+  position:fixed;
+  left:0;
+  top:0;
+  bottom:0;
+  z-index:100;
+  display:flex;
+  flex-direction:column;
+}
+
+.brand{
+  height:92px;
+  padding:25px 24px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.brand-icon{
+  color:#1685ff;
+  font-size:30px;
+}
+
+.brand-title{
+  font-size:15px;
+  font-weight:700;
+}
+
+.brand-sub{
+  font-size:13px;
+  color:#8494a8;
+  margin-top:3px;
+}
+
+.menu{
+  padding:16px 12px;
+  flex:1;
+}
+
+.menu button{
+  width:100%;
+  border:0;
+  background:transparent;
+  color:#edf4fc;
+  text-align:left;
+  padding:13px 14px;
+  margin-bottom:3px;
+  border-radius:8px;
+  font-size:15px;
+  font-weight:600;
+  display:flex;
+  align-items:center;
+  gap:13px;
+}
+
+.menu button:hover{
+  background:rgba(255,255,255,.07);
+}
+
+.menu button.active{
+  background:#063b75;
+  color:#1685ff;
+}
+
+.menu-icon{
+  width:20px;
+  text-align:center;
+  font-size:18px;
+}
+
+.sidebar-footer{
+  padding:18px;
+  border-top:1px solid rgba(255,255,255,.08);
+  color:#71849a;
+  font-size:12px;
+}
+
+/* ================= CONTENT ================= */
+
+.main{
+  margin-left:272px;
+  width:calc(100% - 272px);
+  min-height:100vh;
+}
+
+.topbar{
+  height:70px;
+  background:white;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
+  padding:0 28px;
+  gap:12px;
+}
+
+.user-badge{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  color:#536275;
+  font-size:14px;
+}
+
+.user-circle{
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  background:var(--blue);
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:bold;
+}
+
+.logout{
+  border:1px solid var(--border);
+  background:white;
+  border-radius:7px;
+  padding:8px 13px;
+  color:#536275;
+}
+
+.content{
+  padding:25px 28px 50px;
+}
+
+.page-title{
+  font-size:28px;
+  font-weight:700;
+  margin:0;
+}
+
+.page-subtitle{
+  color:var(--muted);
+  margin-top:5px;
+  font-size:15px;
+}
+
+.page-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  margin-bottom:20px;
+}
+
+.month-badge{
+  background:#eaf0f6;
+  color:#596a7d;
+  padding:9px 15px;
+  border-radius:7px;
+  font-size:14px;
+}
+
+/* ================= FILTER ================= */
+
+.filters{
+  display:flex;
+  gap:7px;
+  margin-bottom:14px;
+  flex-wrap:wrap;
+}
+
+.filter-btn{
+  border:0;
+  background:#e7edf3;
+  color:#59697b;
+  padding:9px 15px;
+  border-radius:18px;
+  font-size:13px;
+  font-weight:600;
+}
+
+.filter-btn.active{
+  background:var(--blue);
+  color:white;
+}
+
+.select{
+  height:38px;
+  border:1px solid var(--border);
+  background:white;
+  border-radius:7px;
+  padding:0 12px;
+  color:#536275;
+}
+
+/* ================= CARDS ================= */
+
+.card{
+  background:white;
+  border:1px solid var(--border);
+  border-radius:10px;
+  box-shadow:0 1px 2px rgba(0,0,0,.02);
+}
+
+.overview-main{
+  padding:18px;
+  border-top:4px solid var(--blue);
+  margin-bottom:14px;
+}
+
+.card-title{
+  font-size:15px;
+  font-weight:700;
+  color:#5b6b7c;
+}
+
+.metrics{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:30px;
+  margin-top:20px;
+}
+
+.metric-label{
+  color:#657587;
+  font-size:13px;
+  margin-bottom:6px;
+}
+
+.metric-value{
+  font-size:21px;
+  font-weight:700;
+}
+
+.metric-value.blue{
+  color:#087bea;
+}
+
+.metric-value.red{
+  color:#ff3344;
+}
+
+.progress{
+  height:8px;
+  background:#e8eef4;
+  border-radius:10px;
+  overflow:hidden;
+  margin-top:15px;
+}
+
+.progress-bar{
+  height:100%;
+  background:#4a9df7;
+  border-radius:10px;
+}
+
+.category-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+}
+
+.category-card{
+  padding:16px;
+  min-height:250px;
+  border-top:4px solid var(--blue);
+}
+
+.category-card:nth-child(2){
+  border-top-color:#884dff;
+}
+
+.category-card:nth-child(3){
+  border-top-color:#12b8cf;
+}
+
+.category-card:nth-child(4){
+  border-top-color:#ff7600;
+}
+
+.category-name{
+  font-weight:700;
+  color:#5b6b7c;
+  margin-bottom:20px;
+}
+
+.two-col{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+.operator-box{
+  background:#f0f4f7;
+  border-radius:7px;
+  padding:11px;
+  margin-top:8px;
+}
+
+.operator-head{
+  display:flex;
+  justify-content:space-between;
+  font-size:12px;
+  font-weight:700;
+}
+
+.operator-value{
+  font-size:13px;
+  margin-top:6px;
+}
+
+/* ================= TABLE ================= */
+
+.table-card{
+  background:white;
+  border:1px solid var(--border);
+  border-radius:10px;
+  overflow:auto;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:850px;
+}
+
+th{
+  background:#f5f8fa;
+  color:#5a6b7c;
+  text-align:left;
+  font-size:12px;
+  padding:12px;
+  border-bottom:1px solid var(--border);
+}
+
+td{
+  padding:12px;
+  border-bottom:1px solid #e8edf1;
+  font-size:13px;
+}
+
+tr:last-child td{
+  border-bottom:0;
+}
+
+.money{
+  font-weight:700;
+}
+
+.percent-red{
+  color:#ff3344;
+  font-weight:700;
+}
+
+.percent-green{
+  color:#0caf75;
+  font-weight:700;
+}
+
+/* ================= BUTTON ================= */
+
+.btn{
+  border:0;
+  border-radius:7px;
+  padding:9px 15px;
+  font-weight:600;
+}
+
+.btn-primary{
+  background:var(--blue);
+  color:white;
+}
+
+.btn-danger{
+  background:#fff0f1;
+  color:#e62939;
+}
+
+.btn-secondary{
+  background:#e9eef3;
+  color:#536275;
+}
+
+.actions{
+  display:flex;
+  gap:7px;
+}
+
+/* ================= FORM ================= */
+
+.form-card{
+  background:white;
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:20px;
+  margin-bottom:15px;
+}
+
+.form-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
+}
+
+.form-group{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+.form-group label{
+  font-size:12px;
+  font-weight:700;
+  color:#596a7b;
+}
+
+.form-group input,
+.form-group select{
+  height:40px;
+  border:1px solid var(--border);
+  border-radius:6px;
+  padding:0 11px;
+  outline:none;
+}
+
+.form-group input:focus,
+.form-group select:focus{
+  border-color:var(--blue);
+}
+
+/* ================= TARGET ================= */
+
+.target-wrapper{
+  overflow:auto;
+}
+
+.target-table input{
+  width:120px;
+  height:34px;
+  border:1px solid #d7e0e8;
+  border-radius:6px;
+  text-align:center;
+  font-size:13px;
+}
+
+.target-table input:focus{
+  border-color:var(--blue);
+  outline:none;
+}
+
+/* ================= TOP SALES ================= */
+
+.top-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
+  margin-bottom:16px;
+}
+
+.top-card{
+  padding:24px;
+  text-align:center;
+  border-radius:10px;
+  background:white;
+  border:1px solid var(--border);
+}
+
+.top-card.rank1{
+  background:#fffbea;
+  border-color:#f0d567;
+}
+
+.top-card.rank2{
+  background:#f8fafc;
+}
+
+.top-card.rank3{
+  background:#fff8f0;
+  border-color:#f1c69a;
+}
+
+.medal{
+  font-size:28px;
+}
+
+.top-name{
+  font-size:16px;
+  font-weight:700;
+  margin-top:10px;
+}
+
+.top-amount{
+  font-size:25px;
+  font-weight:700;
+  color:var(--blue);
+  margin-top:12px;
+}
+
+.badge{
+  display:inline-block;
+  margin-top:8px;
+  padding:5px 10px;
+  border-radius:15px;
+  background:#ffe1e3;
+  color:#ff3344;
+  font-size:12px;
+  font-weight:700;
+}
+
+/* ================= IMPORT ================= */
+
+.upload-box{
+  background:white;
+  border:2px dashed #cdd8e2;
+  border-radius:12px;
+  padding:60px 20px;
+  text-align:center;
+}
+
+.upload-icon{
+  font-size:45px;
+  color:#65a8ef;
+  margin-bottom:10px;
+}
+
+.upload-title{
+  font-size:19px;
+  font-weight:700;
+}
+
+.upload-sub{
+  color:#667789;
+  margin:8px 0 20px;
+}
+
+/* ================= LOGIN ================= */
+
+.login-screen{
+  position:fixed;
+  inset:0;
+  background:#f4f7fb;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
+}
+
+.login-box{
+  width:390px;
+  background:white;
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:32px;
+  box-shadow:0 10px 40px rgba(0,0,0,.08);
+}
+
+.login-logo{
+  text-align:center;
+  font-size:35px;
+  color:var(--blue);
+}
+
+.login-title{
+  text-align:center;
+  font-size:23px;
+  font-weight:700;
+  margin-top:10px;
+}
+
+.login-sub{
+  text-align:center;
+  color:var(--muted);
+  font-size:13px;
+  margin:7px 0 25px;
+}
+
+.login-box input{
+  width:100%;
+  height:44px;
+  border:1px solid var(--border);
+  border-radius:7px;
+  padding:0 12px;
+  margin-bottom:12px;
+}
+
+.login-btn{
+  width:100%;
+  height:44px;
+  border:0;
+  border-radius:7px;
+  background:var(--blue);
+  color:white;
+  font-weight:700;
+}
+
+.login-error{
+  color:#e62f40;
+  text-align:center;
+  font-size:13px;
+  margin-top:10px;
+}
+
+/* ================= MODAL ================= */
+
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.4);
+  z-index:500;
+  display:none;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
+}
+
+.modal.show{
+  display:flex;
+}
+
+.modal-box{
+  background:white;
+  width:500px;
+  max-width:100%;
+  border-radius:12px;
+  padding:22px;
+  max-height:90vh;
+  overflow:auto;
+}
+
+.modal-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:18px;
+}
+
+.modal-head h3{
+  margin:0;
+}
+
+.close{
+  border:0;
+  background:transparent;
+  font-size:22px;
+}
+
+/* ================= TOAST ================= */
+
+.toast{
+  position:fixed;
+  right:25px;
+  bottom:25px;
+  background:#172033;
+  color:white;
+  padding:13px 18px;
+  border-radius:7px;
+  display:none;
+  z-index:99999;
+  font-size:13px;
+}
+
+.toast.show{
+  display:block;
+}
+
+/* ================= MOBILE ================= */
+
+.mobile-menu{
+  display:none;
+}
+
+@media(max-width:900px){
+
+  .sidebar{
+    transform:translateX(-100%);
+    transition:.2s;
+  }
+
+  .sidebar.open{
+    transform:translateX(0);
+  }
+
+  .main{
+    margin-left:0;
+    width:100%;
+  }
+
+  .mobile-menu{
+    display:block;
+    border:0;
+    background:white;
+    font-size:22px;
+  }
+
+  .topbar{
+    justify-content:space-between;
+    padding:0 15px;
+  }
+
+  .content{
+    padding:18px 14px 40px;
+  }
+
+  .page-title{
+    font-size:22px;
+  }
+
+  .metrics{
+    grid-template-columns:repeat(2,1fr);
+    gap:18px;
+  }
+
+  .category-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .top-grid{
+    grid-template-columns:1fr;
+  }
+
+  .form-grid{
+    grid-template-columns:1fr;
+  }
+
+}
+
+@media(max-width:600px){
+
+  .category-grid{
+    grid-template-columns:1fr;
+  }
+
+  .page-head{
+    align-items:center;
+  }
+
+  .user-badge span{
+    display:none;
+  }
+
+  .overview-main{
+    padding:14px;
+  }
+
+  .metrics{
+    gap:14px;
+  }
+
+  .metric-value{
+    font-size:18px;
+  }
+
+}
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+
+<div id="loginScreen" class="login-screen">
+
+  <div class="login-box">
+
+    <div class="login-logo">↗</div>
+
+    <div class="login-title">
+      Sales Performance
+    </div>
+
+    <div class="login-sub">
+      Dashboard SES SMB
+    </div>
+
+    <input
+      id="loginUsername"
+      placeholder="Username"
+      autocomplete="username"
+    >
+
+    <input
+      id="loginPassword"
+      type="password"
+      placeholder="Password"
+      autocomplete="current-password"
+    >
+
+    <button
+      class="login-btn"
+      onclick="login()"
+    >
+      Login
+    </button>
+
+    <div id="loginError" class="login-error"></div>
+
+  </div>
+
+</div>
+
+
+<!-- APPLICATION -->
+
+<div id="app" class="app" style="display:none">
+
+  <!-- SIDEBAR -->
+
+  <aside id="sidebar" class="sidebar">
+
+    <div class="brand">
+
+      <div class="brand-icon">↗</div>
+
+      <div>
+        <div class="brand-title">Sales</div>
+        <div class="brand-sub">Performance</div>
+      </div>
+
+    </div>
+
+    <div class="menu">
+
+      <button
+        id="menu-overview"
+        class="active"
+        onclick="showPage('overview')"
+      >
+        <span class="menu-icon">▦</span>
+        Overview
+      </button>
+
+      <button
+        id="menu-store"
+        onclick="showPage('store')"
+      >
+        <span class="menu-icon">♧</span>
+        Performa Store
+      </button>
+
+      <button
+        id="menu-sales"
+        onclick="showPage('sales')"
+      >
+        <span class="menu-icon">♧</span>
+        Performa Sales
+      </button>
+
+      <button
+        id="menu-contribution"
+        onclick="showPage('contribution')"
+      >
+        <span class="menu-icon">◔</span>
+        Kontribusi Sales
+      </button>
+
+      <button
+        id="menu-top"
+        onclick="showPage('top')"
+      >
+        <span class="menu-icon">♜</span>
+        Top Sales
+      </button>
+
+      <button
+        id="menu-target"
+        onclick="showPage('target')"
+      >
+        <span class="menu-icon">◎</span>
+        Target Management
+      </button>
+
+      <button
+        id="menu-input"
+        onclick="showPage('input')"
+      >
+        <span class="menu-icon">⊕</span>
+        Input Data
+      </button>
+
+      <button
+        id="menu-import"
+        onclick="showPage('import')"
+      >
+        <span class="menu-icon">⇧</span>
+        Import Excel
+      </button>
+
+      <button
+        id="menu-manage"
+        onclick="showPage('manage')"
+      >
+        <span class="menu-icon">♙</span>
+        Manage Sales
+      </button>
+
+    </div>
+
+    <div class="sidebar-footer">
+      v1.0.0 • Sales Dashboard
+    </div>
+
+  </aside>
+
+
+  <!-- MAIN -->
+
+  <main class="main">
+
+    <header class="topbar">
+
+      <button
+        class="mobile-menu"
+        onclick="toggleSidebar()"
+      >
+        ☰
+      </button>
+
+      <div class="user-badge">
+
+        <div class="user-circle" id="userInitial">
+          A
+        </div>
+
+        <span id="userName">
+          Administrator
+        </span>
+
+        <button
+          class="logout"
+          onclick="logout()"
+        >
+          Logout
+        </button>
+
+      </div>
+
+    </header>
+
+
+    <section class="content">
+
+      <!-- ================= OVERVIEW ================= -->
+
+      <div id="page-overview" class="page">
+
+        <div class="page-head">
+
+          <div>
+            <h1 class="page-title">
+              Overview
+            </h1>
+
+            <div class="page-subtitle">
+              Ringkasan performa toko
+            </div>
+          </div>
+
+          <div class="month-badge">
+            📅 <span id="overviewMonth"></span>
+          </div>
+
+        </div>
+
+
+        <div class="filters">
+
+          <button
+            class="filter-btn"
+            onclick="setPeriodMode('day',this)"
+          >
+            Hari Ini
+          </button>
+
+          <button
+            class="filter-btn"
+            onclick="setPeriodMode('week',this)"
+          >
+            Minggu Ini
+          </button>
+
+          <button
+            class="filter-btn active"
+            onclick="setPeriodMode('month',this)"
+          >
+            Bulan Ini
+          </button>
+
+          <button
+            class="filter-btn"
+            onclick="setPeriodMode('year',this)"
+          >
+            Tahun Ini
+          </button>
+
+          <button
+            class="filter-btn"
+            onclick="setPeriodMode('custom',this)"
+          >
+            Custom
+          </button>
+
+        </div>
+
+
+        <div class="card overview-main">
+
+          <div class="card-title">
+            ↗ &nbsp; SALES ALL
+
+            <span
+              id="overviewAch"
+              style="float:right;background:#ffe1e3;color:#ff3344;padding:6px 10px;border-radius:15px;font-size:12px"
+            >
+              0.0%
+            </span>
+          </div>
+
+
+          <div class="metrics">
+
+            <div>
+              <div class="metric-label">
+                Actual
+              </div>
+
+              <div
+                class="metric-value blue"
+                id="overviewActual"
+              >
+                Rp 0
+              </div>
+            </div>
+
+            <div>
+              <div class="metric-label">
+                Target
+              </div>
+
+              <div
+                class="metric-value"
+                id="overviewTarget"
+              >
+                Rp 0
+              </div>
+            </div>
+
+            <div>
+              <div class="metric-label">
+                Estimasi
+              </div>
+
+              <div
+                class="metric-value red"
+                id="overviewEst"
+              >
+                Rp 0
+              </div>
+
+              <div
+                id="overviewEstPercent"
+                style="font-size:12px;color:#ff3344"
+              >
+                0.0%
+              </div>
+            </div>
+
+            <div>
+              <div class="metric-label">
+                Kekurangan
+              </div>
+
+              <div
+                class="metric-value"
+                id="overviewShort"
+              >
+                Rp 0
+              </div>
+            </div>
+
+          </div>
+
+
+          <div class="progress">
+
+            <div
+              id="overviewProgress"
+              class="progress-bar"
+              style="width:0%"
+            ></div>
+
+          </div>
+
+        </div>
+
+
+        <div class="category-grid">
+
+          <div class="card category-card">
+
+            <div class="category-name">
+              DEVICE
+            </div>
+
+            <div class="two-col">
+
+              <div>
+                <div class="metric-label">Actual</div>
+                <div class="metric-value" id="deviceActual">
+                  Rp 0
+                </div>
+              </div>
+
+              <div>
+                <div class="metric-label">Target</div>
+                <div class="metric-value" id="deviceTarget">
+                  Rp 0
+                </div>
+              </div>
+
+            </div>
+
+            <br>
+
+            <div class="two-col">
+
+              <div>
+                <div class="metric-label">Achievement</div>
+                <div class="metric-value red" id="deviceAch">
+                  0.0%
+                </div>
+              </div>
+
+              <div>
+                <div class="metric-label">Estimasi</div>
+                <div class="metric-value" id="deviceEst">
+                  Rp 0
+                </div>
+              </div>
+
+            </div>
+
+            <hr>
+
+            <div class="metric-label">
+              Kekurangan
+            </div>
+
+            <div
+              class="metric-value red"
+              id="deviceShort"
+            >
+              Rp 0
+            </div>
+
+          </div>
+
+
+          <div class="card category-card">
+
+            <div class="category-name">
+              ACCESSORIES
+            </div>
+
+            <div class="two-col">
+
+              <div>
+                <div class="metric-label">Actual</div>
+                <div class="metric-value" id="accActual">
+                  Rp 0
+                </div>
+              </div>
+
+              <div>
+                <div class="metric-label">Target</div>
+                <div class="metric-value" id="accTarget">
+                  Rp 0
+                </div>
+              </div>
+
+            </div>
+
+            <br>
+
+            <div class="two-col">
+
+              <div>
+                <div class="metric-label">Achievement</div>
+                <div class="metric-value red" id="accAch">
+                  0.0%
+                </div>
+              </div>
+
+              <div>
+                <div class="metric-label">Estimasi</div>
+                <div class="metric-value" id="accEst">
+                  Rp 0
+                </div>
+              </div>
+
+            </div>
+
+            <hr>
+
+            <div class="metric-label">
+              Kekurangan
+            </div>
+
+            <div
+              class="metric-value red"
+              id="accShort"
+            >
+              Rp 0
+            </div>
+
+          </div>
+
+
+          <div class="card category-card">
+
+            <div class="category-name">
+              REPAIR CONTRACT
+            </div>
+
+            <div class="two-col">
+
+              <div>
+                <div class="metric-label">Actual</div>
+                <div class="metric-value" id="repairActual">
+                  Rp 0
+                </div>
+              </div>
+
+              <div>
+                <div class="metric-label">Target</div>
+                <div class="metric-value" id="repairTarget">
+                  Rp 0
+                </div>
+              </div>
+
+            </div>
+
+            <br>
+
+            <div class="two-col">
+
+              <div>
+                <div class="metric-label">Achievement</div>
+                <div class="metric-value red" id="repairAch">
+                  0.0%
+                </div>
+              </div>
+
+              <div>
+                <div class="metric-label">Estimasi</div>
+                <div class="metric-value" id="repairEst">
+                  Rp 0
+                </div>
+              </div>
+
+            </div>
+
+            <hr>
+
+            <div class="metric-label">
+              Kekurangan
+            </div>
+
+            <div
+              class="metric-value red"
+              id="repairShort"
+            >
+              Rp 0
+            </div>
+
+          </div>
+
+
+          <div class="card category-card">
+
+            <div class="category-name">
+              OPERATOR
+            </div>
+
+            <div class="two-col">
+
+              <div>
+                <div class="metric-label">Actual</div>
+                <div class="metric-value" id="operatorActual">
+                  Rp 0
+                </div>
+              </div>
+
+              <div>
+                <div class="metric-label">Target</div>
+                <div class="metric-value" id="operatorTarget">
+                  Rp 0
+                </div>
+              </div>
+
+            </div>
+
+            <br>
+
+            <div class="two-col">
+
+              <div>
+                <div class="metric-label">Achievement</div>
+                <div class="metric-value red" id="operatorAch">
+                  0.0%
+                </div>
+              </div>
+
+              <div>
+                <div class="metric-label">Estimasi</div>
+                <div class="metric-value" id="operatorEst">
+                  Rp 0
+                </div>
+              </div>
+
+            </div>
+
+            <hr>
+
+            <div class="operator-box">
+
+              <div class="operator-head">
+                <span>Indosat</span>
+                <span id="indosatAch">0.0%</span>
+              </div>
+
+              <div
+                class="operator-value"
+                id="indosatActual"
+              >
+                Actual Rp 0
+              </div>
+
+            </div>
+
+            <div class="operator-box">
+
+              <div class="operator-head">
+                <span>XL</span>
+                <span id="xlAch">0.0%</span>
+              </div>
+
+              <div
+                class="operator-value"
+                id="xlActual"
+              >
+                Actual Rp 0
+              </div>
+
+            </div>
+
+            <div class="operator-box">
+
+              <div class="operator-head">
+                <span>Telkomsel</span>
+                <span id="telkomselAch">0.0%</span>
+              </div>
+
+              <div
+                class="operator-value"
+                id="telkomselActual"
+              >
+                Actual Rp 0
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- ================= STORE ================= -->
+
+      <div id="page-store" class="page" style="display:none">
+
+        <div class="page-head">
+
+          <div>
+            <h1 class="page-title">
+              Performa Store
+            </h1>
+
+            <div class="page-subtitle">
+              Perbandingan performa toko
+            </div>
+          </div>
+
+          <div class="month-badge">
+            📅 <span id="storeMonth"></span>
+          </div>
+
+        </div>
+
+        <div class="filters">
+
+          <button class="filter-btn active">
+            Bulan Ini
+          </button>
+
+          <select
+            class="select"
+            id="storeCategory"
+            onchange="renderStore()"
+          >
+            <option value="ALL">
+              Sales All
+            </option>
+
+            <option value="Device">
+              Device
+            </option>
+
+            <option value="Accessories">
+              Accessories
+            </option>
+
+            <option value="Repair Contract">
+              Repair Contract
+            </option>
+
+            <option value="Operator">
+              Operator
+            </option>
+
+          </select>
+
+        </div>
+
+        <div class="table-card">
+
+          <table>
+
+            <thead>
+
+              <tr>
+                <th>PERIODE</th>
+                <th>ACTUAL</th>
+                <th>TARGET</th>
+                <th>ACH%</th>
+                <th>ESTIMASI</th>
+                <th>EST%</th>
+              </tr>
+
+            </thead>
+
+            <tbody id="storeTable"></tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+
+      <!-- ================= SALES ================= -->
+
+      <div id="page-sales" class="page" style="display:none">
+
+        <div class="page-head">
+
+          <div>
+            <h1 class="page-title">
+              Performa Sales
+            </h1>
+
+            <div class="page-subtitle">
+              Perbandingan performa setiap sales
+            </div>
+          </div>
+
+          <div class="month-badge">
+            📅 <span id="salesMonth"></span>
+          </div>
+
+        </div>
+
+        <div class="filters">
+
+          <button class="filter-btn active">
+            Per Sales
+          </button>
+
+          <select
+            class="select"
+            id="salesCategory"
+            onchange="renderSalesPerformance()"
+          >
+
+            <option value="ALL">
+              Sales All
+            </option>
+
+            <option value="Device">
+              Device
+            </option>
+
+            <option value="Accessories">
+              Accessories
+            </option>
+
+            <option value="Repair Contract">
+              Repair Contract
+            </option>
+
+            <option value="Operator">
+              Operator
+            </option>
+
+          </select>
+
+        </div>
+
+        <div class="card" style="padding:12px;margin-bottom:12px">
+
+          <b>
+            Time Gone:
+          </b>
+
+          <span id="salesTimeGone">
+            0%
+          </span>
+
+          <div class="progress">
+            <div
+              id="salesTimeProgress"
+              class="progress-bar"
+              style="width:0%"
+            ></div>
+          </div>
+
+        </div>
+
+        <div class="table-card">
+
+          <table>
+
+            <thead>
+
+              <tr>
+                <th>SALES</th>
+                <th>TARGET</th>
+                <th>ACTUAL</th>
+                <th>ACH%</th>
+                <th>ESTIMASI</th>
+                <th>EST%</th>
+                <th>MELESET</th>
+              </tr>
+
+            </thead>
+
+            <tbody id="salesPerformanceTable"></tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+
+      <!-- ================= CONTRIBUTION ================= -->
+
+      <div id="page-contribution" class="page" style="display:none">
+
+        <div class="page-head">
+
+          <div>
+            <h1 class="page-title">
+              Kontribusi Sales
+            </h1>
+
+            <div class="page-subtitle">
+              Kontribusi masing-masing sales terhadap omzet
+            </div>
+          </div>
+
+        </div>
+
+        <div class="table-card">
+
+          <table>
+
+            <thead>
+
+              <tr>
+                <th>RANK</th>
+                <th>SALES</th>
+                <th>ACTUAL</th>
+                <th>KONTRIBUSI</th>
+              </tr>
+
+            </thead>
+
+            <tbody id="contributionTable"></tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+
+      <!-- ================= TOP SALES ================= -->
+
+      <div id="page-top" class="page" style="display:none">
+
+        <div class="page-head">
+
+          <div>
+            <h1 class="page-title">
+              Top Sales
+            </h1>
+
+            <div class="page-subtitle">
+              Ranking sales terbaik
+            </div>
+          </div>
+
+        </div>
+
+        <div class="top-grid" id="topCards"></div>
+
+        <div class="table-card">
+
+          <table>
+
+            <thead>
+
+              <tr>
+                <th>RANK</th>
+                <th>SALES</th>
+                <th>TARGET</th>
+                <th>ACTUAL</th>
+                <th>ACH%</th>
+                <th>ESTIMASI</th>
+                <th>EST%</th>
+              </tr>
+
+            </thead>
+
+            <tbody id="topTable"></tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+
+      <!-- ================= TARGET ================= -->
+
+      <div id="page-target" class="page" style="display:none">
+
+        <div class="page-head">
+
+          <div>
+            <h1 class="page-title">
+              Target Management
+            </h1>
+
+            <div class="page-subtitle">
+              Atur target sales per periode
+            </div>
+          </div>
+
+          <div class="month-badge">
+            📅 <span id="targetMonth"></span>
+          </div>
+
+        </div>
+
+        <div class="card" style="padding:18px;margin-bottom:14px">
+
+          <div class="card-title">
+            TOTAL TARGET STORE
+          </div>
+
+          <div class="metrics">
+
+            <div>
+              <div class="metric-label">Target All</div>
+              <div class="metric-value" id="targetTotalAll">
+                Rp 0
+              </div>
+            </div>
+
+            <div>
+              <div class="metric-label">Device</div>
+              <div class="metric-value" id="targetTotalDevice">
+                Rp 0
+              </div>
+            </div>
+
+            <div>
+              <div class="metric-label">Accessories</div>
+              <div class="metric-value" id="targetTotalAcc">
+                Rp 0
+              </div>
+            </div>
+
+            <div>
+              <div class="metric-label">Operator</div>
+              <div class="metric-value" id="targetTotalOperator">
+                Rp 0
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="form-card">
+
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px">
+
+            <b>
+              Target Per Sales
+            </b>
+
+            <button
+              class="btn btn-primary"
+              onclick="saveAllTargets()"
+            >
+              💾 Save
+            </button>
+
+          </div>
+
+          <div class="target-wrapper">
+
+            <table class="target-table">
+
+              <thead>
+
+                <tr>
+
+                  <th>SALES</th>
+
+                  <th>TARGET ALL</th>
+
+                  <th>DEVICE</th>
+
+                  <th>ACCESSORIES</th>
+
+                  <th>REPAIR CONTRACT</th>
+
+                  <th>OPERATOR</th>
+
+                  <th>INDOSAT</th>
+
+                  <th>XL</th>
+
+                  <th>TELKOMSEL</th>
+
+                </tr>
+
+              </thead>
+
+              <tbody id="targetTable"></tbody>
+
+            </table>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- ================= INPUT ================= -->
+
+      <div id="page-input" class="page" style="display:none">
+
+        <div class="page-head">
+
+          <div>
+            <h1 class="page-title">
+              Input Data
+            </h1>
+
+            <div class="page-subtitle">
+              Input transaksi penjualan
+            </div>
+          </div>
+
+        </div>
+
+        <div class="form-card">
+
+          <div class="form-grid">
+
+            <div class="form-group">
+
+              <label>
+                Tanggal
+              </label>
+
+              <input
+                type="date"
+                id="inputDate"
+              >
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label>
+                Sales
+              </label>
+
+              <select id="inputSales"></select>
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label>
+                Kategori
+              </label>
+
+              <select
+                id="inputCategory"
+                onchange="updateSubcategory()"
+              >
+
+                <option value="Device">
+                  Device
+                </option>
+
+                <option value="Accessories">
+                  Accessories
+                </option>
+
+                <option value="Repair Contract">
+                  Repair Contract
+                </option>
+
+                <option value="Operator">
+                  Operator
+                </option>
+
+              </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label>
+                Subkategori
+              </label>
+
+              <select id="inputSubcategory">
+
+                <option value="">
+                  -
+                </option>
+
+              </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label>
+                Produk
+              </label>
+
+              <input
+                id="inputProduct"
+                placeholder="Nama produk"
+              >
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label>
+                Qty
+              </label>
+
+              <input
+                type="number"
+                id="inputQty"
+                value="1"
+                min="1"
+              >
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label>
+                Nominal
+              </label>
+
+              <input
+                type="number"
+                id="inputAmount"
+                placeholder="0"
+              >
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label>
+                Customer
+              </label>
+
+              <input
+                id="inputCustomer"
+                placeholder="Nama customer"
+              >
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label>
+                No HP
+              </label>
+
+              <input
+                id="inputPhone"
+                placeholder="Opsional"
+              >
+
+            </div>
+
+          </div>
+
+          <div style="margin-top:18px">
+
+            <button
+              class="btn btn-primary"
+              onclick="saveTransaction()"
+            >
+              + Simpan Transaksi
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- ================= IMPORT ================= -->
+
+      <div id="page-import" class="page" style="display:none">
+
+        <div class="page-head">
+
+          <div>
+            <h1 class="page-title">
+              Import Excel
+            </h1>
+
+            <div class="page-subtitle">
+              Upload file Excel atau CSV untuk import data
+            </div>
+          </div>
+
+        </div>
+
+        <div class="upload-box">
+
+          <div class="upload-icon">
+            ⇧
+          </div>
+
+          <div class="upload-title">
+            Upload File Excel / CSV
+          </div>
+
+          <div class="upload-sub">
+            Format .xlsx, .xls, .csv
+          </div>
+
+          <input
+            type="file"
+            id="excelFile"
+            accept=".xlsx,.xls,.csv"
+            style="display:none"
+            onchange="processExcel(this)"
+          >
+
+          <button
+            class="btn btn-primary"
+            onclick="document.getElementById('excelFile').click()"
+          >
+            ⇧ Pilih File
+          </button>
+
+        </div>
+
+        <div
+          id="importPreview"
+          style="margin-top:15px"
+        ></div>
+
+      </div>
+
+
+      <!-- ================= MANAGE ================= -->
+
+      <div id="page-manage" class="page" style="display:none">
+
+        <div class="page-head">
+
+          <div>
+
+            <h1 class="page-title">
+              Manage Sales
+            </h1>
+
+            <div class="page-subtitle">
+              Kelola data sales toko
+            </div>
+
+          </div>
+
+          <button
+            class="btn btn-primary"
+            onclick="openSalesModal()"
+          >
+            + Tambah Sales
+          </button>
+
+        </div>
+
+        <div class="table-card">
+
+          <table>
+
+            <thead>
+
+              <tr>
+
+                <th>NAMA</th>
+                <th>NIK</th>
+                <th>ROLE</th>
+                <th>STATUS</th>
+                <th>AKSI</th>
+
+              </tr>
+
+            </thead>
+
+            <tbody id="manageSalesTable"></tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+</div>
+
+
+<!-- SALES MODAL -->
+
+<div id="salesModal" class="modal">
+
+  <div class="modal-box">
+
+    <div class="modal-head">
+
+      <h3 id="salesModalTitle">
+        Tambah Sales
+      </h3>
+
+      <button
+        class="close"
+        onclick="closeSalesModal()"
+      >
+        ×
+      </button>
+
+    </div>
+
+    <input
+      type="hidden"
+      id="editSalesId"
+    >
+
+    <div class="form-group">
+      <label>Nama Sales</label>
+
+      <input
+        id="salesNameInput"
+        placeholder="Nama lengkap"
+      >
+    </div>
+
+    <br>
+
+    <div class="form-group">
+      <label>NIK</label>
+
+      <input
+        id="salesNikInput"
+        placeholder="NIK"
+      >
+    </div>
+
+    <br>
+
+    <div class="form-group">
+
+      <label>Role</label>
+
+      <select id="salesRoleInput">
+
+        <option value="SALES">
+          SALES
+        </option>
+
+        <option value="SL">
+          SL
+        </option>
+
+        <option value="TSH">
+          TSH
+        </option>
+
+        <option value="ADMIN">
+          ADMIN
+        </option>
+
+      </select>
+
+    </div>
+
+    <br>
+
+    <div class="form-group">
+
+      <label>Status</label>
+
+      <select id="salesStatusInput">
+
+        <option value="AKTIF">
+          AKTIF
+        </option>
+
+        <option value="NONAKTIF">
+          NONAKTIF
+        </option>
+
+      </select>
+
+    </div>
+
+    <br>
+
+    <button
+      class="btn btn-primary"
+      onclick="saveSales()"
+    >
+      Simpan
+    </button>
+
+  </div>
+
+</div>
+
+
+<div id="toast" class="toast"></div>
+
+
+<script>
+
+/* =====================================================
+   CONFIG
+===================================================== */
+
+const API_URL =
+"https://script.google.com/macros/s/AKfycbwdf99iMhurOAjIfR4VaJ7qRMz-SBPkXPcR03w0gVziMYt3q-Dgfo82LIF3eQVjWqEhaQ/exec";
+
+const API_KEY =
+"SALES2026";
+
+
+/* =====================================================
+   STATE
+===================================================== */
+
+let currentUser = null;
+
+let dashboardData = null;
+
+let salesList = [];
+
+let targets = [];
+
+let currentPage = "overview";
+
+let periodMode = "month";
+
+
+/* =====================================================
+   INIT
+===================================================== */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function(){
+
+    const saved =
+      localStorage.getItem("ses_user");
+
+    if(saved){
+
+      try{
+
+        currentUser =
+          JSON.parse(saved);
+
+        startApp();
+
+      }catch(e){
+
+        localStorage.removeItem("ses_user");
+
+      }
+
+    }
+
+    document
+      .getElementById("inputDate")
+      .value =
+      new Date()
+        .toISOString()
+        .slice(0,10);
+
+  }
+);
+
+
+/* =====================================================
+   API JSONP
+===================================================== */
+
+function api(params){
+
+  return new Promise(
+    function(resolve,reject){
+
+      const callback =
+        "cb_" +
+        Date.now() +
+        "_" +
+        Math.floor(
+          Math.random()*10000
+        );
+
+      const script =
+        document.createElement("script");
+
+      params.key =
+        API_KEY;
+
+      params.callback =
+        callback;
+
+      window[callback] =
+        function(data){
+
+          resolve(data);
+
+          cleanup();
+
+        };
+
+      script.onerror =
+        function(){
+
+          reject(
+            new Error(
+              "Gagal terhubung ke Google Apps Script"
+            )
+          );
+
+          cleanup();
+
+        };
+
+      const query =
+        Object.keys(params)
+          .map(function(k){
+
+            return encodeURIComponent(k)
+              + "=" +
+              encodeURIComponent(params[k]);
+
+          })
+          .join("&");
+
+      script.src =
+        API_URL + "?" + query;
+
+      document.body.appendChild(
+        script
+      );
+
+
+      function cleanup(){
+
+        delete window[callback];
+
+        if(script.parentNode){
+
+          script.parentNode.removeChild(
+            script
+          );
+
+        }
+
+      }
+
+    }
+  );
+
+}
+
+
+/* =====================================================
+   LOGIN
+===================================================== */
+
+async function login(){
+
+  const username =
+    document
+      .getElementById("loginUsername")
+      .value
+      .trim();
+
+  const password =
+    document
+      .getElementById("loginPassword")
+      .value;
+
+  const error =
+    document
+      .getElementById("loginError");
+
+  error.textContent =
+    "Memproses...";
+
+  try{
+
+    const result =
+      await api({
+
+        action:"login",
+
+        username:username,
+
+        password:password
+
+      });
+
+    if(result.success){
+
+      currentUser =
+        result.user;
+
+      localStorage.setItem(
+        "ses_user",
+        JSON.stringify(
+          currentUser
+        )
+      );
+
+      error.textContent = "";
+
+      startApp();
+
+    }else{
+
+      error.textContent =
+        result.message ||
+        "Login gagal";
+
+    }
+
+  }catch(e){
+
+    error.textContent =
+      e.message;
+
+  }
+
+}
+
+
+function logout(){
+
+  localStorage.removeItem(
+    "ses_user"
+  );
+
+  location.reload();
+
+}
+
+
+/* =====================================================
+   START APP
+===================================================== */
+
+async function startApp(){
+
+  document
+    .getElementById("loginScreen")
+    .style.display = "none";
+
+  document
+    .getElementById("app")
+    .style.display = "flex";
+
+  document
+    .getElementById("userName")
+    .textContent =
+    currentUser.name;
+
+  document
+    .getElementById("userInitial")
+    .textContent =
+    currentUser.name
+      .charAt(0)
+      .toUpperCase();
+
+  await loadAll();
+
+}
+
+
+/* =====================================================
+   LOAD DATA
+===================================================== */
+
+async function loadAll(){
+
+  try{
+
+    const dashboard =
+      await api({
+        action:"dashboard",
+        period:getCurrentPeriod()
+      });
+
+    if(
+      dashboard &&
+      dashboard.success
+    ){
+
+      dashboardData =
+        dashboard.data;
+
+      renderOverview();
+
+    }
+
+    const sales =
+      await api({
+        action:"sales"
+      });
+
+    if(
+      sales &&
+      sales.success
+    ){
+
+      salesList =
+        sales.data || [];
+
+      renderManageSales();
+
+      renderInputSales();
+
+      renderSalesPerformance();
+
+    }
+
+    const targetResult =
+      await api({
+        action:"targets",
+        period:getCurrentPeriod()
+      });
+
+    if(
+      targetResult &&
+      targetResult.success
+    ){
+
+      targets =
+        targetResult.data || [];
+
+      renderTargets();
+
+    }
+
+  }catch(e){
+
+    showToast(
+      "Gagal mengambil data: " +
+      e.message
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   PERIOD
+===================================================== */
+
+function getCurrentPeriod(){
+
+  const d =
+    new Date();
+
+  return d.getFullYear()
+    + "-" +
+    String(
+      d.getMonth()+1
+    ).padStart(2,"0");
+
+}
+
+
+function setPeriodMode(mode,button){
+
+  periodMode =
+    mode;
+
+  document
+    .querySelectorAll(".filter-btn")
+    .forEach(
+      x => x.classList.remove(
+        "active"
+      )
+    );
+
+  if(button){
+
+    button.classList.add(
+      "active"
+    );
+
+  }
+
+  showToast(
+    "Filter " +
+    mode +
+    " dipilih"
+  );
+
+}
+
+
+/* =====================================================
+   PAGE
+===================================================== */
+
+function showPage(page){
+
+  currentPage =
+    page;
+
+  document
+    .querySelectorAll(".page")
+    .forEach(
+      p => p.style.display = "none"
+    );
+
+  const el =
+    document.getElementById(
+      "page-" + page
+    );
+
+  if(el){
+
+    el.style.display =
+      "block";
+
+  }
+
+  document
+    .querySelectorAll(".menu button")
+    .forEach(
+      b => b.classList.remove(
+        "active"
+      )
+    );
+
+  const menu =
+    document.getElementById(
+      "menu-" + page
+    );
+
+  if(menu){
+
+    menu.classList.add(
+      "active"
+    );
+
+  }
+
+  if(page === "overview")
+    renderOverview();
+
+  if(page === "store")
+    renderStore();
+
+  if(page === "sales")
+    renderSalesPerformance();
+
+  if(page === "contribution")
+    renderContribution();
+
+  if(page === "top")
+    renderTopSales();
+
+  if(page === "target")
+    renderTargets();
+
+  if(page === "manage")
+    renderManageSales();
+
+  if(window.innerWidth < 900){
+
+    document
+      .getElementById("sidebar")
+      .classList.remove("open");
+
+  }
+
+}
+
+
+function toggleSidebar(){
+
+  document
+    .getElementById("sidebar")
+    .classList.toggle(
+      "open"
+    );
+
+}
+
+
+/* =====================================================
+   OVERVIEW
+===================================================== */
+
+function renderOverview(){
+
+  if(!dashboardData)
+    return;
+
+  const d =
+    dashboardData;
+
+  const month =
+    d.period || getCurrentPeriod();
+
+  setText(
+    "overviewMonth",
+    formatMonth(month)
+  );
+
+  setText(
+    "overviewActual",
+    money(d.totalActual)
+  );
+
+  setText(
+    "overviewTarget",
+    money(d.targetAll)
+  );
+
+  setText(
+    "overviewEst",
+    money(d.estimation)
+  );
+
+  setText(
+    "overviewEstPercent",
+    percent(d.estimationPercent)
+  );
+
+  setText(
+    "overviewShort",
+    money(d.shortfall)
+  );
+
+  setText(
+    "overviewAch",
+    percent(d.achievement)
+  );
+
+  document
+    .getElementById(
+      "overviewProgress"
+    )
+    .style.width =
+    Math.min(
+      Number(d.achievement || 0),
+      100
+    ) + "%";
+
+
+  renderCategory(
+    "Device",
+    "device"
+  );
+
+  renderCategory(
+    "Accessories",
+    "acc"
+  );
+
+  renderCategory(
+    "Repair Contract",
+    "repair"
+  );
+
+  renderCategory(
+    "Operator",
+    "operator"
+  );
+
+
+  const op =
+    d.operators || {};
+
+  setText(
+    "indosatActual",
+    "Actual " +
+    money(
+      op.Indosat
+        ? op.Indosat.actual
+        : 0
+    )
+  );
+
+  setText(
+    "indosatAch",
+    percent(
+      op.Indosat
+        ? op.Indosat.achievement
+        : 0
+    )
+  );
+
+  setText(
+    "xlActual",
+    "Actual " +
+    money(
+      op.XL
+        ? op.XL.actual
+        : 0
+    )
+  );
+
+  setText(
+    "xlAch",
+    percent(
+      op.XL
+        ? op.XL.achievement
+        : 0
+    )
+  );
+
+  setText(
+    "telkomselActual",
+    "Actual " +
+    money(
+      op.Telkomsel
+        ? op.Telkomsel.actual
+        : 0
+    )
+  );
+
+  setText(
+    "telkomselAch",
+    percent(
+      op.Telkomsel
+        ? op.Telkomsel.achievement
+        : 0
+    )
+  );
+
+}
+
+
+function renderCategory(category,prefix){
+
+  const c =
+    dashboardData
+      .categories
+      ? dashboardData
+          .categories[category]
+      : null;
+
+  if(!c)
+    return;
+
+  setText(
+    prefix+"Actual",
+    money(c.actual)
+  );
+
+  setText(
+    prefix+"Target",
+    money(c.target)
+  );
+
+  setText(
+    prefix+"Ach",
+    percent(c.achievement)
+  );
+
+  setText(
+    prefix+"Est",
+    money(c.estimation)
+  );
+
+  setText(
+    prefix+"Short",
+    money(c.shortfall)
+  );
+
+}
+
+
+/* =====================================================
+   SALES PERFORMANCE
+===================================================== */
+
+function getSalesStats(){
+
+  if(!dashboardData)
+    return [];
+
+  const tx =
+    dashboardData.transactions || [];
+
+  const targetMap = {};
+
+  (dashboardData.targets || [])
+    .forEach(function(t){
+
+      targetMap[t.salesId] =
+        t;
+
+    });
+
+
+  const result = [];
+
+  salesList.forEach(function(s){
+
+    const transactions =
+      tx.filter(
+        x =>
+          String(x.salesId) ===
+          String(s.id)
+      );
+
+    const actual =
+      transactions.reduce(
+        (sum,x)=>
+          sum +
+          Number(x.amount || 0),
+        0
+      );
+
+    const t =
+      targetMap[s.id] || {};
+
+    const target =
+      Number(
+        t.targetAll || 0
+      );
+
+    const est =
+      dashboardData.daysPassed > 0
+      ?
+      actual /
+      dashboardData.daysPassed *
+      dashboardData.daysInMonth
+      :
+      0;
+
+    result.push({
+
+      id:s.id,
+
+      name:s.name,
+
+      nik:s.nik,
+
+      actual:actual,
+
+      target:target,
+
+      achievement:
+        target > 0
+        ? actual / target * 100
+        : 0,
+
+      estimation:est,
+
+      estPercent:
+        target > 0
+        ? est / target * 100
+        : 0
+
+    });
+
+  });
+
+  return result;
+
+}
+
+
+function renderSalesPerformance(){
+
+  const tbody =
+    document.getElementById(
+      "salesPerformanceTable"
+    );
+
+  if(!tbody)
+    return;
+
+  const rows =
+    getSalesStats();
+
+  tbody.innerHTML =
+    rows.map(function(r){
+
+      return `
+        <tr>
+
+          <td>
+            <b>${escapeHtml(r.name)}</b>
+            <br>
+            <span style="color:#718096;font-size:11px">
+              ${escapeHtml(r.nik || "")}
+            </span>
+          </td>
+
+          <td class="money">
+            ${money(r.target)}
+          </td>
+
+          <td class="money">
+            ${money(r.actual)}
+          </td>
+
+          <td class="percent-red">
+            ${percent(r.achievement)}
+          </td>
+
+          <td class="money">
+            ${money(r.estimation)}
+          </td>
+
+          <td class="percent-red">
+            ${percent(r.estPercent)}
+          </td>
+
+          <td>
+            —
+          </td>
+
+        </tr>
+      `;
+
+    }).join("");
+
+  if(
+    dashboardData
+  ){
+
+    setText(
+      "salesTimeGone",
+      Math.round(
+        dashboardData.timeGone
+      ) + "%"
+    );
+
+    const p =
+      document.getElementById(
+        "salesTimeProgress"
+      );
+
+    if(p){
+
+      p.style.width =
+        Math.min(
+          dashboardData.timeGone,
+          100
+        ) + "%";
+
+    }
+
+  }
+
+}
+
+
+/* =====================================================
+   STORE
+===================================================== */
+
+function renderStore(){
+
+  if(!dashboardData)
+    return;
+
+  const tbody =
+    document.getElementById(
+      "storeTable"
+    );
+
+  if(!tbody)
+    return;
+
+  const d =
+    dashboardData;
+
+  tbody.innerHTML = `
+
+    <tr>
+
+      <td>
+        Bulan Ini
+      </td>
+
+      <td class="money">
+        ${money(d.totalActual)}
+      </td>
+
+      <td class="money">
+        ${money(d.targetAll)}
+      </td>
+
+      <td class="percent-red">
+        ${percent(d.achievement)}
+      </td>
+
+      <td class="money">
+        ${money(d.estimation)}
+      </td>
+
+      <td class="percent-red">
+        ${percent(d.estimationPercent)}
+      </td>
+
+    </tr>
+
+  `;
+
+}
+
+
+/* =====================================================
+   CONTRIBUTION
+===================================================== */
+
+function renderContribution(){
+
+  const tbody =
+    document.getElementById(
+      "contributionTable"
+    );
+
+  if(!tbody)
+    return;
+
+  const rows =
+    getSalesStats()
+      .sort(
+        (a,b)=>
+          b.actual-a.actual
+      );
+
+  const total =
+    rows.reduce(
+      (s,r)=>
+        s+r.actual,
+      0
+    );
+
+  tbody.innerHTML =
+    rows.map(
+      function(r,i){
+
+        const contribution =
+          total > 0
+          ? r.actual / total * 100
+          : 0;
+
+        return `
+          <tr>
+
+            <td>
+              #${i+1}
+            </td>
+
+            <td>
+              <b>${escapeHtml(r.name)}</b>
+            </td>
+
+            <td class="money">
+              ${money(r.actual)}
+            </td>
+
+            <td style="width:35%">
+
+              <div style="font-weight:700">
+                ${percent(contribution)}
+              </div>
+
+              <div class="progress">
+                <div
+                  class="progress-bar"
+                  style="width:${Math.min(contribution,100)}%"
+                ></div>
+              </div>
+
+            </td>
+
+          </tr>
+        `;
+
+      }
+    ).join("");
+
+}
+
+
+/* =====================================================
+   TOP SALES
+===================================================== */
+
+function renderTopSales(){
+
+  const rows =
+    getSalesStats()
+      .sort(
+        (a,b)=>
+          b.actual-a.actual
+      );
+
+  const top =
+    rows.slice(0,3);
+
+  const cards =
+    document.getElementById(
+      "topCards"
+    );
+
+  if(cards){
+
+    const medals =
+      ["🥇","🥈","🥉"];
+
+    cards.innerHTML =
+      top.map(
+        function(r,i){
+
+          return `
+            <div class="top-card rank${i+1}">
+
+              <div class="medal">
+                ${medals[i]}
+              </div>
+
+              <div class="top-name">
+                ${escapeHtml(r.name)}
+              </div>
+
+              <div style="font-size:11px;color:#718096">
+                ${escapeHtml(r.nik || "")}
+              </div>
+
+              <div class="top-amount">
+                ${money(r.actual)}
+              </div>
+
+              <div class="badge">
+                Ach ${percent(r.achievement)}
+              </div>
+
+              <div style="font-size:12px;margin-top:8px;color:#64748b">
+                Est ${money(r.estimation)}
+              </div>
+
+            </div>
+          `;
+
+        }
+      ).join("");
+
+  }
+
+
+  const tbody =
+    document.getElementById(
+      "topTable"
+    );
+
+  if(!tbody)
+    return;
+
+  tbody.innerHTML =
+    rows.map(
+      function(r,i){
+
+        return `
+          <tr>
+
+            <td>
+              #${i+1}
+            </td>
+
+            <td>
+              <b>${escapeHtml(r.name)}</b>
+              <br>
+              <span style="font-size:11px;color:#718096">
+                ${escapeHtml(r.nik || "")}
+              </span>
+            </td>
+
+            <td class="money">
+              ${money(r.target)}
+            </td>
+
+            <td class="money">
+              ${money(r.actual)}
+            </td>
+
+            <td class="percent-red">
+              ${percent(r.achievement)}
+            </td>
+
+            <td class="money">
+              ${money(r.estimation)}
+            </td>
+
+            <td class="percent-red">
+              ${percent(r.estPercent)}
+            </td>
+
+          </tr>
+        `;
+
+      }
+    ).join("");
+
+}
+
+
+/* =====================================================
+   TARGET
+===================================================== */
+
+function renderTargets(){
+
+  const tbody =
+    document.getElementById(
+      "targetTable"
+    );
+
+  if(!tbody)
+    return;
+
+  const targetMap = {};
+
+  targets.forEach(
+    t =>
+      targetMap[t.salesId] =
+      t
+  );
+
+  tbody.innerHTML =
+    salesList.map(
+      function(s){
+
+        const t =
+          targetMap[s.id] || {};
+
+        return `
+          <tr>
+
+            <td>
+              <b>${escapeHtml(s.name)}</b>
+              <br>
+              <span style="font-size:11px;color:#718096">
+                ${escapeHtml(s.nik || "")}
+              </span>
+            </td>
+
+            ${targetInput(
+              s.id,
+              "targetAll",
+              t.targetAll
+            )}
+
+            ${targetInput(
+              s.id,
+              "device",
+              t.device
+            )}
+
+            ${targetInput(
+              s.id,
+              "accessories",
+              t.accessories
+            )}
+
+            ${targetInput(
+              s.id,
+              "repairContract",
+              t.repairContract
+            )}
+
+            ${targetInput(
+              s.id,
+              "operator",
+              t.operator
+            )}
+
+            ${targetInput(
+              s.id,
+              "indosat",
+              t.indosat
+            )}
+
+            ${targetInput(
+              s.id,
+              "xl",
+              t.xl
+            )}
+
+            ${targetInput(
+              s.id,
+              "telkomsel",
+              t.telkomsel
+            )}
+
+          </tr>
+        `;
+
+      }
+    ).join("");
+
+  updateTargetTotals();
+
+}
+
+
+function targetInput(id,key,value){
+
+  return `
+    <td>
+
+      <input
+        type="number"
+        min="0"
+        data-sales="${escapeAttr(id)}"
+        data-key="${key}"
+        value="${Number(value || 0)}"
+        oninput="updateTargetTotals()"
+      >
+
+    </td>
+  `;
+
+}
+
+
+function updateTargetTotals(){
+
+  const keys =
+    [
+      "targetAll",
+      "device",
+      "accessories",
+      "operator"
+    ];
+
+  const totals = {};
+
+  keys.forEach(
+    k =>
+      totals[k]=0
+  );
+
+  document
+    .querySelectorAll(
+      "#targetTable input"
+    )
+    .forEach(
+      input => {
+
+        const key =
+          input.dataset.key;
+
+        if(
+          totals.hasOwnProperty(key)
+        ){
+
+          totals[key] +=
+            Number(
+              input.value || 0
+            );
+
+        }
+
+      }
+    );
+
+  setText(
+    "targetTotalAll",
+    money(totals.targetAll)
+  );
+
+  setText(
+    "targetTotalDevice",
+    money(totals.device)
+  );
+
+  setText(
+    "targetTotalAcc",
+    money(totals.accessories)
+  );
+
+  setText(
+    "targetTotalOperator",
+    money(totals.operator)
+  );
+
+}
+
+
+async function saveAllTargets(){
+
+  const inputs =
+    document.querySelectorAll(
+      "#targetTable input"
+    );
+
+  const grouped = {};
+
+  inputs.forEach(
+    function(input){
+
+      const id =
+        input.dataset.sales;
+
+      const key =
+        input.dataset.key;
+
+      if(!grouped[id])
+        grouped[id]={};
+
+      grouped[id][key] =
+        Number(
+          input.value || 0
+        );
+
+    }
+  );
+
+  try{
+
+    for(
+      const id of Object.keys(grouped)
+    ){
+
+      const s =
+        salesList.find(
+          x =>
+            String(x.id) ===
+            String(id)
+        );
+
+      if(!s)
+        continue;
+
+      await api({
+
+        action:"saveTarget",
+
+        period:getCurrentPeriod(),
+
+        salesId:s.id,
+
+        salesName:s.name,
+
+        targetAll:
+          grouped[id].targetAll || 0,
+
+        device:
+          grouped[id].device || 0,
+
+        accessories:
+          grouped[id].accessories || 0,
+
+        repairContract:
+          grouped[id].repairContract || 0,
+
+        operator:
+          grouped[id].operator || 0,
+
+        indosat:
+          grouped[id].indosat || 0,
+
+        xl:
+          grouped[id].xl || 0,
+
+        telkomsel:
+          grouped[id].telkomsel || 0
+
+      });
+
+    }
+
+    showToast(
+      "Target berhasil disimpan"
+    );
+
+    await loadAll();
+
+  }catch(e){
+
+    showToast(
+      "Gagal menyimpan target"
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   MANAGE SALES
+===================================================== */
+
+function renderManageSales(){
+
+  const tbody =
+    document.getElementById(
+      "manageSalesTable"
+    );
+
+  if(!tbody)
+    return;
+
+  tbody.innerHTML =
+    salesList.map(
+      function(s){
+
+        const active =
+          String(s.status)
+            .toUpperCase()
+            === "AKTIF";
+
+        return `
+          <tr>
+
+            <td>
+              <b>${escapeHtml(s.name)}</b>
+            </td>
+
+            <td>
+              ${escapeHtml(s.nik || "-")}
+            </td>
+
+            <td>
+              ${escapeHtml(s.role || "SALES")}
+            </td>
+
+            <td>
+
+              <span
+                style="
+                  background:${active ? "#d7f8eb" : "#ffe1e3"};
+                  color:${active ? "#0caf75" : "#e62939"};
+                  padding:5px 10px;
+                  border-radius:14px;
+                  font-size:12px;
+                  font-weight:700
+                "
+              >
+                ${active ? "Aktif" : "Nonaktif"}
+              </span>
+
+            </td>
+
+            <td>
+
+              <div class="actions">
+
+                <button
+                  class="btn btn-secondary"
+                  onclick="editSales('${escapeAttr(s.id)}')"
+                >
+                  ✏
+                </button>
+
+                <button
+                  class="btn btn-danger"
+                  onclick="deleteSales('${escapeAttr(s.id)}')"
+                >
+                  🗑
+                </button>
+
+              </div>
+
+            </td>
+
+          </tr>
+        `;
+
+      }
+    ).join("");
+
+}
+
+
+function openSalesModal(){
+
+  document
+    .getElementById(
+      "salesModal"
+    )
+    .classList.add("show");
+
+  document
+    .getElementById(
+      "salesModalTitle"
+    )
+    .textContent =
+    "Tambah Sales";
+
+  document
+    .getElementById(
+      "editSalesId"
+    )
+    .value = "";
+
+  document
+    .getElementById(
+      "salesNameInput"
+    )
+    .value = "";
+
+  document
+    .getElementById(
+      "salesNikInput"
+    )
+    .value = "";
+
+}
+
+
+function closeSalesModal(){
+
+  document
+    .getElementById(
+      "salesModal"
+    )
+    .classList.remove(
+      "show"
+    );
+
+}
+
+
+function editSales(id){
+
+  const s =
+    salesList.find(
+      x =>
+        String(x.id) ===
+        String(id)
+    );
+
+  if(!s)
+    return;
+
+  openSalesModal();
+
+  document
+    .getElementById(
+      "salesModalTitle"
+    )
+    .textContent =
+    "Edit Sales";
+
+  document
+    .getElementById(
+      "editSalesId"
+    )
+    .value =
+    s.id;
+
+  document
+    .getElementById(
+      "salesNameInput"
+    )
+    .value =
+    s.name || "";
+
+  document
+    .getElementById(
+      "salesNikInput"
+    )
+    .value =
+    s.nik || "";
+
+  document
+    .getElementById(
+      "salesRoleInput"
+    )
+    .value =
+    s.role || "SALES";
+
+  document
+    .getElementById(
+      "salesStatusInput"
+    )
+    .value =
+    s.status || "AKTIF";
+
+}
+
+
+async function saveSales(){
+
+  const id =
+    document
+      .getElementById(
+        "editSalesId"
+      )
+      .value;
+
+  const name =
+    document
+      .getElementById(
+        "salesNameInput"
+      )
+      .value
+      .trim();
+
+  const nik =
+    document
+      .getElementById(
+        "salesNikInput"
+      )
+      .value
+      .trim();
+
+  const role =
+    document
+      .getElementById(
+        "salesRoleInput"
+      )
+      .value;
+
+  const status =
+    document
+      .getElementById(
+        "salesStatusInput"
+      )
+      .value;
+
+  if(!name){
+
+    showToast(
+      "Nama sales wajib diisi"
+    );
+
+    return;
+
+  }
+
+  try{
+
+    const result =
+      await api({
+
+        action:"saveSales",
+
+        id:id,
+
+        name:name,
+
+        nik:nik,
+
+        role:role,
+
+        status:status,
+
+        store:"SES SMB"
+
+      });
+
+    if(result.success){
+
+      closeSalesModal();
+
+      showToast(
+        "Sales berhasil disimpan"
+      );
+
+      await loadAll();
+
+    }else{
+
+      showToast(
+        result.message ||
+        "Gagal menyimpan"
+      );
+
+    }
+
+  }catch(e){
+
+    showToast(
+      e.message
+    );
+
+  }
+
+}
+
+
+async function deleteSales(id){
+
+  if(
+    !confirm(
+      "Hapus sales ini?"
+    )
+  )
+    return;
+
+  try{
+
+    const result =
+      await api({
+
+        action:"deleteSales",
+
+        id:id
+
+      });
+
+    if(result.success){
+
+      showToast(
+        "Sales berhasil dihapus"
+      );
+
+      await loadAll();
+
+    }else{
+
+      showToast(
+        result.message
+      );
+
+    }
+
+  }catch(e){
+
+    showToast(
+      e.message
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   INPUT SALES
+===================================================== */
+
+function renderInputSales(){
+
+  const select =
+    document.getElementById(
+      "inputSales"
+    );
+
+  if(!select)
+    return;
+
+  select.innerHTML =
+    `<option value="">
+      Pilih Sales
+    </option>` +
+    salesList
+      .filter(
+        x =>
+          String(x.status)
+            .toUpperCase()
+          !== "NONAKTIF"
+      )
+      .map(
+        s =>
+          `
+          <option value="${escapeAttr(s.id)}">
+            ${escapeHtml(s.name)}
+          </option>
+          `
+      )
+      .join("");
+
+}
+
+
+function updateSubcategory(){
+
+  const category =
+    document
+      .getElementById(
+        "inputCategory"
+      )
+      .value;
+
+  const select =
+    document
+      .getElementById(
+        "inputSubcategory"
+      );
+
+  let values = [];
+
+  if(category === "Operator"){
+
+    values =
+      [
+        "Indosat",
+        "XL",
+        "Telkomsel"
+      ];
+
+  }
+
+  select.innerHTML =
+    `<option value="">
+      -
+    </option>` +
+    values.map(
+      x =>
+        `<option value="${x}">
+          ${x}
+        </option>`
+    ).join("");
+
+}
+
+
+async function saveTransaction(){
+
+  const salesId =
+    document
+      .getElementById(
+        "inputSales"
+      )
+      .value;
+
+  const s =
+    salesList.find(
+      x =>
+        String(x.id) ===
+        String(salesId)
+    );
+
+  if(!s){
+
+    showToast(
+      "Pilih sales terlebih dahulu"
+    );
+
+    return;
+
+  }
+
+  const params = {
+
+    action:"saveTransaction",
+
+    date:
+      document
+        .getElementById(
+          "inputDate"
+        )
+        .value,
+
+    salesId:s.id,
+
+    salesName:s.name,
+
+    category:
+      document
+        .getElementById(
+          "inputCategory"
+        )
+        .value,
+
+    subcategory:
+      document
+        .getElementById(
+          "inputSubcategory"
+        )
+        .value,
+
+    product:
+      document
+        .getElementById(
+          "inputProduct"
+        )
+        .value,
+
+    qty:
+      document
+        .getElementById(
+          "inputQty"
+        )
+        .value,
+
+    amount:
+      document
+        .getElementById(
+          "inputAmount"
+        )
+        .value,
+
+    customer:
+      document
+        .getElementById(
+          "inputCustomer"
+        )
+        .value,
+
+    phone:
+      document
+        .getElementById(
+          "inputPhone"
+        )
+        .value
+
+  };
+
+
+  try{
+
+    const result =
+      await api(params);
+
+    if(result.success){
+
+      showToast(
+        "Transaksi berhasil disimpan"
+      );
+
+      document
+        .getElementById(
+          "inputProduct"
+        )
+        .value = "";
+
+      document
+        .getElementById(
+          "inputAmount"
+        )
+        .value = "";
+
+      document
+        .getElementById(
+          "inputCustomer"
+        )
+        .value = "";
+
+      document
+        .getElementById(
+          "inputPhone"
+        )
+        .value = "";
+
+      await loadAll();
+
+      showPage("overview");
+
+    }else{
+
+      showToast(
+        result.message
+      );
+
+    }
+
+  }catch(e){
+
+    showToast(
+      e.message
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   IMPORT EXCEL
+===================================================== */
+
+function processExcel(input){
+
+  const file =
+    input.files[0];
+
+  if(!file)
+    return;
+
+  const reader =
+    new FileReader();
+
+  reader.onload =
+    async function(e){
+
+      try{
+
+        const workbook =
+          XLSX.read(
+            e.target.result,
+            {
+              type:"array"
+            }
+          );
+
+        const sheet =
+          workbook
+            .Sheets[
+              workbook.SheetNames[0]
+            ];
+
+        const rows =
+          XLSX.utils.sheet_to_json(
+            sheet,
+            {
+              defval:""
+            }
+          );
+
+        if(!rows.length){
+
+          showToast(
+            "File tidak memiliki data"
+          );
+
+          return;
+
+        }
+
+        const preview =
+          document
+            .getElementById(
+              "importPreview"
+            );
+
+        preview.innerHTML = `
+
+          <div class="form-card">
+
+            <b>
+              Preview ${rows.length} data
+            </b>
+
+            <p style="color:#64748b;font-size:13px">
+              Sistem akan mencoba membaca kolom:
+              tanggal, sales, kategori, produk,
+              qty, nominal, customer, phone.
+            </p>
+
+            <button
+              class="btn btn-primary"
+              onclick="importRows()"
+            >
+              Import Data
+            </button>
+
+          </div>
+
+        `;
+
+        window.importData =
+          rows;
+
+      }catch(err){
+
+        showToast(
+          "Gagal membaca file: " +
+          err.message
+        );
+
+      }
+
+    };
+
+  reader.readAsArrayBuffer(
+    file
+  );
+
+}
+
+
+async function importRows(){
+
+  const rows =
+    window.importData || [];
+
+  if(!rows.length)
+    return;
+
+  let success = 0;
+
+  showToast(
+    "Import sedang berjalan..."
+  );
+
+  for(
+    const row of rows
+  ){
+
+    const normalized =
+      normalizeImportRow(
+        row
+      );
+
+    if(
+      !normalized.salesName ||
+      !normalized.amount
+    )
+      continue;
+
+    let sales =
+      salesList.find(
+        s =>
+          String(s.name)
+            .toLowerCase()
+          ===
+          String(
+            normalized.salesName
+          )
+            .toLowerCase()
+      );
+
+    if(!sales)
+      continue;
+
+    try{
+
+      const result =
+        await api({
+
+          action:
+            "saveTransaction",
+
+          date:
+            normalized.date,
+
+          salesId:
+            sales.id,
+
+          salesName:
+            sales.name,
+
+          category:
+            normalized.category,
+
+          subcategory:
+            normalized.subcategory,
+
+          product:
+            normalized.product,
+
+          qty:
+            normalized.qty,
+
+          amount:
+            normalized.amount,
+
+          customer:
+            normalized.customer,
+
+          phone:
+            normalized.phone
+
+        });
+
+      if(
+        result &&
+        result.success
+      ){
+
+        success++;
+
+      }
+
+    }catch(e){}
+
+  }
+
+  showToast(
+    success +
+    " transaksi berhasil diimport"
+  );
+
+  await loadAll();
+
+}
+
+
+function normalizeImportRow(row){
+
+  const get =
+    function(names){
+
+      for(
+        const name of names
+      ){
+
+        const key =
+          Object.keys(row)
+            .find(
+              k =>
+                String(k)
+                  .toLowerCase()
+                  .replace(/\s/g,"")
+                ===
+                String(name)
+                  .toLowerCase()
+                  .replace(/\s/g,"")
+            );
+
+        if(key)
+          return row[key];
+
+      }
+
+      return "";
+
+    };
+
+
+  let date =
+    get([
+      "tanggal",
+      "date",
+      "tgl"
+    ]);
+
+  if(
+    typeof date === "number"
+  ){
+
+    const excelDate =
+      XLSX.SSF.parse_date_code(
+        date
+      );
+
+    date =
+      excelDate.y +
+      "-" +
+      String(excelDate.m)
+        .padStart(2,"0") +
+      "-" +
+      String(excelDate.d)
+        .padStart(2,"0");
+
+  }else{
+
+    date =
+      normalizeDate(
+        date
+      );
+
+  }
+
+
+  let amount =
+    get([
+      "nominal",
+      "amount",
+      "sales",
+      "penjualan",
+      "value"
+    ]);
+
+  amount =
+    Number(
+      String(amount)
+        .replace(/[^\d.-]/g,"")
+    ) || 0;
+
+
+  return {
+
+    date:
+      date ||
+      getCurrentDate(),
+
+    salesName:
+      get([
+        "sales",
+        "salesname",
+        "nama",
+        "nama sales"
+      ]),
+
+    category:
+      get([
+        "kategori",
+        "category"
+      ]) ||
+      "Device",
+
+    subcategory:
+      get([
+        "subkategori",
+        "subcategory"
+      ]),
+
+    product:
+      get([
+        "produk",
+        "product",
+        "item"
+      ]),
+
+    qty:
+      Number(
+        get([
+          "qty",
+          "quantity",
+          "jumlah"
+        ]) || 1
+      ),
+
+    amount:
+      amount,
+
+    customer:
+      get([
+        "customer",
+        "customername",
+        "nama customer"
+      ]),
+
+    phone:
+      get([
+        "phone",
+        "nohp",
+        "no hp",
+        "nomor hp"
+      ])
+
+  };
+
+}
+
+
+/* =====================================================
+   HELPERS
+===================================================== */
+
+function setText(id,value){
+
+  const el =
+    document.getElementById(id);
+
+  if(el)
+    el.textContent =
+      value;
+
+}
+
+
+function money(value){
+
+  return "Rp " +
+    Number(value || 0)
+      .toLocaleString(
+        "id-ID"
+      );
+
+}
+
+
+function percent(value){
+
+  return Number(
+    value || 0
+  ).toFixed(1) + "%";
+
+}
+
+
+function formatMonth(period){
+
+  if(!period)
+    return "-";
+
+  const d =
+    new Date(
+      period + "-01T00:00:00"
+    );
+
+  return d.toLocaleDateString(
+    "id-ID",
+    {
+      month:"long",
+      year:"numeric"
+    }
+  );
+
+}
+
+
+function getCurrentDate(){
+
+  return new Date()
+    .toISOString()
+    .slice(0,10);
+
+}
+
+
+function normalizeDate(value){
+
+  if(!value)
+    return "";
+
+  const s =
+    String(value)
+      .trim();
+
+  if(
+    /^\d{4}-\d{2}-\d{2}$/.test(s)
+  )
+    return s;
+
+  let m =
+    s.match(
+      /^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})$/
+    );
+
+  if(m){
+
+    return m[3] +
+      "-" +
+      String(m[2])
+        .padStart(2,"0") +
+      "-" +
+      String(m[1])
+        .padStart(2,"0");
+
+  }
+
+  return "";
+
+}
+
+
+function escapeHtml(value){
+
+  return String(
+    value == null
+      ? ""
+      : value
+  )
+  .replace(/&/g,"&amp;")
+  .replace(/</g,"&lt;")
+  .replace(/>/g,"&gt;")
+  .replace(/"/g,"&quot;")
+  .replace(/'/g,"&#039;");
+
+}
+
+
+function escapeAttr(value){
+
+  return escapeHtml(value);
+
+}
+
+
+function showToast(message){
+
+  const toast =
+    document.getElementById(
+      "toast"
+    );
+
+  toast.textContent =
+    message;
+
+  toast.classList.add(
+    "show"
+  );
+
+  clearTimeout(
+    window.toastTimer
+  );
+
+  window.toastTimer =
+    setTimeout(
+      function(){
+
+        toast.classList.remove(
+          "show"
+        );
+
+      },
+      3000
+    );
+
+}
+
+</script>
+
+</body>
+</html>
