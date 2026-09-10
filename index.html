@@ -3228,17 +3228,17 @@ function renderOverview(){
 
   setText(
     "overviewActual",
-    money(d.totalActual)
+    overviewMoney(d.totalActual)
   );
 
   setText(
     "overviewTarget",
-    money(d.targetAll)
+    overviewMoney(d.targetAll)
   );
 
   setText(
     "overviewEst",
-    money(d.estimation)
+    overviewMoney(d.estimation)
   );
 
   setHtml(
@@ -3248,7 +3248,7 @@ function renderOverview(){
 
   setText(
     "overviewShort",
-    money(d.shortfall)
+    overviewMoney(d.shortfall)
   );
 
   setHtml(
@@ -3298,15 +3298,15 @@ function renderOverview(){
     const estimation = Number(o.estimation || 0);
     const shortfall = Math.max(target - actual, 0);
 
-    setText(prefix + "Target", money(target));
-    setText(prefix + "Actual", money(actual));
-    setText(prefix + "Est", money(estimation));
+    setText(prefix + "Target", overviewMoney(target));
+    setText(prefix + "Actual", overviewMoney(actual));
+    setText(prefix + "Est", overviewMoney(estimation));
     setHtml(prefix + "EstPercent", percent(
       o.estimationPercent != null
         ? Number(o.estimationPercent)
         : (target > 0 ? estimation / target * 100 : 0)
     ));
-    setText(prefix + "Short", money(shortfall));
+    setText(prefix + "Short", overviewMoney(shortfall));
 
     setHtml(prefix + "Ach", percent(
       o.achievement != null
@@ -3337,12 +3337,12 @@ function renderCategory(category,prefix){
 
   setText(
     prefix+"Actual",
-    money(c.actual)
+    overviewMoney(c.actual)
   );
 
   setText(
     prefix+"Target",
-    money(c.target)
+    overviewMoney(c.target)
   );
 
   setHtml(
@@ -3352,7 +3352,7 @@ function renderCategory(category,prefix){
 
   setText(
     prefix+"Est",
-    money(c.estimation)
+    overviewMoney(c.estimation)
   );
 
   setHtml(
@@ -3362,7 +3362,7 @@ function renderCategory(category,prefix){
 
   setText(
     prefix+"Short",
-    money(c.shortfall)
+    overviewMoney(c.shortfall)
   );
 
 }
@@ -3390,7 +3390,7 @@ function renderPerformanceHighlight(){
     topEl.innerHTML=top.length?top.map((x,i)=>`
       <div class="highlight-row">
         <div class="highlight-rank">#${i+1}</div>
-        <div><div class="highlight-name">${escapeHtml(x.name)}</div><div class="highlight-meta">Actual ${money(x.actual)}</div></div>
+        <div><div class="highlight-name">${escapeHtml(x.name)}</div><div class="highlight-meta">Actual ${overviewMoney(x.actual)}</div></div>
         <div class="highlight-score">${percent(x.ach)}</div>
       </div>`).join(""):'<div class="highlight-empty">Belum ada transaksi H-1 untuk diranking.</div>';
   }
@@ -3406,7 +3406,7 @@ function renderPerformanceHighlight(){
     bestEl.innerHTML=best?`
       <div class="highlight-row">
         <div class="highlight-rank">★</div>
-        <div><div class="highlight-name">${escapeHtml(best.name)}</div><div class="highlight-meta">Actual ${money(best.actual)} • Target ${money(best.target)}</div></div>
+        <div><div class="highlight-name">${escapeHtml(best.name)}</div><div class="highlight-meta">Actual ${overviewMoney(best.actual)} • Target ${overviewMoney(best.target)}</div></div>
         <div class="highlight-score">${percent(best.ach)}</div>
       </div>`:'<div class="highlight-empty">Belum ada transaksi H-1.</div>';
   }
@@ -3417,7 +3417,7 @@ function renderPerformanceHighlight(){
     quickEl.innerHTML=focus?`
       <div class="highlight-action">
         <div><div class="highlight-action-main">Kejar ${escapeHtml(focus.name)}</div><div class="highlight-meta">Time Gone ${Math.round(Number(dashboardData.timeGone||0))}%</div></div>
-        <div class="highlight-action-value">${money(Math.max(focus.target-focus.actual,0))}</div>
+        <div class="highlight-action-value">${overviewMoney(Math.max(focus.target-focus.actual,0))}</div>
       </div>`:'<div class="highlight-empty">Target belum tersedia.</div>';
   }
 }
@@ -5391,7 +5391,33 @@ function money(value){
 }
 
 function compactNumber_(value){
-  return String(Math.round(Number(value) || 0));
+  const n = Number(value) || 0;
+  // Tampilkan sampai 2 angka desimal, tetapi hilangkan nol di belakang.
+  // Contoh: 1.000.000 -> 1 jt, 2.048.735 -> 2,05 jt.
+  return n.toLocaleString('id-ID', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2
+  });
+}
+
+
+// Formatter khusus OVERVIEW: maksimal 1 angka desimal.
+// Menu lain tetap menggunakan money() yang sudah ada.
+function overviewMoney(value){
+  const n = Number(value || 0);
+  if (!Number.isFinite(n)) return "Rp 0";
+
+  const abs = Math.abs(n);
+  const sign = n < 0 ? "-" : "";
+  const fmt = v => Number(v).toLocaleString("id-ID", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 1
+  });
+
+  if (abs >= 1000000000) return "Rp " + sign + fmt(abs / 1000000000) + " M";
+  if (abs >= 1000000) return "Rp " + sign + fmt(abs / 1000000) + " jt";
+  if (abs >= 1000) return "Rp " + sign + fmt(abs / 1000) + " rb";
+  return "Rp " + sign + Math.round(abs).toLocaleString("id-ID");
 }
 
 
