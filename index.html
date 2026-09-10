@@ -1573,6 +1573,14 @@ html,body{
       </button>
 
       <button
+        id="menu-top"
+        onclick="showPage('top')"
+      >
+        <span class="menu-icon">🏆</span>
+        Top ERO
+      </button>
+
+      <button
         id="menu-outlook"
         onclick="showPage('outlook')"
       >
@@ -2400,6 +2408,51 @@ html,body{
         </div>
       </div>
 
+      <!-- ================= TOP ERO ================= -->
+
+      <div id="page-top" class="page" style="display:none">
+
+        <div class="page-head">
+          <div>
+            <h1 class="page-title">Top ERO</h1>
+            <div class="page-subtitle">Ranking ERO berdasarkan Achievement % H-1</div>
+          </div>
+          <div class="month-badge">📅 <span id="topEroMonth"></span></div>
+        </div>
+
+        <div class="filters" style="margin-bottom:10px">
+          <select class="select top-ero-filter" id="topPageCategory" onchange="renderTopEROPage()">
+            <option value="Sales All">Sales All</option>
+            <option value="Device">Device</option>
+            <option value="Accessories">Accessories</option>
+            <option value="Operator">Operator</option>
+          </select>
+        </div>
+
+        <div class="top-grid" id="topPageCards"></div>
+
+        <div class="table-card">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>RANK</th>
+                  <th>ERO</th>
+                  <th>TARGET</th>
+                  <th>ACTUAL H-1</th>
+                  <th>ACH%</th>
+                  <th>ESTIMASI</th>
+                  <th>EST%</th>
+                </tr>
+              </thead>
+              <tbody id="topPageTable"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+
       <!-- ================= TARGET ================= -->
 
       <div id="page-target" class="page" style="display:none">
@@ -3038,6 +3091,7 @@ async function loadAll(){
       renderSalesPerformance();
       renderStore();
       renderOutlook();
+      if(currentPage === "top") renderTopEROPage();
 
     }
 
@@ -3202,6 +3256,8 @@ function showPage(page){
     );
 
   }
+
+  if(page === "top") renderTopEROPage();
 
   if(page === "overview")
     renderOverview();
@@ -4146,6 +4202,51 @@ function renderContribution(){
 
 }
 
+
+function renderTopEROPage(){
+  if(!dashboardData || !salesList || !salesList.length) return;
+
+  const categoryEl=document.getElementById("topPageCategory");
+  const category=categoryEl ? categoryEl.value : "Sales All";
+  const days=Number(dashboardData.daysPassed || dashboardData.days || 0);
+  const dim=Number(dashboardData.daysInMonth || new Date(new Date().getFullYear(),new Date().getMonth()+1,0).getDate());
+
+  const rows=salesList.map(s=>{
+    const actual=getStoreSalesCategoryActual_(s.id,category,"ALL");
+    const target=getStoreSalesTarget_(s.id,category);
+    const est=days>0 ? actual/days*dim : 0;
+    const ach=target>0 ? actual/target*100 : 0;
+    const estPct=target>0 ? est/target*100 : 0;
+    return {s,actual,target,est,ach,estPct};
+  }).filter(r=>r.target>0 || r.actual!==0).sort((a,b)=>b.ach-a.ach || b.actual-a.actual);
+
+  const medals=["🥇","🥈","🥉"];
+  const cards=document.getElementById("topPageCards");
+  if(cards){
+    cards.innerHTML=rows.slice(0,3).map((r,i)=>`
+      <div class="top-card rank${i+1}">
+        <div class="medal">${medals[i]}</div>
+        <div class="top-name">${escapeHtml(r.s.name||"-")}</div>
+        <div class="top-amount">${money(r.actual)}</div>
+        <div class="badge">Ach ${percent(r.ach)}</div>
+      </div>`).join("") || '<div class="highlight-empty">Belum ada data untuk diranking.</div>';
+  }
+
+  const tbody=document.getElementById("topPageTable");
+  if(tbody){
+    tbody.innerHTML=rows.map((r,i)=>`
+      <tr>
+        <td>#${i+1}</td>
+        <td><b>${escapeHtml(r.s.name||"-")}</b></td>
+        <td class="money">${money(r.target)}</td>
+        <td class="money">${money(r.actual)}</td>
+        <td>${percent(r.ach)}</td>
+        <td class="money">${money(r.est)}</td>
+        <td>${percent(r.estPct)}</td>
+      </tr>`).join("") || '<tr><td colspan="7">Belum ada data.</td></tr>';
+  }
+  setText("topEroMonth", formatMonth(dashboardData.period || getCurrentPeriod()));
+}
 
 /* =====================================================
    TOP SALES
