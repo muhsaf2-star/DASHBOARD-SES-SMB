@@ -1980,6 +1980,26 @@ html,body{
   #page-overview .operator-liquid-percent{font-size:8px!important;}
 }
 
+
+/* V15 — achievement liquid colors:
+   0–50 red | 51–80 orange | 81–90 yellow | 91+ green */
+#page-overview .liquid-capsule.liquid-bad > span,
+#page-overview .operator-liquid-capsule.liquid-bad > span{
+  background:linear-gradient(180deg,#ff6876 0%,#f13b4c 55%,#d92b3b 100%) !important;
+}
+#page-overview .liquid-capsule.liquid-warn > span,
+#page-overview .operator-liquid-capsule.liquid-warn > span{
+  background:linear-gradient(180deg,#ffb84d 0%,#f28c18 55%,#db7100 100%) !important;
+}
+#page-overview .liquid-capsule.liquid-yellow > span,
+#page-overview .operator-liquid-capsule.liquid-yellow > span{
+  background:linear-gradient(180deg,#ffe66b 0%,#f8c928 55%,#e5aa00 100%) !important;
+}
+#page-overview .liquid-capsule.liquid-good > span,
+#page-overview .operator-liquid-capsule.liquid-good > span{
+  background:linear-gradient(180deg,#4be39a 0%,#16b96b 55%,#0c9b59 100%) !important;
+}
+
 </style>
 </head>
 
@@ -3697,12 +3717,15 @@ function renderOverview(){
 
 
 function setOperatorLiquidCapsule(id,value){
-  const el=document.getElementById(id); if(!el)return;
+  const el=document.getElementById(id);
+  if(!el)return;
   const pct=Number(value||0), fill=Math.max(0,Math.min(pct,100));
-  const span=el.querySelector('span'); if(span)span.style.height=fill+"%";
-  el.classList.remove("liquid-good","liquid-warn","liquid-bad");
-  if(pct>=100)el.classList.add("liquid-good");
-  else if(pct>=90)el.classList.add("liquid-warn");
+  const span=el.querySelector('span');
+  if(span) span.style.height=fill+"%";
+  el.classList.remove("liquid-good","liquid-warn","liquid-yellow","liquid-bad");
+  if(pct>=91) el.classList.add("liquid-good");
+  else if(pct>=81) el.classList.add("liquid-yellow");
+  else if(pct>=51) el.classList.add("liquid-warn");
   else el.classList.add("liquid-bad");
 }
 
@@ -3712,9 +3735,10 @@ function setLiquidCapsule(id, value){
   const pct=Number(value||0);
   const fill=Math.max(0,Math.min(pct,100));
   el.style.height=fill+"%";
-  el.classList.remove("liquid-good","liquid-warn","liquid-bad");
-  if(pct>=100) el.classList.add("liquid-good");
-  else if(pct>=90) el.classList.add("liquid-warn");
+  el.classList.remove("liquid-good","liquid-warn","liquid-yellow","liquid-bad");
+  if(pct>=91) el.classList.add("liquid-good");
+  else if(pct>=81) el.classList.add("liquid-yellow");
+  else if(pct>=51) el.classList.add("liquid-warn");
   else el.classList.add("liquid-bad");
 }
 
