@@ -1653,6 +1653,11 @@ html,body{
   .exec-filter-grid .select{width:100%;min-width:0;}
 }
 </style>
+
+<style>
+.exec-period-compact{display:flex;align-items:center;gap:12px;padding:9px 12px}.exec-period-compact .filter-section-title{margin:0;white-space:nowrap}.exec-period-compact .exec-periods{flex:1}.device-value-only{min-height:132px}.device-value-only .device-date-label{margin-top:12px;font-size:10px;color:#64748b}.operator-sub-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px}.operator-sub-card{padding:12px;background:#fff;border:1px solid #dce8f5;border-radius:13px;box-shadow:0 2px 10px rgba(20,70,130,.04)}.operator-sub-head{display:flex;gap:8px;align-items:center;color:#087bea}.operator-sub-head>span{font-size:20px}.operator-sub-head b{display:block;color:#112e68;font-size:13px}.operator-sub-head small{font-size:9px;color:#8290a8}.operator-sub-value{font-size:21px;font-weight:900;color:#092d72;margin-top:8px}.operator-sub-target{font-size:10px;color:#64748b}.operator-sub-target b{color:#17356f}.operator-sub-row{display:flex;align-items:center;gap:7px;justify-content:space-between;font-size:10px;color:#64748b;margin-top:7px}.operator-sub-row b{color:#17356f}.operator-sub-row em{font-style:normal;color:#087bea;font-weight:900}.operator-sub-row.gap b{color:#f13b4c}.operator-chart{height:220px;display:flex;align-items:flex-end;justify-content:space-around;gap:18px;padding:12px 12px 20px;border-bottom:1px solid #d9e4f1}.operator-chart-item{height:100%;flex:1;max-width:90px;display:flex;flex-direction:column;justify-content:flex-end;align-items:center}.operator-chart-track{height:145px;width:42px;background:#edf2f8;border-radius:7px 7px 2px 2px;display:flex;align-items:flex-end;overflow:hidden}.operator-chart-fill{width:100%;min-height:2px;border-radius:7px 7px 2px 2px}.operator-chart-value{font-size:11px;font-weight:900;color:#12346b;margin-bottom:5px}.operator-chart-name{font-size:10px;font-weight:800;color:#435676;margin-top:6px}.exec-filter-grid{display:none!important}
+@media(max-width:900px){.operator-sub-grid{grid-template-columns:1fr}.exec-period-compact{display:block;padding:7px 8px}.exec-period-compact .filter-section-title{margin-bottom:5px}.exec-period-compact .exec-periods{overflow-x:auto}.operator-sub-grid{grid-template-columns:1fr;gap:6px}.operator-sub-card{padding:9px}.operator-sub-value{font-size:19px}.operator-chart{height:190px;gap:8px;padding:10px 6px 18px}.operator-chart-track{height:120px;width:34px}.operator-chart-name{font-size:9px}.operator-chart-value{font-size:10px}.device-value-only{min-height:120px}.device-value-only .device-date-label{font-size:9px}}
+</style>
 </head>
 
 <body>
@@ -1850,7 +1855,7 @@ html,body{
           <div class="ero-motto-text" id="eroMottoText">Jualan yang semangat ya! 💪🔥</div>
         </div>
 
-        <div class="exec-filter card">
+        <div class="exec-filter card exec-period-compact">
           <div class="filter-section-title">📅 Periode</div>
           <div class="filters exec-periods">
             <button class="filter-btn" onclick="setPeriodMode('lastweek',this)">Minggu Lalu</button>
@@ -1864,24 +1869,22 @@ html,body{
             <div><label>Tanggal Akhir</label><input type="date" id="customEndDate"></div>
             <button class="btn primary" onclick="applyCustomPeriod()">Terapkan</button>
           </div>
-          <div class="exec-filter-grid">
-            <div><label>Kategori</label><select id="overviewCategoryFilter" class="select" onchange="updateOverviewFilterOptions();renderOverviewCharts()"><option value="ALL">Semua Kategori</option><option value="Device">Device</option><option value="Accessories">Accessories</option><option value="Repair Contract">SCP</option><option value="Operator">Operator</option></select></div>
-            <div><label>Sub Kategori</label><select id="overviewSubcategoryFilter" class="select" onchange="renderOverviewCharts()"><option value="ALL">Semua Sub Kategori</option></select></div>
-            <div><label>ERO</label><select id="overviewEroFilter" class="select" onchange="renderOverviewCharts()"><option value="ALL">Semua ERO</option></select></div>
-            <button class="btn filter-reset" onclick="resetOverviewFilters()">↻ Reset Filter</button>
-          </div>
         </div>
 
         <div class="exec-kpi-grid">
           <div class="exec-kpi kpi-main"><div class="kpi-icon">▥</div><div class="kpi-label">SALES ALL</div><div class="kpi-value" id="overviewActual">Rp 0</div><div class="kpi-target">dari target <b id="overviewTarget">Rp 0</b></div><div class="kpi-progress"><span id="overviewProgress"></span></div><div class="kpi-percent" id="overviewAch">0%</div><div class="kpi-foot"><span>Estimasi</span><b id="overviewEst">Rp 0</b><em id="overviewEstPercent">0%</em></div><div class="kpi-foot danger"><span>Kekurangan</span><b id="overviewShort">Rp 0</b></div></div>
-          <div class="exec-kpi"><div class="kpi-icon">▣</div><div class="kpi-label">DEVICE</div><div class="kpi-value" id="deviceActual">Rp 0</div><div class="kpi-target">dari target <b id="deviceTarget">Rp 0</b></div><div class="kpi-progress"><span id="deviceProgress"></span></div><div class="kpi-percent" id="deviceAch">0%</div><div class="kpi-foot"><span>Estimasi</span><b id="deviceEst">Rp 0</b><em id="deviceEstPercent">0%</em></div><div class="kpi-foot danger"><span>Kekurangan</span><b id="deviceShort">Rp 0</b></div></div>
+          <div class="exec-kpi device-value-only"><div class="kpi-icon">▣</div><div class="kpi-label">DEVICE</div><div class="kpi-value" id="deviceActual">Rp 0</div><div class="device-date-label">📅 <span id="deviceDateLabel">Periode terpilih</span></div></div>
           <div class="exec-kpi"><div class="kpi-icon">◉</div><div class="kpi-label">ACCESSORIES</div><div class="kpi-value" id="accActual">Rp 0</div><div class="kpi-target">dari target <b id="accTarget">Rp 0</b></div><div class="kpi-progress"><span id="accProgress"></span></div><div class="kpi-percent" id="accAch">0%</div><div class="kpi-foot"><span>Estimasi</span><b id="accEst">Rp 0</b><em id="accEstPercent">0%</em></div><div class="kpi-foot danger"><span>Kekurangan</span><b id="accShort">Rp 0</b></div></div>
           <div class="exec-kpi"><div class="kpi-icon">◆</div><div class="kpi-label">SCP</div><div class="kpi-value" id="repairActual">Rp 0</div><div class="kpi-target">dari target <b id="repairTarget">Rp 0</b></div><div class="kpi-progress"><span id="repairProgress"></span></div><div class="kpi-percent" id="repairAch">0%</div><div class="kpi-foot"><span>Estimasi</span><b id="repairEst">Rp 0</b><em id="repairEstPercent">0%</em></div><div class="kpi-foot danger"><span>Kekurangan</span><b id="repairShort">Rp 0</b></div></div>
           <div class="exec-kpi"><div class="kpi-icon">⌁</div><div class="kpi-label">OPERATOR</div><div class="kpi-value" id="operatorActual">Rp 0</div><div class="kpi-target">dari target <b id="operatorTarget">Rp 0</b></div><div class="kpi-progress"><span id="operatorProgress"></span></div><div class="kpi-percent" id="operatorAch">0%</div><div class="kpi-foot"><span>Estimasi</span><b id="operatorEst">Rp 0</b><em id="operatorEstPercent">0%</em></div><div class="kpi-foot danger"><span>Kekurangan</span><b id="operatorShort">Rp 0</b></div></div>
         </div>
 
         <div class="exec-grid grid-main">
-          <div class="card exec-chart-card wide"><div class="exec-card-head"><span>▥</span><div><b id="overviewTrendTitle">Trend Sales All</b><small>Actual & estimasi harian</small></div><span class="legend"><i class="dot actual"></i>Actual <i class="dot est"></i>Estimasi</span></div><div id="overviewTrendChart" class="svg-chart"></div></div>
+          <div class="card exec-chart-card wide"><div class="exec-card-head"><span>⌁</span><div><b>Operator by Sub Kategori</b><small>Target • Pencapaian • Estimasi • Est % • Gap</small></div></div><div class="operator-sub-grid" id="overviewOperatorSubGrid">
+            <div class="operator-sub-card"><div class="operator-sub-head"><span>◉</span><div><b>Indosat</b><small>Operator</small></div></div><div class="operator-sub-value" id="overviewIndosatActual">Rp 0</div><div class="operator-sub-target">Target <b id="overviewIndosatTarget">Rp 0</b></div><div class="operator-sub-row"><span>Pencapaian</span><b id="overviewIndosatAch">0%</b></div><div class="operator-sub-row"><span>Estimasi</span><b id="overviewIndosatEst">Rp 0</b><em id="overviewIndosatEstPercent">0%</em></div><div class="operator-sub-row gap"><span>Gap</span><b id="overviewIndosatGap">Rp 0</b></div></div>
+            <div class="operator-sub-card"><div class="operator-sub-head"><span>ⓧ</span><div><b>XL</b><small>Operator</small></div></div><div class="operator-sub-value" id="overviewXLActual">Rp 0</div><div class="operator-sub-target">Target <b id="overviewXLTarget">Rp 0</b></div><div class="operator-sub-row"><span>Pencapaian</span><b id="overviewXLAch">0%</b></div><div class="operator-sub-row"><span>Estimasi</span><b id="overviewXLEst">Rp 0</b><em id="overviewXLEstPercent">0%</em></div><div class="operator-sub-row gap"><span>Gap</span><b id="overviewXlGap">Rp 0</b></div></div>
+            <div class="operator-sub-card"><div class="operator-sub-head"><span>⌁</span><div><b>Telkomsel</b><small>Operator</small></div></div><div class="operator-sub-value" id="overviewTelkomselActual">Rp 0</div><div class="operator-sub-target">Target <b id="overviewTelkomselTarget">Rp 0</b></div><div class="operator-sub-row"><span>Pencapaian</span><b id="overviewTelkomselAch">0%</b></div><div class="operator-sub-row"><span>Estimasi</span><b id="overviewTelkomselEst">Rp 0</b><em id="overviewTelkomselEstPercent">0%</em></div><div class="operator-sub-row gap"><span>Gap</span><b id="overviewTelkomselGap">Rp 0</b></div></div>
+          </div></div>
           <div class="card exec-chart-card"><div class="exec-card-head"><span>▥</span><div><b>Sales by Series</b><small>Device • Actual</small></div></div><div id="overviewSeriesChart" class="svg-chart"></div></div>
           <div class="card exec-chart-card"><div class="exec-card-head"><span>◔</span><div><b>Kontribusi Kategori</b><small>Nilai sales</small></div></div><div id="overviewContributionChart" class="donut-chart"></div></div>
         </div>
@@ -3119,7 +3122,7 @@ function normalizeOverviewSubcategory_(x){
 function overviewFilteredTransactions(){
   const tx=(dashboardData&&dashboardData.transactions)||[];
   const ero=(document.getElementById('overviewEroFilter')||{}).value||'ALL';
-  const cat=(document.getElementById('overviewCategoryFilter')||{}).value||'ALL';
+  const cat='ALL';
   const sub=(document.getElementById('overviewSubcategoryFilter')||{}).value||'ALL';
   return tx.filter(x=>{
     if(ero!=='ALL' && String(x.salesId)!==String(ero)) return false;
@@ -3133,7 +3136,7 @@ function overviewFilteredTransactions(){
   });
 }
 function updateOverviewFilterOptions(){
-  const cat=(document.getElementById('overviewCategoryFilter')||{}).value||'ALL';
+  const cat='ALL';
   const el=document.getElementById('overviewSubcategoryFilter'); if(!el)return;
   let opts=['ALL'];
   if(cat==='Device') opts=['ALL','Series A','Series S','Series Z','Series Tab'];
@@ -3174,15 +3177,24 @@ function renderOverviewTrend(tx){
   const vals=actual.length?actual:[0]; const estLine=vals.map((_,i)=>total/(Math.max(1,actual.length))*(i+1));
   svgLineChart('overviewTrendChart',vals,estLine);
 }
+function getDeviceSeriesKey(value){
+  const r=String(value||'').trim().toLowerCase();
+  if(!r) return null;
+  if(r.includes('tab')) return 'Tab';
+  if(/(^|\b)z(\b|\s|-|series)/.test(r) || r.includes('series z')) return 'Series Z';
+  if(/(^|\b)a(\b|\s|-|series)/.test(r) || r.includes('series a')) return 'Series A';
+  if(/(^|\b)s(\b|\s|-|series)/.test(r) || r.includes('series s')) return 'Series S';
+  return null;
+}
 function renderOverviewSeries(tx){
   const keys=['Series S','Series Z','Series A','Tab']; const colors=['#087bea','#5d7fe8','#f08a24','#16a765']; const sums={}; keys.forEach(k=>sums[k]=0);
-  tx.filter(x=>String(x.category||'')==='Device').forEach(x=>{let raw=String(x.series||'').toLowerCase(); let k=raw.includes('s')&&!raw.includes('a')&&!raw.includes('z')?'Series S':raw.includes('z')?'Series Z':raw.includes('a')?'Series A':raw.includes('tab')?'Tab':null;if(k)sums[k]+=Number(x.amount||0);});
-  const max=Math.max(1,...keys.map(k=>sums[k])); const w=520,h=220,p=28,bw=48,gap=65; let svg=`<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><line x1="${p}" y1="${h-p}" x2="${w-p}" y2="${h-p}" stroke="#b9c8dc"/>`;
-  keys.forEach((k,i)=>{const bh=(sums[k]/max)*(h-p*2-20),x=p+20+i*(bw+gap),y=h-p-bh;svg+=`<rect x="${x}" y="${y}" width="${bw}" height="${bh}" rx="5" fill="${colors[i]}" opacity=".9"/><text x="${x+bw/2}" y="${y-7}" text-anchor="middle" font-size="10" font-weight="800" fill="#17356f">${eroMoney(sums[k])}</text><text x="${x+bw/2}" y="${h-8}" text-anchor="middle" font-size="9" fill="#50627f">${k.replace('Series ','S ')}</text>`;});
+  tx.filter(x=>String(x.category||'')==='Device').forEach(x=>{const k=getDeviceSeriesKey(x.series);if(k)sums[k]+=Number(x.amount||0);});
+  const max=Math.max(1,...keys.map(k=>Math.abs(sums[k]))); const w=520,h=220,p=28,bw=48,gap=65; let svg=`<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><line x1="${p}" y1="${h-p}" x2="${w-p}" y2="${h-p}" stroke="#b9c8dc"/>`;
+  keys.forEach((k,i)=>{const bh=Math.max(2,Math.abs(sums[k])/max*(h-p*2-20)),x=p+20+i*(bw+gap),y=h-p-bh;svg+=`<rect x="${x}" y="${y}" width="${bw}" height="${bh}" rx="5" fill="${colors[i]}" opacity=".9"/><text x="${x+bw/2}" y="${y-7}" text-anchor="middle" font-size="10" font-weight="800" fill="#17356f">${overviewMoney(sums[k])}</text><text x="${x+bw/2}" y="${h-8}" text-anchor="middle" font-size="9" fill="#50627f">${k==='Tab'?'Tab':k.replace('Series ','')+' Series'}</text>`;});
   document.getElementById('overviewSeriesChart').innerHTML=svg+'</svg>';
 }
 function renderOverviewSeriesTrend(tx){
-  const keys=['Series S','Series Z','Series A','Tab']; const maps={}; keys.forEach(k=>maps[k]={}); tx.filter(x=>String(x.category||'')==='Device').forEach(x=>{const r=String(x.series||'').toLowerCase();const k=r.includes('z')?'Series Z':r.includes('tab')?'Tab':r.includes('a')?'Series A':r.includes('s')?'Series S':null;if(k){const d=String(x.date||'').slice(0,10);if(d)maps[k][d]=(maps[k][d]||0)+Number(x.amount||0);}});
+  const keys=['Series S','Series Z','Series A','Tab']; const maps={}; keys.forEach(k=>maps[k]={}); tx.filter(x=>String(x.category||'')==='Device').forEach(x=>{const k=getDeviceSeriesKey(x.series);if(k){const d=String(x.date||'').slice(0,10);if(d)maps[k][d]=(maps[k][d]||0)+Number(x.amount||0);}});
   const dates=[...new Set(keys.flatMap(k=>Object.keys(maps[k])))].sort(); const w=700,h=220,p=28,max=Math.max(1,...keys.flatMap(k=>dates.map(d=>maps[k][d]||0))); const colors=['#173f91','#6f3ce5','#f08a24','#16a765']; let svg=`<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><g stroke="#e7edf5">`;
   for(let i=0;i<5;i++){let y=p+i*(h-p*2)/4;svg+=`<line x1="${p}" y1="${y}" x2="${w-p}" y2="${y}"/>`;}svg+='</g>';
   keys.forEach((k,j)=>{const pts=dates.map((d,i)=>`${p+i*(w-p*2)/Math.max(1,dates.length-1)},${h-p-(maps[k][d]||0)/max*(h-p*2)}`).join(' ');svg+=`<polyline fill="none" stroke="${colors[j]}" stroke-width="2" points="${pts}"/>`;}); document.getElementById('overviewSeriesTrend').innerHTML=svg+'</svg>';
@@ -3200,9 +3212,24 @@ function renderOverviewContribution(tx){
   const cats=[['Device','#087bea'],['Accessories','#63aef5'],['Repair Contract','#9eafc5'],['Operator','#dce3ec']]; const vals=cats.map(c=>tx.filter(x=>String(x.category||'')===c[0]).reduce((a,x)=>a+Number(x.amount||0),0));const total=vals.reduce((a,b)=>a+b,0);let acc=0,stops=[];vals.forEach((v,i)=>{const pct=total?v/total*100:0;stops.push(`${cats[i][1]} ${acc}% ${acc+pct}%`);acc+=pct;}); document.getElementById('overviewContributionChart').innerHTML=`<div class="donut" style="background:conic-gradient(${stops.join(',')||'#e8edf4 0 100%'})"><div class="donut-center">${overviewMoney(total)}<small>Sales All</small></div></div><div class="donut-list">${cats.map((c,i)=>`<div class="donut-row"><i class="donut-swatch" style="background:${c[1]}"></i>${c[0]} <b style="margin-left:auto">${total?Math.round(vals[i]/total*100):0}%</b></div>`).join('')}</div>`;}
 function renderOverviewGauge(){const a=Number(dashboardData.totalActual||0),t=Number(dashboardData.targetAll||0),p=t>0?Math.min(100,a/t*100):0;document.getElementById('overviewGauge').innerHTML=`<div class="gauge" style="--p:${p}%"></div><div class="gauge-center"><strong>${Math.round(p)}%</strong><small>Achievement</small></div>`;}
 function renderOverviewCategoryPerformance(){const cats=['Device','Accessories','Repair Contract','Operator'];document.getElementById('overviewCategoryPerformance').innerHTML=cats.map(c=>{const x=(dashboardData.categories||{})[c]||{};const est=Number(x.estimationPercent||0);return `<div class="category-performance-row"><span class="cat-name">${c==='Repair Contract'?'SCP':c}</span><div class="cat-track"><div class="cat-fill" style="width:${Math.min(100,est)}%"></div></div><span class="cat-est">${Math.round(est)}%</span></div>`}).join('');}
-function renderOverviewLowest(){const cat=(document.getElementById('overviewCategoryFilter')||{}).value||'ALL';const cats=cat==='ALL'?['Sales All','Device','Accessories','Indosat','XL','Telkomsel']:[cat==='Repair Contract'?'SCP':cat];const days=Number(dashboardData.daysPassed||0),dim=Number(dashboardData.daysInMonth||days||1);let html='<table class="lowest-table"><thead><tr><th>KATEGORI</th><th>ERO</th><th>ACTUAL</th><th>EST%</th><th>GAP EST</th></tr></thead><tbody>';cats.forEach(c=>{const base=c==='Sales All'?'Sales All':c;const rows=salesList.map(s=>{let a=getStoreSalesCategoryActual_(s.id,base,'ALL');let t=getStoreSalesTarget_(s.id,base);if(['Indosat','XL','Telkomsel'].includes(c)){a=getStoreSalesCategoryActual_(s.id,'Operator',c);t=getStoreSalesTarget_(s.id,c);}const e=days>0?a/days*dim:0;return {name:s.name,a,t,p:t>0?e/t*100:0,g:Math.max(t-e,0)};}).filter(r=>r.t>0).sort((a,b)=>a.p-b.p)[0];if(rows)html+=`<tr><td>${c}</td><td>${escapeHtml(rows.name)}</td><td>${eroMoney(rows.a)}</td><td>${Math.round(rows.p)}%</td><td>${eroMoney(rows.g)}</td></tr>`;});document.getElementById('overviewLowest').innerHTML=html+'</tbody></table>';}
+function renderOverviewLowest(){const cat='ALL';const cats=cat==='ALL'?['Sales All','Device','Accessories','Indosat','XL','Telkomsel']:[cat==='Repair Contract'?'SCP':cat];const days=Number(dashboardData.daysPassed||0),dim=Number(dashboardData.daysInMonth||days||1);let html='<table class="lowest-table"><thead><tr><th>KATEGORI</th><th>ERO</th><th>ACTUAL</th><th>EST%</th><th>GAP EST</th></tr></thead><tbody>';cats.forEach(c=>{const base=c==='Sales All'?'Sales All':c;const rows=salesList.map(s=>{let a=getStoreSalesCategoryActual_(s.id,base,'ALL');let t=getStoreSalesTarget_(s.id,base);if(['Indosat','XL','Telkomsel'].includes(c)){a=getStoreSalesCategoryActual_(s.id,'Operator',c);t=getStoreSalesTarget_(s.id,c);}const e=days>0?a/days*dim:0;return {name:s.name,a,t,p:t>0?e/t*100:0,g:Math.max(t-e,0)};}).filter(r=>r.t>0).sort((a,b)=>a.p-b.p)[0];if(rows)html+=`<tr><td>${c}</td><td>${escapeHtml(rows.name)}</td><td>${eroMoney(rows.a)}</td><td>${Math.round(rows.p)}%</td><td>${eroMoney(rows.g)}</td></tr>`;});document.getElementById('overviewLowest').innerHTML=html+'</tbody></table>';}
 function renderOverviewInsights(){const est=Math.round(Number(dashboardData.estimationPercent||0));const cats=Object.entries(dashboardData.categories||{}).filter(([k,v])=>Number(v.target||0)>0).sort((a,b)=>Number(a[1].estimationPercent||0)-Number(b[1].estimationPercent||0));const focus=cats.slice(0,2).map(x=>x[0]==='Repair Contract'?'SCP':x[0]).join(' & ');const top=salesList.map(s=>{const a=getStoreSalesCategoryActual_(s.id,'Sales All','ALL'),t=getStoreSalesTarget_(s.id,'Sales All'),e=(dashboardData.daysPassed||1)>0?a/(dashboardData.daysPassed||1)*(dashboardData.daysInMonth||1):0;return {name:s.name,p:t?e/t*100:0};}).sort((a,b)=>b.p-a.p)[0];document.getElementById('overviewInsight').innerHTML=`<ul class="insight-list"><li>Estimasi Sales All saat ini <b>${est}%</b>.</li><li>Fokus kategori <b>${focus||'prioritas utama'}</b> untuk mengejar target.</li><li>${escapeHtml(top?.name||'ERO terbaik')} memimpin dengan estimasi <b>${Math.round(top?.p||0)}%</b>.</li><li>Gunakan grafik ERO untuk melihat posisi tim secara visual.</li></ul>`;document.getElementById('overviewAction').innerHTML='<ul class="action-list"><li>Push penjualan Device dan flagship.</li><li>Optimalkan aktivasi Operator.</li><li>Tingkatkan attach rate Accessories.</li><li>Follow up ERO dengan estimasi &lt; 100%.</li><li>Review target mingguan dan eksekusi campaign.</li></ul>';}
-function renderOverviewCharts(){if(!dashboardData)return;populateOverviewEros();const tx=overviewFilteredTransactions();renderOverviewTrend(tx);renderOverviewSeries(tx);renderOverviewSeriesTrend(tx);renderOverviewEroChart();renderOverviewTop3();renderOverviewContribution(tx);renderOverviewGauge();renderOverviewCategoryPerformance();renderOverviewLowest();renderOverviewInsights();}
+function renderOverviewOperatorChart(){
+  const op=dashboardData.operators||{};
+  const keys=['Indosat','XL','Telkomsel'];
+  const rows=keys.map(k=>{const o=op[k]||{};const target=Number(o.target||0);const actual=Number(o.actual||0);const est=Number(o.estimation||0);const ep=target>0?est/target*100:0;return {k,actual,target,est,ep};});
+  const max=Math.max(100,...rows.map(x=>x.ep));
+  const colors=['#f39b20','#087bea','#f13b4c'];
+  document.getElementById('overviewOperatorChart').innerHTML=rows.map((r,i)=>{const h=Math.min(100,r.ep/max*100);return `<div class="operator-chart-item"><div class="operator-chart-value">${Math.round(r.ep)}%</div><div class="operator-chart-track"><div class="operator-chart-fill" style="height:${h}%;background:${colors[i]}"></div></div><div class="operator-chart-name">${r.k}</div></div>`;}).join('');
+}
+
+function renderOverviewCharts(){if(!dashboardData)return;populateOverviewEros();const tx=overviewFilteredTransactions();renderOverviewSeries(tx);renderOverviewSeriesTrend(tx);renderOverviewEroChart();renderOverviewTop3();renderOverviewContribution(tx);renderOverviewGauge();renderOverviewCategoryPerformance();renderOverviewLowest();renderOverviewInsights();}
+
+function getOverviewPeriodLabel(){
+  if(periodMode==='custom' && customStartDate && customEndDate) return `${customStartDate} – ${customEndDate}`;
+  const labels={month:'Bulan Ini',week:'Minggu Ini',lastweek:'Minggu Lalu',year:'Tahun Ini'};
+  return labels[periodMode]||'Periode terpilih';
+}
 
 function renderOverview(){
 
@@ -3312,6 +3339,18 @@ function renderOverview(){
   renderOperator("Indosat", "indosat");
   renderOperator("XL", "xl");
   renderOperator("Telkomsel", "telkomsel");
+
+  const subCards=[['Indosat','overviewIndosat'],['XL','overviewXL'],['Telkomsel','overviewTelkomsel']];
+  subCards.forEach(([key,prefix])=>{
+    const o=op[key]||{}; const target=Number(o.target||0); const actual=Number(o.actual||0); const est=Number(o.estimation||0);
+    setText(prefix+'Actual',overviewMoney(actual));
+    setText(prefix+'Target',overviewMoney(target));
+    setHtml(prefix+'Ach',percent(o.achievement!=null?Number(o.achievement):(target?actual/target*100:0)));
+    setText(prefix+'Est',overviewMoney(est));
+    setHtml(prefix+'EstPercent',percent(o.estimationPercent!=null?Number(o.estimationPercent):(target?est/target*100:0)));
+    setText(prefix+'Gap',overviewMoney(Math.max(target-actual,0)));
+  });
+  setText('deviceDateLabel', getOverviewPeriodLabel());
 
   renderPerformanceHighlight();
   updateOverviewFilterOptions();
