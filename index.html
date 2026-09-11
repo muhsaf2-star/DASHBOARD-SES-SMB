@@ -1816,7 +1816,7 @@ html,body{
 </style>
 
 <style>
-.exec-period-compact{display:flex;align-items:center;gap:12px;padding:9px 12px}.exec-period-compact .filter-section-title{margin:0;white-space:nowrap}.exec-period-compact .exec-periods{flex:1}.device-value-only{min-height:132px}.device-value-only .device-date-label{margin-top:12px;font-size:10px;color:#64748b}.operator-sub-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px};/* OPERATOR BRAND BORDERS */
+.exec-period-compact{display:flex;align-items:center;gap:12px;padding:9px 12px}.exec-period-compact .filter-section-title{margin:0;white-space:nowrap}.exec-period-compact .exec-periods{flex:1}.device-value-only .operator-sub-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px};/* OPERATOR BRAND BORDERS */
 .operator-sub-card.operator-indosat{border:2px solid #f4c400!important;}
 .operator-sub-card.operator-xl{border:2px solid #20252b!important;}
 .operator-sub-card.operator-telkomsel{border:2px solid #e51f2a!important;}
@@ -2044,7 +2044,7 @@ html,body{
 
         <div class="exec-kpi-grid">
           <div class="exec-kpi kpi-main"><div class="kpi-icon">▥</div><div class="kpi-label">SALES ALL</div><div class="kpi-value" id="overviewActual">Rp 0</div><div class="kpi-target">dari target <b id="overviewTarget">Rp 0</b></div><div class="kpi-progress"><span id="overviewProgress"></span></div><div class="kpi-percent" id="overviewAch">0%</div><div class="kpi-foot"><span>Estimasi</span><b id="overviewEst">Rp 0</b><em id="overviewEstPercent">0%</em></div><div class="kpi-foot danger"><span>Kekurangan</span><b id="overviewShort">Rp 0</b></div></div>
-          <div class="exec-kpi device-value-only"><div class="kpi-icon">▣</div><div class="kpi-label">DEVICE</div><div class="kpi-value" id="deviceActual">Rp 0</div><div class="device-date-label">📅 <span id="deviceDateLabel">Periode terpilih</span></div></div>
+          <div class="exec-kpi"><div class="kpi-icon">▣</div><div class="kpi-label">DEVICE</div><div class="kpi-value" id="deviceActual">Rp 0</div><div class="kpi-target">dari target <b id="deviceTarget">Rp 0</b></div><div class="kpi-progress"><span id="deviceProgress"></span></div><div class="kpi-percent" id="deviceAch">0%</div><div class="kpi-foot"><span>Estimasi</span><b id="deviceEst">Rp 0</b><em id="deviceEstPercent">0%</em></div><div class="kpi-foot danger"><span>Kekurangan</span><b id="deviceShort">Rp 0</b></div></div>
           <div class="exec-kpi"><div class="kpi-icon">◉</div><div class="kpi-label">ACCESSORIES</div><div class="kpi-value" id="accActual">Rp 0</div><div class="kpi-target">dari target <b id="accTarget">Rp 0</b></div><div class="kpi-progress"><span id="accProgress"></span></div><div class="kpi-percent" id="accAch">0%</div><div class="kpi-foot"><span>Estimasi</span><b id="accEst">Rp 0</b><em id="accEstPercent">0%</em></div><div class="kpi-foot danger"><span>Kekurangan</span><b id="accShort">Rp 0</b></div></div>
           <div class="exec-kpi"><div class="kpi-icon">◆</div><div class="kpi-label">SCP</div><div class="kpi-value" id="repairActual">Rp 0</div><div class="kpi-target">dari target <b id="repairTarget">Rp 0</b></div><div class="kpi-progress"><span id="repairProgress"></span></div><div class="kpi-percent" id="repairAch">0%</div><div class="kpi-foot"><span>Estimasi</span><b id="repairEst">Rp 0</b><em id="repairEstPercent">0%</em></div><div class="kpi-foot danger"><span>Kekurangan</span><b id="repairShort">Rp 0</b></div></div>
           <div class="exec-kpi"><div class="kpi-icon">⌁</div><div class="kpi-label">OPERATOR</div><div class="kpi-value" id="operatorActual">Rp 0</div><div class="kpi-target">dari target <b id="operatorTarget">Rp 0</b></div><div class="kpi-progress"><span id="operatorProgress"></span></div><div class="kpi-percent" id="operatorAch">0%</div><div class="kpi-foot"><span>Estimasi</span><b id="operatorEst">Rp 0</b><em id="operatorEstPercent">0%</em></div><div class="kpi-foot danger"><span>Kekurangan</span><b id="operatorShort">Rp 0</b></div></div>
@@ -3542,8 +3542,6 @@ function renderOverview(){
     setHtml(prefix+'EstPercent',percent(o.estimationPercent!=null?Number(o.estimationPercent):(target?est/target*100:0)));
     setText(prefix+'Gap',overviewMoney(Math.max(target-actual,0)));
   });
-  setText('deviceDateLabel', getOverviewPeriodLabel());
-
   renderPerformanceHighlight();
   updateOverviewFilterOptions();
   renderOverviewCharts();
