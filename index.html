@@ -1509,6 +1509,14 @@ html,body{
 }
 
 
+
+/* SUMMARY LOWEST TOP-3: mobile lebih rapat namun nama ERO tetap terbaca */
+@media (max-width:600px){
+  #summaryLowestTable th:nth-child(1), #summaryLowestTable td:nth-child(1){width:14% !important;}
+  #summaryLowestTable th:nth-child(2), #summaryLowestTable td:nth-child(2){width:28% !important;}
+  #summaryLowestTable th:nth-child(n+3), #summaryLowestTable td:nth-child(n+3){width:auto !important;}
+}
+
 /* SUMMARY MOBILE: header & KPI dibuat lebih rapat */
 @media (max-width:600px){
   #page-summary .summary-grid{
@@ -1627,6 +1635,10 @@ html,body{
   }
   .store-breakdown th:first-child, .store-breakdown td:first-child{width:28% !important;}
 }
+
+/* ================= EXECUTIVE OVERVIEW ================= */
+.exec-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}.exec-kicker{font-size:11px;font-weight:800;letter-spacing:1.2px;color:#087bea}.exec-date{background:#fff;border:1px solid #dbe7f5;border-radius:12px;padding:9px 13px;font-size:12px;font-weight:700;color:#12346b}.exec-motto{margin-bottom:12px}.exec-filter{padding:12px 14px;margin-bottom:12px}.filter-section-title{font-size:13px;font-weight:800;color:#102b63;margin-bottom:8px}.exec-periods{margin:0;display:flex;gap:6px;flex-wrap:wrap}.exec-filter-grid{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px;margin-top:10px;align-items:end}.exec-filter-grid label{display:block;font-size:10px;color:#64748b;font-weight:700;margin:0 0 4px}.filter-reset{height:36px;background:#f5f9ff;color:#087bea;border:1px solid #b9d6f7}.exec-kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:12px}.exec-kpi{background:#fff;border:1px solid #dce8f5;border-radius:13px;padding:13px;position:relative;min-height:158px;box-shadow:0 2px 10px rgba(20,70,130,.05)}.exec-kpi .kpi-icon{font-size:20px;color:#087bea;font-weight:900}.kpi-label{font-size:11px;font-weight:800;color:#17356f;margin-top:4px}.kpi-value{font-size:23px;font-weight:900;color:#092d72;margin-top:4px}.kpi-target{font-size:10px;color:#64748b}.kpi-target b{color:#163875}.kpi-progress{height:7px;background:#e8eef6;border-radius:8px;margin:10px 0 4px;overflow:hidden}.kpi-progress span{display:block;height:100%;width:0;background:#087bea;border-radius:8px}.kpi-percent{text-align:right;font-size:11px;font-weight:900;color:#087bea}.kpi-foot{display:flex;gap:7px;align-items:center;justify-content:space-between;font-size:10px;margin-top:7px;color:#64748b}.kpi-foot b{color:#17356f}.kpi-foot em{font-style:normal;color:#087bea;font-weight:900}.kpi-foot.danger b{color:#f12d3c}.exec-grid{display:grid;gap:10px;margin-bottom:10px}.grid-main{grid-template-columns:1.45fr 1fr .9fr}.grid-mid{grid-template-columns:1.35fr 1fr .9fr}.grid-bottom{grid-template-columns:1.35fr 1fr}.grid-bottom2{grid-template-columns:1.25fr .95fr}.exec-chart-card{background:#fff;border:1px solid #dce8f5;border-radius:13px;padding:12px;min-width:0;box-shadow:0 2px 10px rgba(20,70,130,.04)}.exec-card-head{display:flex;align-items:center;gap:9px;margin-bottom:8px;color:#087bea}.exec-card-head>span:first-child{font-size:20px}.exec-card-head>div{min-width:0;flex:1}.exec-card-head b{display:block;color:#112e68;font-size:14px}.exec-card-head small{display:block;color:#8290a8;font-size:9px;margin-top:2px}.exec-card-head a{font-size:10px;color:#087bea;text-decoration:none;white-space:nowrap}.legend{font-size:9px;color:#65748b;white-space:nowrap}.dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin:0 3px 0 8px;background:#087bea}.dot.est{background:#6aaeff}.svg-chart{height:220px;min-height:190px}.svg-chart svg{width:100%;height:100%;display:block}.ero-bars{height:210px;display:flex;align-items:flex-end;gap:8px;padding:12px 4px 20px;border-bottom:1px solid #d9e4f1;overflow:hidden}.ero-bar-item{height:100%;flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;min-width:0}.ero-bar-track{height:145px;width:min(30px,70%);background:#edf2f8;border-radius:6px 6px 2px 2px;display:flex;align-items:flex-end;position:relative}.ero-bar-fill{width:100%;border-radius:6px 6px 2px 2px;background:#087bea;min-height:2px}.ero-bar-fill.good{background:#16b96b}.ero-bar-fill.warn{background:#f39b20}.ero-bar-fill.bad{background:#f13b4c}.ero-bar-value{font-size:10px;font-weight:900;color:#12346b;margin-bottom:4px}.ero-bar-name{font-size:8px;color:#435676;text-align:center;line-height:1.15;margin-top:5px;max-width:55px;word-break:break-word}.top-ero-filter{font-size:10px;padding:5px 8px}.mini-podium{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;height:205px;align-items:stretch}.mini-podium .pod{border:1px solid #dce8f5;border-radius:10px;padding:9px 5px;text-align:center;display:flex;flex-direction:column;justify-content:center}.mini-podium .pod:first-child{border-color:#f0c928;background:#fffdf2}.pod-medal{font-size:24px}.pod-rank{font-size:9px;color:#74839b}.pod-name{font-size:10px;font-weight:800;color:#12346b;margin:5px 0;word-break:break-word}.pod-est{font-size:21px;font-weight:900;color:#087bea}.pod-est.good{color:#16a765}.pod-est.bad{color:#f13b4c}.gauge-wrap{height:205px;display:flex;align-items:center;justify-content:center;position:relative}.gauge{width:145px;height:145px;border-radius:50%;background:conic-gradient(#087bea var(--p),#e7edf5 0);display:flex;align-items:center;justify-content:center}.gauge:after{content:"";width:105px;height:105px;border-radius:50%;background:#fff}.gauge-center{position:absolute;text-align:center;color:#12346b}.gauge-center strong{display:block;font-size:27px}.gauge-center small{font-size:10px;color:#64748b}.series-legend{font-size:9px}.category-performance-row{display:grid;grid-template-columns:92px 1fr 38px;gap:6px;align-items:center;padding:7px 0;border-bottom:1px solid #edf1f6;font-size:10px}.category-performance-row:last-child{border-bottom:0}.cat-name{font-weight:800;color:#17356f}.cat-track{height:8px;background:#edf1f6;border-radius:8px;overflow:hidden}.cat-fill{height:100%;background:#087bea;border-radius:8px}.cat-est{font-weight:900;color:#087bea;text-align:right}.lowest-table{width:100%;border-collapse:collapse;font-size:9px}.lowest-table th{background:#f5f9ff;color:#60708b;text-align:left;font-weight:800}.lowest-table th,.lowest-table td{padding:6px 5px;border-bottom:1px solid #edf1f6}.lowest-table td:nth-child(4){font-weight:900;color:#f13b4c}.lowest-table td:nth-child(5){color:#f13b4c;font-weight:800}.donut-chart{height:220px;display:flex;align-items:center;justify-content:center}.donut{width:145px;height:145px;border-radius:50%;background:conic-gradient(#087bea 0 85%,#63aef5 85% 93%,#9eafc5 93% 93%,#e8edf4 93% 100%);position:relative}.donut:after{content:"";position:absolute;inset:35px;border-radius:50%;background:#fff}.donut-center{position:absolute;z-index:2;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;font-weight:900;color:#12346b}.donut-center small{font-size:9px;font-weight:500}.donut-list{margin-left:18px;font-size:10px}.donut-row{display:flex;gap:6px;margin:8px 0;align-items:center}.donut-swatch{width:9px;height:9px;border-radius:2px;background:#087bea}.insight-stack{display:grid;gap:10px}.insight-card,.action-card{padding:12px;border-radius:13px}.insight-card{background:#eaf5ff;border:1px solid #d2e9ff}.action-card{background:#e9fbf3;border:1px solid #ccefe0}.insight-list,.action-list{font-size:10px;line-height:1.6;color:#294a75;margin:5px 0 0 28px;padding:0}.action-list{color:#23634d}.action-list li::marker{color:#14ad72}.legacy-overview-data{display:none}.exec-chart-card.wide{min-width:0}
+@media(max-width:900px){.exec-head{align-items:center}.exec-date{font-size:9px;padding:7px}.exec-kicker{font-size:8px}.page-title{font-size:20px}.exec-motto{padding:9px}.exec-filter{padding:9px}.exec-filter-grid{grid-template-columns:1fr 1fr;gap:6px}.exec-filter-grid .filter-reset{grid-column:1/-1}.exec-periods{overflow-x:auto;flex-wrap:nowrap;padding-bottom:2px}.exec-periods .filter-btn{white-space:nowrap;font-size:9px;padding:7px 9px}.exec-kpi-grid{grid-template-columns:repeat(2,1fr);gap:6px}.exec-kpi{min-height:140px;padding:9px}.exec-kpi.kpi-main{grid-column:1/-1}.kpi-value{font-size:20px}.kpi-label{font-size:10px}.kpi-target,.kpi-foot{font-size:9px}.grid-main,.grid-mid,.grid-bottom,.grid-bottom2{grid-template-columns:1fr}.exec-chart-card{padding:9px}.exec-card-head{gap:6px}.exec-card-head b{font-size:12px}.exec-card-head small{font-size:8px}.svg-chart{height:190px}.ero-bars{height:190px;gap:4px}.ero-bar-track{height:125px;width:24px}.ero-bar-name{font-size:7px;max-width:42px}.ero-bar-value{font-size:9px}.mini-podium{height:175px}.pod-name{font-size:9px}.pod-est{font-size:19px}.gauge-wrap{height:180px}.lowest-table{font-size:8px}.lowest-table th,.lowest-table td{padding:5px 3px}.donut-chart{height:180px}.donut{width:125px;height:125px}.donut:after{inset:30px}.exec-filter-grid .select{width:100%}}
 </style>
 </head>
 
@@ -1811,516 +1823,79 @@ html,body{
 
       <div id="page-overview" class="page">
 
-        <div class="page-head">
-
+        <div class="exec-head">
           <div>
-            <h1 class="page-title">
-              Overview
-            </h1>
-
-            <div class="page-subtitle">
-              Ringkasan performa toko
-            </div>
+            <div class="exec-kicker">EXECUTIVE SALES PERFORMANCE</div>
+            <h1 class="page-title">Overview</h1>
+            <div class="page-subtitle">Ringkasan performa SES SMB • data H-1</div>
           </div>
-
-          <div class="month-badge">
-            📅 <span id="overviewMonth"></span>
-          </div>
-
+          <div class="exec-date">📅 <span id="overviewMonth"></span></div>
         </div>
 
-
-
-        <div class="ero-motto">
+        <div class="ero-motto exec-motto">
           <div class="ero-motto-title">🔥 HAI KALIAN SEMUA ERO SMB!</div>
           <div class="ero-motto-text" id="eroMottoText">Jualan yang semangat ya! 💪🔥</div>
         </div>
 
-        <div class="filters">
-
-          <button
-            class="filter-btn"
-            onclick="setPeriodMode('lastweek',this)"
-          >
-            Minggu Lalu
-          </button>
-
-          <button
-            class="filter-btn"
-            onclick="setPeriodMode('week',this)"
-          >
-            Minggu Ini
-          </button>
-
-          <button
-            class="filter-btn active"
-            onclick="setPeriodMode('month',this)"
-          >
-            Bulan Ini
-          </button>
-
-          <button
-            class="filter-btn"
-            onclick="setPeriodMode('year',this)"
-          >
-            Tahun Ini
-          </button>
-
-          <button
-            class="filter-btn"
-            onclick="setPeriodMode('custom',this)"
-          >
-            Custom
-          </button>
-
-        </div>
-
-        <div id="customPeriodBox" class="custom-period-box" style="display:none">
-          <div>
-            <label>Tanggal Mulai</label>
-            <input type="date" id="customStartDate">
+        <div class="exec-filter card">
+          <div class="filter-section-title">📅 Periode</div>
+          <div class="filters exec-periods">
+            <button class="filter-btn" onclick="setPeriodMode('lastweek',this)">Minggu Lalu</button>
+            <button class="filter-btn" onclick="setPeriodMode('week',this)">Minggu Ini</button>
+            <button class="filter-btn active" onclick="setPeriodMode('month',this)">Bulan Ini</button>
+            <button class="filter-btn" onclick="setPeriodMode('year',this)">Tahun Ini</button>
+            <button class="filter-btn" onclick="setPeriodMode('custom',this)">Custom</button>
           </div>
-          <div>
-            <label>Tanggal Akhir</label>
-            <input type="date" id="customEndDate">
+          <div id="customPeriodBox" class="custom-period-box" style="display:none">
+            <div><label>Tanggal Mulai</label><input type="date" id="customStartDate"></div>
+            <div><label>Tanggal Akhir</label><input type="date" id="customEndDate"></div>
+            <button class="btn primary" onclick="applyCustomPeriod()">Terapkan</button>
           </div>
-          <button class="btn primary" onclick="applyCustomPeriod()">Terapkan</button>
-        </div>
-
-
-        <div class="card overview-main">
-
-          <div class="card-title">
-            ↗ &nbsp; SALES ALL
-
-            <span
-              id="overviewAch"
-              style="float:right;background:#ffe1e3;color:#ff3344;padding:6px 10px;border-radius:15px;font-size:12px"
-            >
-              0.0%
-            </span>
-          </div>
-
-
-          <div class="metrics">
-
-            <div>
-              <div class="metric-label">
-                Actual
-              </div>
-
-              <div
-                class="metric-value blue"
-                id="overviewActual"
-              >
-                Rp 0
-              </div>
-            </div>
-
-            <div>
-              <div class="metric-label">
-                Target
-              </div>
-
-              <div
-                class="metric-value"
-                id="overviewTarget"
-              >
-                Rp 0
-              </div>
-            </div>
-
-            <div>
-              <div class="metric-label">
-                Estimasi
-              </div>
-
-              <div
-                class="metric-value red"
-                id="overviewEst"
-              >
-                Rp 0
-              </div>
-
-              <div
-                id="overviewEstPercent"
-                style="font-size:12px;color:#ff3344"
-              >
-                0.0%
-              </div>
-            </div>
-
-            <div>
-              <div class="metric-label">
-                Kekurangan
-              </div>
-
-              <div
-                class="metric-value"
-                id="overviewShort"
-              >
-                Rp 0
-              </div>
-            </div>
-
-          </div>
-
-
-          <div class="progress">
-
-            <div
-              id="overviewProgress"
-              class="progress-bar"
-              style="width:0%"
-            ></div>
-
-          </div>
-
-        </div>
-
-
-        <div class="category-grid">
-
-          <div class="card category-card">
-
-            <div class="category-name">
-              DEVICE
-            </div>
-
-            <div class="two-col">
-
-              <div>
-                <div class="metric-label">Actual</div>
-                <div class="metric-value" id="deviceActual">
-                  Rp 0
-                </div>
-              </div>
-
-              <div>
-                <div class="metric-label">Target</div>
-                <div class="metric-value" id="deviceTarget">
-                  Rp 0
-                </div>
-              </div>
-
-            </div>
-
-            <br>
-
-            <div class="two-col">
-
-              <div>
-                <div class="metric-label">Achievement</div>
-                <div class="metric-value red" id="deviceAch">
-                  0.0%
-                </div>
-              </div>
-
-              <div>
-                <div class="metric-label">Estimasi</div>
-                <div class="metric-value" id="deviceEst">
-                  Rp 0
-                </div>
-                <div class="est-percent" id="deviceEstPercent">0.0%</div>
-              </div>
-
-            </div>
-
-            <hr>
-
-            <div class="metric-label">
-              Kekurangan
-            </div>
-
-            <div
-              class="metric-value red"
-              id="deviceShort"
-            >
-              Rp 0
-            </div>
-
-          </div>
-
-
-          <div class="card category-card">
-
-            <div class="category-name">
-              ACCESSORIES
-            </div>
-
-            <div class="two-col">
-
-              <div>
-                <div class="metric-label">Actual</div>
-                <div class="metric-value" id="accActual">
-                  Rp 0
-                </div>
-              </div>
-
-              <div>
-                <div class="metric-label">Target</div>
-                <div class="metric-value" id="accTarget">
-                  Rp 0
-                </div>
-              </div>
-
-            </div>
-
-            <br>
-
-            <div class="two-col">
-
-              <div>
-                <div class="metric-label">Achievement</div>
-                <div class="metric-value red" id="accAch">
-                  0.0%
-                </div>
-              </div>
-
-              <div>
-                <div class="metric-label">Estimasi</div>
-                <div class="metric-value" id="accEst">
-                  Rp 0
-                </div>
-                <div class="est-percent" id="accEstPercent">0.0%</div>
-              </div>
-
-            </div>
-
-            <hr>
-
-            <div class="metric-label">
-              Kekurangan
-            </div>
-
-            <div
-              class="metric-value red"
-              id="accShort"
-            >
-              Rp 0
-            </div>
-
-          </div>
-
-
-          <div class="card category-card">
-
-            <div class="category-name">
-              REPAIR CONTRACT
-            </div>
-
-            <div class="two-col">
-
-              <div>
-                <div class="metric-label">Actual</div>
-                <div class="metric-value" id="repairActual">
-                  Rp 0
-                </div>
-              </div>
-
-              <div>
-                <div class="metric-label">Target</div>
-                <div class="metric-value" id="repairTarget">
-                  Rp 0
-                </div>
-              </div>
-
-            </div>
-
-            <br>
-
-            <div class="two-col">
-
-              <div>
-                <div class="metric-label">Achievement</div>
-                <div class="metric-value red" id="repairAch">
-                  0.0%
-                </div>
-              </div>
-
-              <div>
-                <div class="metric-label">Estimasi</div>
-                <div class="metric-value" id="repairEst">
-                  Rp 0
-                </div>
-                <div class="est-percent" id="repairEstPercent">0.0%</div>
-              </div>
-
-            </div>
-
-            <hr>
-
-            <div class="metric-label">
-              Kekurangan
-            </div>
-
-            <div
-              class="metric-value red"
-              id="repairShort"
-            >
-              Rp 0
-            </div>
-
-          </div>
-
-
-          <div class="card category-card">
-
-            <div class="category-name">
-              OPERATOR
-            </div>
-
-            <div class="two-col">
-
-              <div>
-                <div class="metric-label">Actual</div>
-                <div class="metric-value" id="operatorActual">
-                  Rp 0
-                </div>
-              </div>
-
-              <div>
-                <div class="metric-label">Target</div>
-                <div class="metric-value" id="operatorTarget">
-                  Rp 0
-                </div>
-              </div>
-
-            </div>
-
-            <br>
-
-            <div class="two-col">
-
-              <div>
-                <div class="metric-label">Achievement</div>
-                <div class="metric-value red" id="operatorAch">
-                  0.0%
-                </div>
-              </div>
-
-              <div>
-                <div class="metric-label">Estimasi</div>
-                <div class="metric-value" id="operatorEst">
-                  Rp 0
-                </div>
-                <div class="est-percent" id="operatorEstPercent">0.0%</div>
-              </div>
-
-            </div>
-
-            <hr>
-
-            <div class="operator-box">
-              <div class="operator-head">
-                <span>Indosat</span>
-                <span id="indosatAch">0.0%</span>
-              </div>
-              <div class="operator-grid">
-                <div>
-                  <div class="operator-label">Target</div>
-                  <div class="operator-value" id="indosatTarget">Rp 0</div>
-                </div>
-                <div>
-                  <div class="operator-label">Actual</div>
-                  <div class="operator-value" id="indosatActual">Rp 0</div>
-                </div>
-                <div>
-                  <div class="operator-label">Estimasi</div>
-                  <div class="operator-value" id="indosatEst">Rp 0</div>
-                  <div class="operator-est-percent" id="indosatEstPercent">0.0%</div>
-                </div>
-                <div>
-                  <div class="operator-label">Kekurangan</div>
-                  <div class="operator-value operator-short" id="indosatShort">Rp 0</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="operator-box">
-              <div class="operator-head">
-                <span>XL</span>
-                <span id="xlAch">0.0%</span>
-              </div>
-              <div class="operator-grid">
-                <div>
-                  <div class="operator-label">Target</div>
-                  <div class="operator-value" id="xlTarget">Rp 0</div>
-                </div>
-                <div>
-                  <div class="operator-label">Actual</div>
-                  <div class="operator-value" id="xlActual">Rp 0</div>
-                </div>
-                <div>
-                  <div class="operator-label">Estimasi</div>
-                  <div class="operator-value" id="xlEst">Rp 0</div>
-                  <div class="operator-est-percent" id="xlEstPercent">0.0%</div>
-                </div>
-                <div>
-                  <div class="operator-label">Kekurangan</div>
-                  <div class="operator-value operator-short" id="xlShort">Rp 0</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="operator-box">
-              <div class="operator-head">
-                <span>Telkomsel</span>
-                <span id="telkomselAch">0.0%</span>
-              </div>
-              <div class="operator-grid">
-                <div>
-                  <div class="operator-label">Target</div>
-                  <div class="operator-value" id="telkomselTarget">Rp 0</div>
-                </div>
-                <div>
-                  <div class="operator-label">Actual</div>
-                  <div class="operator-value" id="telkomselActual">Rp 0</div>
-                </div>
-                <div>
-                  <div class="operator-label">Estimasi</div>
-                  <div class="operator-value" id="telkomselEst">Rp 0</div>
-                  <div class="operator-est-percent" id="telkomselEstPercent">0.0%</div>
-                </div>
-                <div>
-                  <div class="operator-label">Kekurangan</div>
-                  <div class="operator-value operator-short" id="telkomselShort">Rp 0</div>
-                </div>
-              </div>
-            </div>
-
-          </div>
-
-        </div>
-
-        <!-- ================= PERFORMANCE HIGHLIGHT ================= -->
-        <div class="performance-highlight">
-          <div class="highlight-card">
-            <div class="highlight-title">🔥 TOP ERO</div>
-            <div class="highlight-subtitle">Ranking berdasarkan Achievement H-1</div>
-            <div class="top-ero-filter-wrap"><select id="topEroCategory" class="top-ero-filter" onchange="renderTopERO()"><option value="Sales All">Sales All</option><option value="Device">Device</option><option value="Accessories">Accessories</option><option value="Operator">Operator</option></select></div>
-            <div id="topSalesHighlight" class="highlight-list">
-              <div class="highlight-empty">Belum ada data transaksi H-1</div>
-            </div>
-          </div>
-          <div class="highlight-card">
-            <div class="highlight-title">🏆 BEST CATEGORY</div>
-            <div class="highlight-subtitle">Kategori dengan achievement tertinggi</div>
-            <div id="bestCategoryHighlight" class="highlight-list">
-              <div class="highlight-empty">Belum ada data transaksi H-1</div>
-            </div>
-          </div>
-          <div class="highlight-card">
-            <div class="highlight-title">⚡ QUICK ACTION</div>
-            <div class="highlight-subtitle">Fokus yang perlu dikejar hari ini</div>
-            <div id="quickActionHighlight" class="highlight-list">
-              <div class="highlight-empty">Menunggu data H-1</div>
-            </div>
+          <div class="exec-filter-grid">
+            <div><label>Kategori</label><select id="overviewCategoryFilter" class="select" onchange="updateOverviewFilterOptions();renderOverviewCharts()"><option value="ALL">Semua Kategori</option><option value="Device">Device</option><option value="Accessories">Accessories</option><option value="Repair Contract">SCP</option><option value="Operator">Operator</option></select></div>
+            <div><label>Sub Kategori</label><select id="overviewSubcategoryFilter" class="select" onchange="renderOverviewCharts()"><option value="ALL">Semua Sub Kategori</option></select></div>
+            <div><label>ERO</label><select id="overviewEroFilter" class="select" onchange="renderOverviewCharts()"><option value="ALL">Semua ERO</option></select></div>
+            <button class="btn filter-reset" onclick="resetOverviewFilters()">↻ Reset Filter</button>
           </div>
         </div>
 
+        <div class="exec-kpi-grid">
+          <div class="exec-kpi kpi-main"><div class="kpi-icon">▥</div><div class="kpi-label">SALES ALL</div><div class="kpi-value" id="overviewActual">Rp 0</div><div class="kpi-target">dari target <b id="overviewTarget">Rp 0</b></div><div class="kpi-progress"><span id="overviewProgress"></span></div><div class="kpi-percent" id="overviewAch">0%</div><div class="kpi-foot"><span>Estimasi</span><b id="overviewEst">Rp 0</b><em id="overviewEstPercent">0%</em></div><div class="kpi-foot danger"><span>Kekurangan</span><b id="overviewShort">Rp 0</b></div></div>
+          <div class="exec-kpi"><div class="kpi-icon">▣</div><div class="kpi-label">DEVICE</div><div class="kpi-value" id="deviceActual">Rp 0</div><div class="kpi-target">dari target <b id="deviceTarget">Rp 0</b></div><div class="kpi-progress"><span id="deviceProgress"></span></div><div class="kpi-percent" id="deviceAch">0%</div><div class="kpi-foot"><span>Estimasi</span><b id="deviceEst">Rp 0</b><em id="deviceEstPercent">0%</em></div><div class="kpi-foot danger"><span>Kekurangan</span><b id="deviceShort">Rp 0</b></div></div>
+          <div class="exec-kpi"><div class="kpi-icon">◉</div><div class="kpi-label">ACCESSORIES</div><div class="kpi-value" id="accActual">Rp 0</div><div class="kpi-target">dari target <b id="accTarget">Rp 0</b></div><div class="kpi-progress"><span id="accProgress"></span></div><div class="kpi-percent" id="accAch">0%</div><div class="kpi-foot"><span>Estimasi</span><b id="accEst">Rp 0</b><em id="accEstPercent">0%</em></div><div class="kpi-foot danger"><span>Kekurangan</span><b id="accShort">Rp 0</b></div></div>
+          <div class="exec-kpi"><div class="kpi-icon">◆</div><div class="kpi-label">SCP</div><div class="kpi-value" id="repairActual">Rp 0</div><div class="kpi-target">dari target <b id="repairTarget">Rp 0</b></div><div class="kpi-progress"><span id="repairProgress"></span></div><div class="kpi-percent" id="repairAch">0%</div><div class="kpi-foot"><span>Estimasi</span><b id="repairEst">Rp 0</b><em id="repairEstPercent">0%</em></div><div class="kpi-foot danger"><span>Kekurangan</span><b id="repairShort">Rp 0</b></div></div>
+          <div class="exec-kpi"><div class="kpi-icon">⌁</div><div class="kpi-label">OPERATOR</div><div class="kpi-value" id="operatorActual">Rp 0</div><div class="kpi-target">dari target <b id="operatorTarget">Rp 0</b></div><div class="kpi-progress"><span id="operatorProgress"></span></div><div class="kpi-percent" id="operatorAch">0%</div><div class="kpi-foot"><span>Estimasi</span><b id="operatorEst">Rp 0</b><em id="operatorEstPercent">0%</em></div><div class="kpi-foot danger"><span>Kekurangan</span><b id="operatorShort">Rp 0</b></div></div>
+        </div>
+
+        <div class="exec-grid grid-main">
+          <div class="card exec-chart-card wide"><div class="exec-card-head"><span>▥</span><div><b id="overviewTrendTitle">Trend Sales All</b><small>Actual & estimasi harian</small></div><span class="legend"><i class="dot actual"></i>Actual <i class="dot est"></i>Estimasi</span></div><div id="overviewTrendChart" class="svg-chart"></div></div>
+          <div class="card exec-chart-card"><div class="exec-card-head"><span>▥</span><div><b>Sales by Series</b><small>Device • Actual</small></div></div><div id="overviewSeriesChart" class="svg-chart"></div></div>
+          <div class="card exec-chart-card"><div class="exec-card-head"><span>◔</span><div><b>Kontribusi Kategori</b><small>Nilai sales</small></div></div><div id="overviewContributionChart" class="donut-chart"></div></div>
+        </div>
+
+        <div class="exec-grid grid-mid">
+          <div class="card exec-chart-card"><div class="exec-card-head"><span>👥</span><div><b>Estimasi % by ERO</b><small>Posisi estimasi terhadap target</small></div><select id="topEroCategory" class="top-ero-filter" onchange="renderTopERO();renderOverviewCharts()"><option value="Sales All">Sales All</option><option value="Device">Device</option><option value="Accessories">Accessories</option><option value="Operator">Operator</option></select></div><div id="overviewEroChart" class="ero-bars"></div></div>
+          <div class="card exec-chart-card"><div class="exec-card-head"><span>🏆</span><div><b>Top 3 ERO (Est %)</b><small>Performa terbaik</small></div><a href="javascript:void(0)" onclick="showPage('top')">Lihat Semua →</a></div><div id="overviewTop3" class="mini-podium"></div></div>
+          <div class="card exec-chart-card"><div class="exec-card-head"><span>🎯</span><div><b>Progress Target Sales All</b><small>Actual H-1 & estimasi</small></div></div><div id="overviewGauge" class="gauge-wrap"></div></div>
+        </div>
+
+        <div class="exec-grid grid-bottom">
+          <div class="card exec-chart-card wide"><div class="exec-card-head"><span>▥</span><div><b>Sales by Series Trend</b><small>Device • harian</small></div></div><div id="overviewSeriesTrend" class="svg-chart"></div></div>
+          <div class="card exec-chart-card"><div class="exec-card-head"><span>▥</span><div><b>Pencapaian per Kategori</b><small>Actual / target / est %</small></div></div><div id="overviewCategoryPerformance"></div></div>
+        </div>
+
+        <div class="exec-grid grid-bottom2">
+          <div class="card exec-chart-card wide"><div class="exec-card-head"><span>⚠</span><div><b>ERO Terendah (Est %)</b><small>Per kategori</small></div></div><div id="overviewLowest"></div></div>
+          <div class="insight-stack"><div class="card insight-card"><div class="exec-card-head"><span>💡</span><div><b>Insight Hari Ini</b></div></div><div id="overviewInsight"></div></div><div class="card action-card"><div class="exec-card-head"><span>✓</span><div><b>Action Plan</b></div></div><div id="overviewAction"></div></div></div>
+        </div>
+
+        <div class="legacy-overview-data" aria-hidden="true">
+          <span id="indosatTarget"></span><span id="indosatActual"></span><span id="indosatEst"></span><span id="indosatEstPercent"></span><span id="indosatShort"></span><span id="indosatAch"></span>
+          <span id="xlTarget"></span><span id="xlActual"></span><span id="xlEst"></span><span id="xlEstPercent"></span><span id="xlShort"></span><span id="xlAch"></span>
+          <span id="telkomselTarget"></span><span id="telkomselActual"></span><span id="telkomselEst"></span><span id="telkomselEstPercent"></span><span id="telkomselShort"></span><span id="telkomselAch"></span>
+          <span id="topSalesHighlight"></span><span id="bestCategoryHighlight"></span><span id="quickActionHighlight"></span>
+        </div>
       </div>
-
 
 
       <!-- ================= STORE ================= -->
@@ -3523,6 +3098,95 @@ function toggleSidebar(){
    OVERVIEW
 ===================================================== */
 
+
+function overviewFilteredTransactions(){
+  const tx=(dashboardData&&dashboardData.transactions)||[];
+  const ero=(document.getElementById('overviewEroFilter')||{}).value||'ALL';
+  const cat=(document.getElementById('overviewCategoryFilter')||{}).value||'ALL';
+  const sub=(document.getElementById('overviewSubcategoryFilter')||{}).value||'ALL';
+  return tx.filter(x=>{
+    if(ero!=='ALL' && String(x.salesId)!==String(ero)) return false;
+    if(cat==='Device' && String(x.category||'')!=='Device') return false;
+    if(cat==='Accessories' && String(x.category||'')!=='Accessories') return false;
+    if(cat==='Repair Contract' && String(x.category||'')!=='Repair Contract') return false;
+    if(cat==='Operator' && String(x.category||'')!=='Operator') return false;
+    if(sub!=='ALL'){
+      const v=String(x.series||x.subCategory||x.operator||x.operatorName||'').toLowerCase();
+      if(v!==sub.toLowerCase()) return false;
+    }
+    return true;
+  });
+}
+function updateOverviewFilterOptions(){
+  const cat=(document.getElementById('overviewCategoryFilter')||{}).value||'ALL';
+  const el=document.getElementById('overviewSubcategoryFilter'); if(!el)return;
+  let opts=['ALL'];
+  if(cat==='Device') opts=['ALL','Series A','Series S','Series Z','Tab'];
+  if(cat==='Operator') opts=['ALL','Indosat','XL','Telkomsel'];
+  el.innerHTML=opts.map(x=>`<option value="${escapeHtml(x)}">${x==='ALL'?'Semua Sub Kategori':escapeHtml(x)}</option>`).join('');
+}
+function resetOverviewFilters(){
+  const c=document.getElementById('overviewCategoryFilter'), s=document.getElementById('overviewSubcategoryFilter'), e=document.getElementById('overviewEroFilter');
+  if(c)c.value='ALL'; updateOverviewFilterOptions(); if(s)s.value='ALL'; if(e)e.value='ALL';
+  const top=document.getElementById('topEroCategory'); if(top)top.value='Sales All';
+  renderOverviewCharts();
+}
+function populateOverviewEros(){
+  const el=document.getElementById('overviewEroFilter'); if(!el||!salesList)return;
+  const cur=el.value||'ALL';
+  el.innerHTML='<option value="ALL">Semua ERO</option>'+salesList.map(s=>`<option value="${escapeHtml(String(s.id))}">${escapeHtml(s.name||'-')}</option>`).join('');
+  if([...el.options].some(o=>o.value===cur))el.value=cur;
+}
+function svgLineChart(elId, points, estPoints){
+  const el=document.getElementById(elId); if(!el)return;
+  const w=700,h=220,p=28; const vals=points.concat(estPoints||[]).map(Number); const max=Math.max(1,...vals)*1.12;
+  const x=i=>p+(i*(w-p*2))/Math.max(1,points.length-1); const y=v=>h-p-(v/max)*(h-p*2);
+  let svg=`<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><g stroke="#e7edf5" stroke-width="1">`;
+  for(let i=0;i<5;i++){let yy=p+i*(h-p*2)/4;svg+=`<line x1="${p}" y1="${yy}" x2="${w-p}" y2="${yy}"/>`;} svg+='</g>';
+  const bars=points.map((v,i)=>{const yy=y(v);return `<rect x="${x(i)-7}" y="${yy}" width="14" height="${h-p-yy}" rx="2" fill="#73b5f5" opacity=".78"/>`;}).join('');
+  const line=(estPoints||[]).map((v,i)=>`${x(i)},${y(v)}`).join(' ');
+  const dots=(estPoints||[]).map((v,i)=>`<circle cx="${x(i)}" cy="${y(v)}" r="2.5" fill="#087bea"/>`).join('');
+  svg+=bars+`<polyline fill="none" stroke="#087bea" stroke-width="2.5" points="${line}"/>${dots}`;
+  svg+=`<line x1="${p}" y1="${h-p}" x2="${w-p}" y2="${h-p}" stroke="#b9c8dc"/>`;
+  el.innerHTML=svg+'</svg>';
+}
+function renderOverviewTrend(tx){
+  const dates=[]; const map={}; tx.forEach(x=>{const d=String(x.date||x.transactionDate||x.tanggal||'').slice(0,10); if(!d)return; map[d]=(map[d]||0)+Number(x.amount||0);});
+  Object.keys(map).sort().forEach(d=>dates.push(d));
+  const actual=dates.map(d=>map[d]); const days=Number(dashboardData.daysPassed||dates.length||1); const periodDays=Number(dashboardData.daysInMonth||days); const total=actual.reduce((a,b)=>a+b,0); const run=dates.map((_,i)=>total/(actual.length||1)*(i+1));
+  const vals=actual.length?actual:[0]; const estLine=vals.map((_,i)=>total/(Math.max(1,actual.length))*(i+1));
+  svgLineChart('overviewTrendChart',vals,estLine);
+}
+function renderOverviewSeries(tx){
+  const keys=['Series S','Series Z','Series A','Tab']; const colors=['#087bea','#5d7fe8','#f08a24','#16a765']; const sums={}; keys.forEach(k=>sums[k]=0);
+  tx.filter(x=>String(x.category||'')==='Device').forEach(x=>{let raw=String(x.series||'').toLowerCase(); let k=raw.includes('s')&&!raw.includes('a')&&!raw.includes('z')?'Series S':raw.includes('z')?'Series Z':raw.includes('a')?'Series A':raw.includes('tab')?'Tab':null;if(k)sums[k]+=Number(x.amount||0);});
+  const max=Math.max(1,...keys.map(k=>sums[k])); const w=520,h=220,p=28,bw=48,gap=65; let svg=`<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><line x1="${p}" y1="${h-p}" x2="${w-p}" y2="${h-p}" stroke="#b9c8dc"/>`;
+  keys.forEach((k,i)=>{const bh=(sums[k]/max)*(h-p*2-20),x=p+20+i*(bw+gap),y=h-p-bh;svg+=`<rect x="${x}" y="${y}" width="${bw}" height="${bh}" rx="5" fill="${colors[i]}" opacity=".9"/><text x="${x+bw/2}" y="${y-7}" text-anchor="middle" font-size="10" font-weight="800" fill="#17356f">${eroMoney(sums[k])}</text><text x="${x+bw/2}" y="${h-8}" text-anchor="middle" font-size="9" fill="#50627f">${k.replace('Series ','S ')}</text>`;});
+  document.getElementById('overviewSeriesChart').innerHTML=svg+'</svg>';
+}
+function renderOverviewSeriesTrend(tx){
+  const keys=['Series S','Series Z','Series A','Tab']; const maps={}; keys.forEach(k=>maps[k]={}); tx.filter(x=>String(x.category||'')==='Device').forEach(x=>{const r=String(x.series||'').toLowerCase();const k=r.includes('z')?'Series Z':r.includes('tab')?'Tab':r.includes('a')?'Series A':r.includes('s')?'Series S':null;if(k){const d=String(x.date||'').slice(0,10);if(d)maps[k][d]=(maps[k][d]||0)+Number(x.amount||0);}});
+  const dates=[...new Set(keys.flatMap(k=>Object.keys(maps[k])))].sort(); const w=700,h=220,p=28,max=Math.max(1,...keys.flatMap(k=>dates.map(d=>maps[k][d]||0))); const colors=['#173f91','#6f3ce5','#f08a24','#16a765']; let svg=`<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><g stroke="#e7edf5">`;
+  for(let i=0;i<5;i++){let y=p+i*(h-p*2)/4;svg+=`<line x1="${p}" y1="${y}" x2="${w-p}" y2="${y}"/>`;}svg+='</g>';
+  keys.forEach((k,j)=>{const pts=dates.map((d,i)=>`${p+i*(w-p*2)/Math.max(1,dates.length-1)},${h-p-(maps[k][d]||0)/max*(h-p*2)}`).join(' ');svg+=`<polyline fill="none" stroke="${colors[j]}" stroke-width="2" points="${pts}"/>`;}); document.getElementById('overviewSeriesTrend').innerHTML=svg+'</svg>';
+}
+function renderOverviewEroChart(){
+  const cat=(document.getElementById('topEroCategory')||{}).value||'Sales All'; const days=Number(dashboardData.daysPassed||0); const dim=Number(dashboardData.daysInMonth||days||1);
+  const rows=salesList.map(s=>{const actual=getStoreSalesCategoryActual_(s.id,cat,'ALL');const target=getStoreSalesTarget_(s.id,cat);const est=days>0?actual/days*dim:0;return {name:s.name,estPct:target>0?est/target*100:0};}).filter(x=>x.estPct>0||true).sort((a,b)=>b.estPct-a.estPct);
+  const max=Math.max(100,...rows.map(x=>x.estPct)); document.getElementById('overviewEroChart').innerHTML=rows.map(r=>{const h=Math.min(100,r.estPct/max*100);const cls=r.estPct>=100?'good':r.estPct>=90?'warn':'bad';return `<div class="ero-bar-item"><div class="ero-bar-value">${Math.round(r.estPct)}%</div><div class="ero-bar-track"><div class="ero-bar-fill ${cls}" style="height:${h}%"></div></div><div class="ero-bar-name">${escapeHtml(r.name||'-')}</div></div>`;}).join('');
+}
+function renderOverviewTop3(){
+  const cat=(document.getElementById('topEroCategory')||{}).value||'Sales All'; const days=Number(dashboardData.daysPassed||0); const dim=Number(dashboardData.daysInMonth||days||1);
+  const rows=salesList.map(s=>{const a=getStoreSalesCategoryActual_(s.id,cat,'ALL'),t=getStoreSalesTarget_(s.id,cat),e=days>0?a/days*dim:0;return {name:s.name,estPct:t>0?e/t*100:0};}).sort((a,b)=>b.estPct-a.estPct).slice(0,3); const medals=['🥇','🥈','🥉']; document.getElementById('overviewTop3').innerHTML=rows.map((r,i)=>`<div class="pod"><div class="pod-medal">${medals[i]}</div><div class="pod-rank">#${i+1}</div><div class="pod-name">${escapeHtml(r.name||'-')}</div><div class="pod-est ${r.estPct>=100?'good':r.estPct<50?'bad':''}">${Math.round(r.estPct)}%</div></div>`).join('');
+}
+function renderOverviewContribution(tx){
+  const cats=[['Device','#087bea'],['Accessories','#63aef5'],['Repair Contract','#9eafc5'],['Operator','#dce3ec']]; const vals=cats.map(c=>tx.filter(x=>String(x.category||'')===c[0]).reduce((a,x)=>a+Number(x.amount||0),0));const total=vals.reduce((a,b)=>a+b,0);let acc=0,stops=[];vals.forEach((v,i)=>{const pct=total?v/total*100:0;stops.push(`${cats[i][1]} ${acc}% ${acc+pct}%`);acc+=pct;}); document.getElementById('overviewContributionChart').innerHTML=`<div class="donut" style="background:conic-gradient(${stops.join(',')||'#e8edf4 0 100%'})"><div class="donut-center">${overviewMoney(total)}<small>Sales All</small></div></div><div class="donut-list">${cats.map((c,i)=>`<div class="donut-row"><i class="donut-swatch" style="background:${c[1]}"></i>${c[0]} <b style="margin-left:auto">${total?Math.round(vals[i]/total*100):0}%</b></div>`).join('')}</div>`;}
+function renderOverviewGauge(){const a=Number(dashboardData.totalActual||0),t=Number(dashboardData.targetAll||0),p=t>0?Math.min(100,a/t*100):0;document.getElementById('overviewGauge').innerHTML=`<div class="gauge" style="--p:${p}%"></div><div class="gauge-center"><strong>${Math.round(p)}%</strong><small>Achievement</small></div>`;}
+function renderOverviewCategoryPerformance(){const cats=['Device','Accessories','Repair Contract','Operator'];document.getElementById('overviewCategoryPerformance').innerHTML=cats.map(c=>{const x=(dashboardData.categories||{})[c]||{};const est=Number(x.estimationPercent||0);return `<div class="category-performance-row"><span class="cat-name">${c==='Repair Contract'?'SCP':c}</span><div class="cat-track"><div class="cat-fill" style="width:${Math.min(100,est)}%"></div></div><span class="cat-est">${Math.round(est)}%</span></div>`}).join('');}
+function renderOverviewLowest(){const cat=(document.getElementById('overviewCategoryFilter')||{}).value||'ALL';const cats=cat==='ALL'?['Sales All','Device','Accessories','Indosat','XL','Telkomsel']:[cat==='Repair Contract'?'SCP':cat];const days=Number(dashboardData.daysPassed||0),dim=Number(dashboardData.daysInMonth||days||1);let html='<table class="lowest-table"><thead><tr><th>KATEGORI</th><th>ERO</th><th>ACTUAL</th><th>EST%</th><th>GAP EST</th></tr></thead><tbody>';cats.forEach(c=>{const base=c==='Sales All'?'Sales All':c;const rows=salesList.map(s=>{let a=getStoreSalesCategoryActual_(s.id,base,'ALL');let t=getStoreSalesTarget_(s.id,base);if(['Indosat','XL','Telkomsel'].includes(c)){a=getStoreSalesCategoryActual_(s.id,'Operator',c);t=getStoreSalesTarget_(s.id,c);}const e=days>0?a/days*dim:0;return {name:s.name,a,t,p:t>0?e/t*100:0,g:Math.max(t-e,0)};}).filter(r=>r.t>0).sort((a,b)=>a.p-b.p)[0];if(rows)html+=`<tr><td>${c}</td><td>${escapeHtml(rows.name)}</td><td>${eroMoney(rows.a)}</td><td>${Math.round(rows.p)}%</td><td>${eroMoney(rows.g)}</td></tr>`;});document.getElementById('overviewLowest').innerHTML=html+'</tbody></table>';}
+function renderOverviewInsights(){const est=Math.round(Number(dashboardData.estimationPercent||0));const cats=Object.entries(dashboardData.categories||{}).filter(([k,v])=>Number(v.target||0)>0).sort((a,b)=>Number(a[1].estimationPercent||0)-Number(b[1].estimationPercent||0));const focus=cats.slice(0,2).map(x=>x[0]==='Repair Contract'?'SCP':x[0]).join(' & ');const top=salesList.map(s=>{const a=getStoreSalesCategoryActual_(s.id,'Sales All','ALL'),t=getStoreSalesTarget_(s.id,'Sales All'),e=(dashboardData.daysPassed||1)>0?a/(dashboardData.daysPassed||1)*(dashboardData.daysInMonth||1):0;return {name:s.name,p:t?e/t*100:0};}).sort((a,b)=>b.p-a.p)[0];document.getElementById('overviewInsight').innerHTML=`<ul class="insight-list"><li>Estimasi Sales All saat ini <b>${est}%</b>.</li><li>Fokus kategori <b>${focus||'prioritas utama'}</b> untuk mengejar target.</li><li>${escapeHtml(top?.name||'ERO terbaik')} memimpin dengan estimasi <b>${Math.round(top?.p||0)}%</b>.</li><li>Gunakan grafik ERO untuk melihat posisi tim secara visual.</li></ul>`;document.getElementById('overviewAction').innerHTML='<ul class="action-list"><li>Push penjualan Device dan flagship.</li><li>Optimalkan aktivasi Operator.</li><li>Tingkatkan attach rate Accessories.</li><li>Follow up ERO dengan estimasi &lt; 100%.</li><li>Review target mingguan dan eksekusi campaign.</li></ul>';}
+function renderOverviewCharts(){if(!dashboardData)return;populateOverviewEros();const tx=overviewFilteredTransactions();renderOverviewTrend(tx);renderOverviewSeries(tx);renderOverviewSeriesTrend(tx);renderOverviewEroChart();renderOverviewTop3();renderOverviewContribution(tx);renderOverviewGauge();renderOverviewCategoryPerformance();renderOverviewLowest();renderOverviewInsights();}
+
 function renderOverview(){
 
   if(!dashboardData)
@@ -3633,6 +3297,8 @@ function renderOverview(){
   renderOperator("Telkomsel", "telkomsel");
 
   renderPerformanceHighlight();
+  updateOverviewFilterOptions();
+  renderOverviewCharts();
 }
 
 
@@ -3677,6 +3343,8 @@ function renderCategory(category,prefix){
     prefix+"Short",
     overviewMoney(c.shortfall)
   );
+  const pb=document.getElementById(prefix+"Progress");
+  if(pb) pb.style.width=Math.min(Number(c.achievement||0),100)+"%";
 
 }
 
@@ -4480,9 +4148,15 @@ function renderSummary(){
     });
   });
 
-  const lowest=categories.map(cat=>
-    rows.filter(r=>r.category===cat).sort((a,b)=>a.estPct-b.estPct || a.ach-b.ach)[0]
-  ).filter(Boolean);
+  // Ambil TOP 3 ERO terendah untuk SETIAP kategori berdasarkan estimasi %.
+  const lowest=[];
+  categories.forEach(cat=>{
+    const top3=rows
+      .filter(r=>r.category===cat)
+      .sort((a,b)=>a.estPct-b.estPct || a.ach-b.ach || b.shortfall-a.shortfall)
+      .slice(0,3);
+    top3.forEach(r=>lowest.push(r));
+  });
 
   const lowEl=document.getElementById('summaryLowestTable');
   if(lowEl){
