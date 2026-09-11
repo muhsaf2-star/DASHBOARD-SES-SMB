@@ -1508,20 +1508,35 @@ html,body{
   #topPageCards .top-name{font-size:14px !important;}
 }
 
-/* MOBILE UI ONLY — rapatkan Rank dan ERO tanpa mengubah API/JavaScript */
+/* MOBILE: rapatkan kolom RANK -> ERO agar nama ERO lebih terbaca */
 @media (max-width:600px){
-  #topPageTable th:nth-child(1), #topPageTable td:nth-child(1){width:7% !important;text-align:left;}
-  #topPageTable th:nth-child(2), #topPageTable td:nth-child(2){width:27% !important;text-align:left;}
+  /* Top ERO: RANK sangat kecil, ERO langsung menempel dan lebih lebar */
+  #topPageTable{table-layout:fixed !important;}
+  #topPageTable th:nth-child(1), #topPageTable td:nth-child(1){width:5% !important; text-align:left;}
+  #topPageTable th:nth-child(2), #topPageTable td:nth-child(2){width:35% !important; text-align:left;}
+  #topPageTable th:nth-child(n+3), #topPageTable td:nth-child(n+3){width:12% !important;}
 
-  #summaryPriorityTable th:nth-child(1), #summaryPriorityTable td:nth-child(1){width:7% !important;text-align:left;}
-  #summaryPriorityTable th:nth-child(2), #summaryPriorityTable td:nth-child(2){width:24% !important;text-align:left;}
-  #summaryPriorityTable th:nth-child(3), #summaryPriorityTable td:nth-child(3){width:16% !important;text-align:left;}
+  /* Summary priority: RANK dekat dengan ERO, nama ERO lebih lega */
+  #summaryPriorityTable{table-layout:fixed !important;}
+  #summaryPriorityTable th:nth-child(1), #summaryPriorityTable td:nth-child(1){width:5% !important; text-align:left;}
+  #summaryPriorityTable th:nth-child(2), #summaryPriorityTable td:nth-child(2){width:30% !important; text-align:left;}
+  #summaryPriorityTable th:nth-child(3), #summaryPriorityTable td:nth-child(3){width:17% !important; text-align:left;}
+  #summaryPriorityTable th:nth-child(n+4), #summaryPriorityTable td:nth-child(n+4){width:12% !important;}
 
-  #summaryLowestTable th:nth-child(1), #summaryLowestTable td:nth-child(1){width:13% !important;text-align:left;}
-  #summaryLowestTable th:nth-child(2), #summaryLowestTable td:nth-child(2){width:24% !important;text-align:left;}
+  /* Summary ERO terendah: kategori + ERO dibuat lebih dekat */
+  #summaryLowestTable{table-layout:fixed !important;}
+  #summaryLowestTable th:nth-child(1), #summaryLowestTable td:nth-child(1){width:12% !important; text-align:left;}
+  #summaryLowestTable th:nth-child(2), #summaryLowestTable td:nth-child(2){width:30% !important; text-align:left;}
+  #summaryLowestTable th:nth-child(n+3), #summaryLowestTable td:nth-child(n+3){width:11.6% !important;}
 
-  #salesPerformanceTable th:nth-child(1), #salesPerformanceTable td:nth-child(1){width:24% !important;text-align:left;}
-  .store-breakdown th:first-child, .store-breakdown td:first-child{width:24% !important;}
+  /* Performa Sales: nama sales lebih lebar dan tidak terlalu jauh dari kolom kiri */
+  #salesPerformanceTable{table-layout:fixed !important;}
+  #salesPerformanceTable th:nth-child(1), #salesPerformanceTable td:nth-child(1){width:28% !important; text-align:left;}
+  #salesPerformanceTable th:nth-child(n+2), #salesPerformanceTable td:nth-child(n+2){width:10.285% !important;}
+
+  /* Breakdown ERO: kolom nama langsung dekat dengan kolom pertama */
+  .store-breakdown table{table-layout:fixed !important;}
+  .store-breakdown th:first-child, .store-breakdown td:first-child{width:28% !important;}
 }
 </style>
 </head>
