@@ -1828,6 +1828,33 @@ html,body{
 .operator-sub-card.operator-telkomsel .operator-sub-head b{color:#112e68;}
 .operator-sub-card{padding:12px;background:#fff;border:1px solid #dce8f5;border-radius:13px;box-shadow:0 2px 10px rgba(20,70,130,.04)}.operator-sub-head{display:flex;gap:8px;align-items:center;color:#087bea}.operator-sub-head>span{font-size:20px}.operator-sub-head b{display:block;color:#112e68;font-size:13px}.operator-sub-head small{font-size:9px;color:#8290a8}.operator-sub-value{font-size:21px;font-weight:900;color:#092d72;margin-top:8px}.operator-sub-target{font-size:10px;color:#64748b}.operator-sub-target b{color:#17356f}.operator-sub-row{display:flex;align-items:center;gap:7px;justify-content:space-between;font-size:10px;color:#64748b;margin-top:7px}.operator-sub-row b{color:#17356f}.operator-sub-row em{font-style:normal;color:#087bea;font-weight:900}.operator-sub-row.gap b{color:#f13b4c}.operator-chart{height:220px;display:flex;align-items:flex-end;justify-content:space-around;gap:18px;padding:12px 12px 20px;border-bottom:1px solid #d9e4f1}.operator-chart-item{height:100%;flex:1;max-width:90px;display:flex;flex-direction:column;justify-content:flex-end;align-items:center}.operator-chart-track{height:145px;width:42px;background:#edf2f8;border-radius:7px 7px 2px 2px;display:flex;align-items:flex-end;overflow:hidden}.operator-chart-fill{width:100%;min-height:2px;border-radius:7px 7px 2px 2px}.operator-chart-value{font-size:11px;font-weight:900;color:#12346b;margin-bottom:5px}.operator-chart-name{font-size:10px;font-weight:800;color:#435676;margin-top:6px}.exec-filter-grid{display:none!important}
 @media(max-width:900px){.operator-sub-grid{grid-template-columns:1fr}.exec-period-compact{display:block;padding:7px 8px}.exec-period-compact .filter-section-title{margin-bottom:5px}.exec-period-compact .exec-periods{overflow-x:auto}.operator-sub-grid{grid-template-columns:1fr;gap:6px}.operator-sub-card{padding:9px}.operator-sub-value{font-size:19px}.operator-chart{height:190px;gap:8px;padding:10px 6px 18px}.operator-chart-track{height:120px;width:34px}.operator-chart-name{font-size:9px}.operator-chart-value{font-size:10px}.device-value-only{min-height:120px}.device-value-only .device-date-label{font-size:9px}}
+
+/* Operator sub-category — compact horizontal cards on desktop */
+#page-overview .operator-sub-grid,
+#page-overview .operator-grid,
+#page-overview .sub-operator-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+  align-items:stretch;
+}
+
+@media (min-width: 769px){
+  #page-overview .operator-sub-grid > *,
+  #page-overview .operator-grid > *,
+  #page-overview .sub-operator-grid > *{
+    min-width:0;
+  }
+}
+
+@media (max-width: 768px){
+  #page-overview .operator-sub-grid,
+  #page-overview .operator-grid,
+  #page-overview .sub-operator-grid{
+    grid-template-columns:1fr;
+  }
+}
+
 </style>
 </head>
 
