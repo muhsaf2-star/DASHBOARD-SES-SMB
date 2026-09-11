@@ -3043,6 +3043,11 @@ async function loadAll(){
       renderSalesPerformance();
       renderStore();
       renderOutlook();
+
+      // SALES_MASTER selesai dimuat setelah dashboard.
+      // Render ulang Overview agar chart ERO / Top 3 yang membutuhkan
+      // salesList tidak kosong pada first load.
+      renderOverview();
       if(currentPage === "top") renderTopEROPage();
       if(currentPage === "summary") renderSummary();
 
