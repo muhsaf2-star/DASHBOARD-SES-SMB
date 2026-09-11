@@ -1517,6 +1517,58 @@ html,body{
   #summaryLowestTable th:nth-child(n+3), #summaryLowestTable td:nth-child(n+3){width:auto !important;}
 }
 
+
+/* SUMMARY PRIORITY — desktop: keep each priority on one clean row */
+#page-summary .summary-priority-card{
+  min-width:0;
+}
+#page-summary .summary-priority-list{
+  display:grid;
+  gap:5px;
+  margin-top:6px;
+}
+#page-summary .summary-priority-row{
+  display:grid;
+  grid-template-columns:28px minmax(0,1fr) minmax(72px,auto) minmax(125px,auto);
+  align-items:center;
+  column-gap:8px;
+  min-width:0;
+  line-height:1.15;
+}
+#page-summary .summary-priority-rank{
+  font-size:11px;
+  font-weight:900;
+  color:#17356f;
+}
+#page-summary .summary-priority-name{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-size:12px;
+  font-weight:800;
+  color:#172b4d;
+}
+#page-summary .summary-priority-cat{
+  font-size:10px;
+  color:#657286;
+  white-space:nowrap;
+  text-align:left;
+}
+#page-summary .summary-priority-daily{
+  font-size:11px;
+  font-weight:900;
+  color:#17356f;
+  white-space:nowrap;
+  text-align:right;
+}
+#page-summary .summary-priority-daily small{
+  font-size:9px;
+  font-weight:700;
+  margin-left:2px;
+  color:#657286;
+}
+
 /* SUMMARY MOBILE: header & KPI dibuat lebih rapat */
 @media (max-width:600px){
   #page-summary .summary-grid{
@@ -3178,23 +3230,37 @@ function renderOverviewTrend(tx){
   svgLineChart('overviewTrendChart',vals,estLine);
 }
 function getDeviceSeriesKey(value){
-  const r=String(value||'').trim().toLowerCase();
-  if(!r) return null;
-  if(r.includes('tab')) return 'Tab';
-  if(/(^|\b)z(\b|\s|-|series)/.test(r) || r.includes('series z')) return 'Series Z';
-  if(/(^|\b)a(\b|\s|-|series)/.test(r) || r.includes('series a')) return 'Series A';
-  if(/(^|\b)s(\b|\s|-|series)/.test(r) || r.includes('series s')) return 'Series S';
+  const values = value && typeof value === 'object'
+    ? [
+        value.series,
+        value.productSeries,
+        value.seriesName,
+        value.subcategory,
+        value.subCategory,
+        value.product
+      ]
+    : [value];
+
+  for(const v of values){
+    const r=String(v||'').trim().toLowerCase();
+    if(!r) continue;
+    if(r.includes('tab')) return 'Tab';
+    if(r.includes('fold') || r.includes('flip')) return 'Series Z';
+    if(r.includes('series z') || /(^|\b)z\s*\d/.test(r)) return 'Series Z';
+    if(r.includes('series a') || /(^|\b)a\s*\d/.test(r) || r.includes('galaxy a')) return 'Series A';
+    if(r.includes('series s') || /(^|\b)s\s*\d/.test(r) || r.includes('galaxy s')) return 'Series S';
+  }
   return null;
 }
 function renderOverviewSeries(tx){
   const keys=['Series S','Series Z','Series A','Tab']; const colors=['#087bea','#5d7fe8','#f08a24','#16a765']; const sums={}; keys.forEach(k=>sums[k]=0);
-  tx.filter(x=>String(x.category||'')==='Device').forEach(x=>{const k=getDeviceSeriesKey(x.series);if(k)sums[k]+=Number(x.amount||0);});
+  tx.filter(x=>String(x.category||'')==='Device').forEach(x=>{const k=getDeviceSeriesKey(x);if(k)sums[k]+=Number(x.amount||0);});
   const max=Math.max(1,...keys.map(k=>Math.abs(sums[k]))); const w=520,h=220,p=28,bw=48,gap=65; let svg=`<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><line x1="${p}" y1="${h-p}" x2="${w-p}" y2="${h-p}" stroke="#b9c8dc"/>`;
   keys.forEach((k,i)=>{const bh=Math.max(2,Math.abs(sums[k])/max*(h-p*2-20)),x=p+20+i*(bw+gap),y=h-p-bh;svg+=`<rect x="${x}" y="${y}" width="${bw}" height="${bh}" rx="5" fill="${colors[i]}" opacity=".9"/><text x="${x+bw/2}" y="${y-7}" text-anchor="middle" font-size="10" font-weight="800" fill="#17356f">${overviewMoney(sums[k])}</text><text x="${x+bw/2}" y="${h-8}" text-anchor="middle" font-size="9" fill="#50627f">${k==='Tab'?'Tab':k.replace('Series ','')+' Series'}</text>`;});
   document.getElementById('overviewSeriesChart').innerHTML=svg+'</svg>';
 }
 function renderOverviewSeriesTrend(tx){
-  const keys=['Series S','Series Z','Series A','Tab']; const maps={}; keys.forEach(k=>maps[k]={}); tx.filter(x=>String(x.category||'')==='Device').forEach(x=>{const k=getDeviceSeriesKey(x.series);if(k){const d=String(x.date||'').slice(0,10);if(d)maps[k][d]=(maps[k][d]||0)+Number(x.amount||0);}});
+  const keys=['Series S','Series Z','Series A','Tab']; const maps={}; keys.forEach(k=>maps[k]={}); tx.filter(x=>String(x.category||'')==='Device').forEach(x=>{const k=getDeviceSeriesKey(x);if(k){const d=String(x.date||'').slice(0,10);if(d)maps[k][d]=(maps[k][d]||0)+Number(x.amount||0);}});
   const dates=[...new Set(keys.flatMap(k=>Object.keys(maps[k])))].sort(); const w=700,h=220,p=28,max=Math.max(1,...keys.flatMap(k=>dates.map(d=>maps[k][d]||0))); const colors=['#173f91','#6f3ce5','#f08a24','#16a765']; let svg=`<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><g stroke="#e7edf5">`;
   for(let i=0;i<5;i++){let y=p+i*(h-p*2)/4;svg+=`<line x1="${p}" y1="${y}" x2="${w-p}" y2="${y}"/>`;}svg+='</g>';
   keys.forEach((k,j)=>{const pts=dates.map((d,i)=>`${p+i*(w-p*2)/Math.max(1,dates.length-1)},${h-p-(maps[k][d]||0)/max*(h-p*2)}`).join(' ');svg+=`<polyline fill="none" stroke="${colors[j]}" stroke-width="2" points="${pts}"/>`;}); document.getElementById('overviewSeriesTrend').innerHTML=svg+'</svg>';
