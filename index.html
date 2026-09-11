@@ -1,1253 +1,5916 @@
-/*************************************************
- * SALES PERFORMANCE DASHBOARD
- * GOOGLE APPS SCRIPT BACKEND
- *************************************************/
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 
+<title>Sales Performance Dashboard</title>
 
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
-/*************************************************
- * PERFORMANCE CACHE
- * Cache aman untuk mempercepat multi-user dashboard.
- * Cache transaction dipecah menjadi chunk karena batas
- * ukuran 1 item CacheService. Data akan otomatis stale
- * maksimal 2 menit, dan langsung dianggap invalid setelah
- * ada perubahan Sales / Transaction / Target.
- *************************************************/
-const CACHE_CONFIG = {
-  TTL: 120,
-  SALES_TTL: 300,
-  TARGET_TTL: 300,
-  TX_CHUNK_SIZE: 300,
-  PREFIX: 'SES_SMB_V1_'
-};
-
-function cacheVersion_() {
-  const props = PropertiesService.getScriptProperties();
-  return props.getProperty('SES_SMB_CACHE_VERSION') || '1';
+<style>
+*{
+  box-sizing:border-box;
 }
 
-function bumpCacheVersion_() {
-  const props = PropertiesService.getScriptProperties();
-  const current = Number(props.getProperty('SES_SMB_CACHE_VERSION') || 1);
-  props.setProperty('SES_SMB_CACHE_VERSION', String(current + 1));
+:root{
+  --blue:#087bea;
+  --blue-dark:#06213d;
+  --blue-soft:#eaf4ff;
+  --bg:#f5f7fa;
+  --border:#d9e1e8;
+  --text:#172033;
+  --muted:#64748b;
+  --green:#16c784;
+  --red:#ff4d5a;
+  --orange:#ff8a00;
 }
 
-function cacheKey_(name) {
-  return CACHE_CONFIG.PREFIX + cacheVersion_() + '_' + name;
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:var(--bg);
+  color:var(--text);
 }
 
-function cacheJsonGet_(key) {
-  try {
-    const raw = CacheService.getScriptCache().get(key);
-    return raw ? JSON.parse(raw) : null;
-  } catch (e) {
-    return null;
+button,
+input,
+select{
+  font-family:inherit;
+}
+
+button{
+  cursor:pointer;
+}
+
+.app{
+  display:flex;
+  min-height:100vh;
+}
+
+/* ================= SIDEBAR ================= */
+
+.sidebar{
+  width:272px;
+  background:var(--blue-dark);
+  color:white;
+  position:fixed;
+  left:0;
+  top:0;
+  bottom:0;
+  z-index:100;
+  display:flex;
+  flex-direction:column;
+}
+
+.brand{
+  height:92px;
+  padding:25px 24px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.brand-icon{
+  color:#1685ff;
+  font-size:30px;
+}
+
+.brand-title{
+  font-size:15px;
+  font-weight:700;
+}
+
+.brand-sub{
+  font-size:13px;
+  color:#8494a8;
+  margin-top:3px;
+}
+
+.menu{
+  padding:16px 12px;
+  flex:1;
+}
+
+.menu button{
+  width:100%;
+  border:0;
+  background:transparent;
+  color:#edf4fc;
+  text-align:left;
+  padding:13px 14px;
+  margin-bottom:3px;
+  border-radius:8px;
+  font-size:15px;
+  font-weight:600;
+  display:flex;
+  align-items:center;
+  gap:13px;
+}
+
+.menu button:hover{
+  background:rgba(255,255,255,.07);
+}
+
+.menu button.active{
+  background:#063b75;
+  color:#1685ff;
+}
+
+.menu-icon{
+  width:20px;
+  text-align:center;
+  font-size:18px;
+}
+
+.sidebar-footer{
+  padding:18px;
+  border-top:1px solid rgba(255,255,255,.08);
+  color:#71849a;
+  font-size:12px;
+}
+
+/* ================= CONTENT ================= */
+
+.main{
+  margin-left:272px;
+  width:calc(100% - 272px);
+  min-height:100vh;
+}
+
+.topbar{
+  height:70px;
+  background:white;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
+  padding:0 28px;
+  gap:12px;
+}
+
+.user-badge{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  color:#536275;
+  font-size:14px;
+}
+
+.user-circle{
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  background:var(--blue);
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:bold;
+}
+
+.logout{
+  border:1px solid var(--border);
+  background:white;
+  border-radius:7px;
+  padding:8px 13px;
+  color:#536275;
+}
+
+.content{
+  padding:25px 28px 50px;
+}
+
+.page-title{
+  font-size:28px;
+  font-weight:700;
+  margin:0;
+}
+
+.page-subtitle{
+  color:var(--muted);
+  margin-top:5px;
+  font-size:15px;
+}
+
+.page-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  margin-bottom:20px;
+}
+
+.month-badge{
+  background:#eaf0f6;
+  color:#596a7d;
+  padding:9px 15px;
+  border-radius:7px;
+  font-size:14px;
+}
+
+/* ================= FILTER ================= */
+
+.filters{
+  display:flex;
+  gap:7px;
+  margin-bottom:14px;
+  flex-wrap:wrap;
+}
+
+.filter-btn{
+  border:0;
+  background:#e7edf3;
+  color:#59697b;
+  padding:9px 15px;
+  border-radius:18px;
+  font-size:13px;
+  font-weight:600;
+}
+
+.filter-btn.active{
+  background:var(--blue);
+  color:white;
+}
+
+.select{
+  height:38px;
+  border:1px solid var(--border);
+  background:white;
+  border-radius:7px;
+  padding:0 12px;
+  color:#536275;
+}
+
+
+.store-mode{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+}
+.store-mode .filter-btn{
+  min-width:92px;
+}
+.store-filter-row{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+.store-filter-row .select{
+  min-width:150px;
+}
+.store-kpis{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:10px;
+  margin:12px 0;
+}
+.store-kpi{
+  background:#fff;
+  border:1px solid #e7ebf2;
+  border-radius:10px;
+  padding:10px 12px;
+}
+.store-kpi .label{
+  font-size:11px;
+  color:#7a8495;
+  margin-bottom:4px;
+}
+.store-kpi .value{
+  font-size:18px;
+  font-weight:700;
+}
+.store-week-title{
+  font-weight:700;
+  margin:14px 0 8px;
+}
+.store-week-table{
+  overflow:auto;
+}
+.store-week-table table{
+  min-width:650px;
+}
+.store-week-table table{
+  min-width:650px;
+}
+.store-breakdown{
+  margin:0 0 12px;
+  background:#fff;
+  border:1px solid #e7ebf2;
+  border-radius:10px;
+  overflow:hidden;
+}
+.store-breakdown-head{
+  padding:10px 12px;
+  background:#f7f9fc;
+  border-bottom:1px solid #e7ebf2;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+.store-breakdown-head .title{font-weight:700;font-size:13px;}
+.store-breakdown-head .sub{font-size:11px;color:#7a8495;}
+.store-breakdown table{width:100%;border-collapse:collapse;min-width:780px;}
+.store-breakdown th,.store-breakdown td{padding:8px 9px;border-bottom:1px solid #edf0f5;font-size:12px;text-align:right;white-space:nowrap;}
+.store-breakdown th:first-child,.store-breakdown td:first-child{text-align:left;}
+.store-breakdown tbody tr:last-child td{border-bottom:0;}
+.store-sales-name{font-weight:700;}
+.store-shortfall{font-weight:700;}
+.store-over{font-weight:700;}
+.store-breakdown-wrap{overflow:auto;}
+.store-breakdown-total td{font-weight:700;background:#fafbfd;}
+@media(max-width:700px){
+  /* Tetap tabel yang sama, hanya dibuat lebih rapat agar muat di HP */
+  .store-breakdown-wrap{
+    overflow-x:hidden;
+  }
+
+  .store-breakdown table{
+    min-width:0;
+    width:100%;
+    table-layout:fixed;
+  }
+
+  .store-breakdown th,
+  .store-breakdown td{
+    padding:5px 4px;
+    font-size:9px;
+    white-space:normal;
+    line-height:1.2;
+  }
+
+  .store-breakdown th:first-child,
+  .store-breakdown td:first-child{
+    width:23%;
+    text-align:left;
+    overflow-wrap:anywhere;
+  }
+
+  .store-breakdown th:not(:first-child),
+  .store-breakdown td:not(:first-child){
+    width:12.83%;
+  }
+
+  .store-breakdown .store-sales-name{
+    font-size:9px;
+  }
+}
+.gap-up{font-weight:700;}
+.gap-down{font-weight:700;}
+@media(max-width:700px){
+  .store-kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;}
+  .store-kpi{padding:8px 9px;}
+  .store-kpi .value{font-size:15px;}
+  .store-filter-row .select{min-width:130px;flex:1;}
+}
+
+
+/* ================= ERO MOTTO ================= */
+.ero-motto{
+  margin:0 0 14px;
+  padding:14px 18px;
+  border-radius:12px;
+  background:linear-gradient(135deg,#087bea,#0758b8);
+  color:#fff;
+  box-shadow:0 4px 12px rgba(8,123,234,.15);
+}
+.ero-motto-title{
+  font-size:16px;
+  font-weight:800;
+  letter-spacing:.1px;
+}
+.ero-motto-text{
+  margin-top:4px;
+  font-size:13px;
+  font-weight:600;
+  opacity:.96;
+  min-height:18px;
+  transition:opacity .2s ease;
+}
+@media(max-width:700px){
+  .ero-motto{padding:11px 13px;margin-bottom:10px;}
+  .ero-motto-title{font-size:13px;}
+  .ero-motto-text{font-size:11px;}
+}
+
+/* ================= CARDS ================= */
+
+.card{
+  background:white;
+  border:1px solid var(--border);
+  border-radius:10px;
+  box-shadow:0 1px 2px rgba(0,0,0,.02);
+}
+
+.overview-main{
+  padding:18px;
+  border-top:4px solid var(--blue);
+  margin-bottom:14px;
+}
+
+.card-title{
+  font-size:15px;
+  font-weight:700;
+  color:#5b6b7c;
+}
+
+.metrics{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:30px;
+  margin-top:20px;
+}
+
+.metric-label{
+  color:#657587;
+  font-size:13px;
+  margin-bottom:6px;
+}
+
+.metric-value{
+  font-size:21px;
+  font-weight:700;
+}
+
+.metric-value.blue{
+  color:#087bea;
+}
+
+.metric-value.red{
+  color:#ff3344;
+}
+
+.progress{
+  height:8px;
+  background:#e8eef4;
+  border-radius:10px;
+  overflow:hidden;
+  margin-top:15px;
+}
+
+.progress-bar{
+  height:100%;
+  background:#4a9df7;
+  border-radius:10px;
+}
+
+.category-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+}
+
+.category-card{
+  padding:16px;
+  min-height:250px;
+  border-top:4px solid var(--blue);
+}
+
+.category-card:nth-child(2){
+  border-top-color:#884dff;
+}
+
+.category-card:nth-child(3){
+  border-top-color:#12b8cf;
+}
+
+.category-card:nth-child(4){
+  border-top-color:#ff7600;
+}
+
+.category-name{
+  font-weight:700;
+  color:#5b6b7c;
+  margin-bottom:20px;
+}
+
+.two-col{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+.operator-box{
+  background:#f0f4f7;
+  border-radius:7px;
+  padding:11px;
+  margin-top:8px;
+}
+
+.operator-head{
+  display:flex;
+  justify-content:space-between;
+  font-size:12px;
+  font-weight:700;
+}
+
+
+.operator-label{
+  font-size:10px;
+  color:#7a8495;
+  margin-top:6px;
+}
+.operator-value{
+  font-size:12px;
+  margin-top:2px;
+  font-weight:600;
+}
+.operator-short{
+  color:#ff4d5a;
+}
+
+.est-percent{
+  font-size:11px;
+  color:#718096;
+  margin-top:2px;
+  font-weight:600;
+}
+
+.operator-est-percent{
+  font-size:10px;
+  color:#718096;
+  margin-top:1px;
+  font-weight:600;
+}
+.operator-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:5px 10px;
+  margin-top:2px;
+}
+
+
+/* ================= TABLE ================= */
+
+.table-card{
+  background:white;
+  border:1px solid var(--border);
+  border-radius:10px;
+  overflow:auto;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:850px;
+}
+
+th{
+  background:#f5f8fa;
+  color:#5a6b7c;
+  text-align:left;
+  font-size:12px;
+  padding:12px;
+  border-bottom:1px solid var(--border);
+}
+
+td{
+  padding:12px;
+  border-bottom:1px solid #e8edf1;
+  font-size:13px;
+}
+
+tr:last-child td{
+  border-bottom:0;
+}
+
+.money{
+  font-weight:700;
+}
+
+.percent-red{
+  color:#e53935;
+  font-weight:700;
+}
+
+.percent-orange{
+  color:#f59e0b;
+  font-weight:700;
+}
+
+.percent-green{
+  color:#16a34a;
+  font-weight:700;
+}
+
+.store-shortfall-red{
+  color:#e53935;
+  font-weight:700;
+}
+
+.store-shortfall-orange{
+  color:#f59e0b;
+  font-weight:700;
+}
+
+.store-shortfall-green{
+  color:#16a34a;
+  font-weight:700;
+}
+
+/* ================= BUTTON ================= */
+
+.btn{
+  border:0;
+  border-radius:7px;
+  padding:9px 15px;
+  font-weight:600;
+}
+
+.btn-primary{
+  background:var(--blue);
+  color:white;
+}
+
+.btn-danger{
+  background:#fff0f1;
+  color:#e62939;
+}
+
+.btn-secondary{
+  background:#e9eef3;
+  color:#536275;
+}
+
+.actions{
+  display:flex;
+  gap:7px;
+}
+
+/* ================= FORM ================= */
+
+.form-card{
+  background:white;
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:20px;
+  margin-bottom:15px;
+}
+
+.form-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
+}
+
+.form-group{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+.form-group label{
+  font-size:12px;
+  font-weight:700;
+  color:#596a7b;
+}
+
+.form-group input,
+.form-group select{
+  height:40px;
+  border:1px solid var(--border);
+  border-radius:6px;
+  padding:0 11px;
+  outline:none;
+}
+
+.form-group input:focus,
+.form-group select:focus{
+  border-color:var(--blue);
+}
+
+/* ================= TARGET ================= */
+
+.target-wrapper{
+  overflow:auto;
+}
+
+.target-table input{
+  width:120px;
+  height:34px;
+  border:1px solid #d7e0e8;
+  border-radius:6px;
+  text-align:center;
+  font-size:13px;
+}
+
+.target-table input:focus{
+  border-color:var(--blue);
+  outline:none;
+}
+
+/* ================= TOP ERO FILTER ================= */
+.top-ero-filter-wrap{margin:8px 0 10px;}
+.top-ero-filter{width:100%;height:30px;border:1px solid var(--border);border-radius:6px;background:#fff;padding:0 9px;font-size:11px;color:#172033;outline:none;}
+.top-ero-filter:focus{border-color:var(--blue);}
+
+/* ================= TOP SALES ================= */
+
+.top-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
+  margin-bottom:16px;
+}
+
+.top-card{
+  padding:24px;
+  text-align:center;
+  border-radius:10px;
+  background:white;
+  border:1px solid var(--border);
+}
+
+.top-card.rank1{
+  background:#fffbea;
+  border-color:#f0d567;
+}
+
+.top-card.rank2{
+  background:#f8fafc;
+}
+
+.top-card.rank3{
+  background:#fff8f0;
+  border-color:#f1c69a;
+}
+
+.medal{
+  font-size:28px;
+}
+
+.top-name{
+  font-size:16px;
+  font-weight:700;
+  margin-top:10px;
+}
+
+.top-amount{
+  font-size:25px;
+  font-weight:700;
+  color:var(--blue);
+  margin-top:12px;
+}
+
+.badge{
+  display:inline-block;
+  margin-top:8px;
+  padding:5px 10px;
+  border-radius:15px;
+  background:#ffe1e3;
+  color:#ff3344;
+  font-size:12px;
+  font-weight:700;
+}
+
+/* ================= IMPORT ================= */
+
+.upload-box{
+  background:white;
+  border:2px dashed #cdd8e2;
+  border-radius:12px;
+  padding:60px 20px;
+  text-align:center;
+}
+
+.upload-icon{
+  font-size:45px;
+  color:#65a8ef;
+  margin-bottom:10px;
+}
+
+.upload-title{
+  font-size:19px;
+  font-weight:700;
+}
+
+.upload-sub{
+  color:#667789;
+  margin:8px 0 20px;
+}
+
+/* ================= LOGIN ================= */
+
+.login-screen{
+  position:fixed;
+  inset:0;
+  background:#f4f7fb;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
+}
+
+.login-box{
+  width:390px;
+  background:white;
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:32px;
+  box-shadow:0 10px 40px rgba(0,0,0,.08);
+}
+
+.login-logo{
+  text-align:center;
+  font-size:35px;
+  color:var(--blue);
+}
+
+.login-title{
+  text-align:center;
+  font-size:23px;
+  font-weight:700;
+  margin-top:10px;
+}
+
+.login-sub{
+  text-align:center;
+  color:var(--muted);
+  font-size:13px;
+  margin:7px 0 25px;
+}
+
+.login-box input{
+  width:100%;
+  height:44px;
+  border:1px solid var(--border);
+  border-radius:7px;
+  padding:0 12px;
+  margin-bottom:12px;
+}
+
+.login-btn{
+  width:100%;
+  height:44px;
+  border:0;
+  border-radius:7px;
+  background:var(--blue);
+  color:white;
+  font-weight:700;
+}
+
+.login-error{
+  color:#e62f40;
+  text-align:center;
+  font-size:13px;
+  margin-top:10px;
+}
+
+/* ================= MODAL ================= */
+
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.4);
+  z-index:500;
+  display:none;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
+}
+
+.modal.show{
+  display:flex;
+}
+
+.modal-box{
+  background:white;
+  width:500px;
+  max-width:100%;
+  border-radius:12px;
+  padding:22px;
+  max-height:90vh;
+  overflow:auto;
+}
+
+.modal-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:18px;
+}
+
+.modal-head h3{
+  margin:0;
+}
+
+.close{
+  border:0;
+  background:transparent;
+  font-size:22px;
+}
+
+/* ================= TOAST ================= */
+
+.toast{
+  position:fixed;
+  right:25px;
+  bottom:25px;
+  background:#172033;
+  color:white;
+  padding:13px 18px;
+  border-radius:7px;
+  display:none;
+  z-index:99999;
+  font-size:13px;
+}
+
+.toast.show{
+  display:block;
+}
+
+/* ================= MOBILE ================= */
+
+.mobile-menu{
+  display:none;
+}
+
+@media(max-width:900px){
+
+  .sidebar{
+    transform:translateX(-100%);
+    transition:.2s;
+  }
+
+  .sidebar.open{
+    transform:translateX(0);
+  }
+
+  .main{
+    margin-left:0;
+    width:100%;
+  }
+
+  .mobile-menu{
+    display:block;
+    border:0;
+    background:white;
+    font-size:22px;
+  }
+
+  .topbar{
+    justify-content:space-between;
+    padding:0 15px;
+  }
+
+  .content{
+    padding:18px 14px 40px;
+  }
+
+  .page-title{
+    font-size:22px;
+  }
+
+  .metrics{
+    grid-template-columns:repeat(2,1fr);
+    gap:18px;
+  }
+
+  .category-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .top-grid{
+    grid-template-columns:1fr;
+  }
+
+  .form-grid{
+    grid-template-columns:1fr;
+  }
+
+}
+
+@media(max-width:600px){
+
+  .category-grid{
+    grid-template-columns:1fr;
+  }
+
+  .page-head{
+    align-items:center;
+  }
+
+  .user-badge span{
+    display:none;
+  }
+
+  .overview-main{
+    padding:14px;
+  }
+
+  .metrics{
+    gap:14px;
+  }
+
+  .metric-value{
+    font-size:18px;
+  }
+
+}
+
+/* ================= MOBILE COMPACT ================= */
+html,body{
+  overflow-x:hidden;
+}
+
+@media(max-width:600px){
+  .content{
+    padding:10px 8px 24px;
+  }
+
+  .page-head{
+    margin-bottom:10px;
+  }
+
+  .page-title{
+    font-size:19px;
+  }
+
+  .page-subtitle{
+    font-size:12px;
+  }
+
+  .month-badge{
+    padding:6px 9px;
+    font-size:11px;
+  }
+
+  .filters{
+    gap:5px;
+    margin-bottom:8px;
+  }
+
+  .filter-btn{
+    padding:7px 10px;
+    font-size:11px;
+  }
+
+  .overview-main{
+    padding:10px;
+    margin-bottom:8px;
+  }
+
+  .metrics{
+    gap:8px;
+    margin-top:10px;
+  }
+
+  .metric-label{
+    font-size:10px;
+  }
+
+  .metric-value{
+    font-size:15px;
+  }
+
+  .category-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:7px;
+  }
+
+  .category-card{
+    padding:9px;
+    min-height:0;
+    border-top-width:3px;
+  }
+
+  .category-name{
+    font-size:12px;
+    margin-bottom:9px;
+  }
+
+  .two-col{
+    gap:7px;
+  }
+
+  .operator-box{
+    padding:7px;
+    margin-top:5px;
+    border-radius:6px;
+  }
+
+  .operator-head{
+    font-size:10px;
+  }
+
+  .operator-grid{
+    gap:3px 6px;
+  }
+
+  .operator-label{
+    font-size:8px;
+    margin-top:4px;
+  }
+
+  .operator-value{
+    font-size:9px;
+    margin-top:1px;
+  }
+
+  .store-kpis{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+
+  .store-kpi{
+    padding:7px 8px;
+  }
+
+  .store-kpi .value{
+    font-size:14px;
+  }
+
+  .store-breakdown-wrap,
+  .store-week-table,
+  .table-card{
+    max-width:100%;
+    overflow-x:auto;
   }
 }
 
-function cacheJsonPut_(key, value, ttl) {
-  try {
-    CacheService.getScriptCache().put(key, JSON.stringify(value), ttl);
-  } catch (e) {
-    // Jangan pernah membuat dashboard gagal hanya karena cache penuh.
+
+/* ================= COMPACT MONEY ================= */
+.money-compact{
+  white-space:nowrap;
+}
+
+@media(max-width:600px){
+  .metric-value{
+    font-size:14px;
+  }
+
+  .category-card .value,
+  .category-card .metric-value{
+    font-size:13px;
+  }
+
+  .operator-value{
+    font-size:9px;
+  }
+
+  .store-kpi .value{
+    font-size:13px;
+  }
+
+  .table-card td,
+  .table-card th,
+  .store-breakdown-wrap td,
+  .store-breakdown-wrap th{
+    font-size:10px;
   }
 }
 
-const CONFIG = {
-  SPREADSHEET_ID: SpreadsheetApp.getActiveSpreadsheet().getId(),
 
-  API_KEY: "SALES2026",
-
-  SHEETS: {
-    USERS: "USERS",
-    SALES_MASTER: "SALES_MASTER",
-    SALES_DATA: "SALES_DATA",
-    TARGET_SALES: "TARGET_SALES",
-    STORE_MASTER: "STORE_MASTER",
-    SETTINGS: "SETTINGS"
+/* ================= MOBILE VERTICAL COMPACT V2 ================= */
+@media(max-width:700px){
+  .content{
+    padding-top:7px !important;
+    padding-bottom:14px !important;
   }
-};
+
+  .page-head{
+    margin-bottom:7px !important;
+  }
+
+  .page-title{
+    margin:0 0 2px !important;
+    line-height:1.15 !important;
+  }
+
+  .page-subtitle{
+    line-height:1.15 !important;
+  }
+
+  .filters{
+    margin-bottom:6px !important;
+    gap:4px !important;
+  }
+
+  .filter-btn{
+    padding:5px 8px !important;
+  }
+
+  .overview-main{
+    padding:8px !important;
+    margin-bottom:6px !important;
+  }
+
+  .metrics{
+    margin-top:7px !important;
+    gap:6px !important;
+  }
+
+  .metric{
+    padding:5px !important;
+  }
+
+  .metric-label{
+    margin-bottom:2px !important;
+  }
+
+  .metric-value{
+    line-height:1.1 !important;
+  }
+
+  .category-grid{
+    gap:6px !important;
+  }
+
+  .category-card{
+    padding:7px !important;
+  }
+
+  .category-name{
+    margin-bottom:6px !important;
+    line-height:1.1 !important;
+  }
+
+  .operator-box{
+    padding:5px !important;
+    margin-top:3px !important;
+  }
+
+  .operator-grid{
+    gap:2px 5px !important;
+  }
+
+  .operator-label{
+    margin-top:2px !important;
+  }
+
+  .store-breakdown-wrap{
+    margin-top:6px !important;
+  }
+
+  .store-breakdown{
+    margin-bottom:6px !important;
+  }
+
+  .store-breakdown .section-head,
+  .store-breakdown .breakdown-head{
+    padding:7px 9px !important;
+  }
+
+  .store-breakdown th,
+  .store-breakdown td{
+    padding:4px 3px !important;
+    line-height:1.12 !important;
+  }
+
+  .store-breakdown tbody tr{
+    height:0 !important;
+  }
+
+  .store-breakdown .store-sales-name{
+    line-height:1.1 !important;
+  }
+
+  .card,
+  .table-card{
+    margin-bottom:7px !important;
+  }
+}
 
 
-/*************************************************
- * SETUP DATABASE
- *************************************************/
+/* ================= MOBILE TABLE COMPACT - ALL MENUS =================
+   Tetap mempertahankan bentuk tabel asli. Hanya lebar kolom, padding,
+   dan ukuran teks yang dibuat konsisten agar seluruh tabel muat di HP.
+*/
+@media(max-width:700px){
 
-function setupDatabase() {
+  .table-card{
+    width:100%;
+    max-width:100%;
+    overflow:hidden !important;
+  }
 
-  const ss = SpreadsheetApp.openById(CONFIG.SPREADSHEET_ID);
+  .table-card table,
+  .target-table,
+  .store-breakdown table,
+  .store-week-table table{
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    table-layout:fixed !important;
+    border-collapse:collapse;
+  }
 
-  createSheet_(ss, CONFIG.SHEETS.USERS, [
-    "ID",
-    "USERNAME",
-    "PASSWORD",
-    "NAME",
-    "ROLE",
-    "STATUS",
-    "STORE",
-    "CREATED_AT"
-  ]);
+  .table-card th,
+  .table-card td,
+  .target-table th,
+  .target-table td,
+  .store-breakdown th,
+  .store-breakdown td,
+  .store-week-table th,
+  .store-week-table td{
+    padding:4px 2px !important;
+    font-size:8.5px !important;
+    line-height:1.08 !important;
+    white-space:nowrap !important;
+    overflow:hidden;
+    text-overflow:clip;
+    vertical-align:middle;
+  }
 
-  createSheet_(ss, CONFIG.SHEETS.SALES_MASTER, [
-    "ID",
-    "NAME",
-    "NIK",
-    "ROLE",
-    "STATUS",
-    "STORE",
-    "CREATED_AT"
-  ]);
+  /* Kolom pertama lebih lebar untuk nama sales / label */
+  .table-card th:first-child,
+  .table-card td:first-child,
+  .target-table th:first-child,
+  .target-table td:first-child,
+  .store-breakdown th:first-child,
+  .store-breakdown td:first-child,
+  .store-week-table th:first-child,
+  .store-week-table td:first-child{
+    width:23% !important;
+    text-align:left;
+  }
 
-  createSheet_(ss, CONFIG.SHEETS.SALES_DATA, [
-    "ID",
-    "DATE",
-    "SALES_ID",
-    "SALES_NAME",
-    "CATEGORY",
-    "SUBCATEGORY",
-    "PRODUCT",
-    "QTY",
-    "AMOUNT",
-    "CUSTOMER",
-    "PHONE",
-    "CREATED_AT"
-  ]);
+  /* Tabel 7 kolom: SALES NAME | TARGET | ACTUAL | ACH | EST | EST% | KEKURANGAN */
+  .store-breakdown th:nth-child(2),
+  .store-breakdown td:nth-child(2){
+    width:16% !important;
+  }
+  .store-breakdown th:nth-child(3),
+  .store-breakdown td:nth-child(3){
+    width:13% !important;
+  }
+  .store-breakdown th:nth-child(4),
+  .store-breakdown td:nth-child(4){
+    width:9% !important;
+  }
+  .store-breakdown th:nth-child(5),
+  .store-breakdown td:nth-child(5){
+    width:13% !important;
+  }
+  .store-breakdown th:nth-child(6),
+  .store-breakdown td:nth-child(6){
+    width:9% !important;
+  }
+  .store-breakdown th:nth-child(7),
+  .store-breakdown td:nth-child(7){
+    width:17% !important;
+  }
 
-  createSheet_(ss, CONFIG.SHEETS.TARGET_SALES, [
-    "PERIOD",
-    "SALES_ID",
-    "SALES_NAME",
-    "TARGET_ALL",
-    "DEVICE",
-    "ACCESSORIES",
-    "REPAIR_CONTRACT",
-    "OPERATOR",
-    "INDOSAT",
-    "XL",
-    "TELKOMSEL"
-  ]);
+  .store-breakdown th,
+  .store-breakdown td{
+    text-align:right;
+    font-size:8.5px !important;
+    padding:4px 2px !important;
+  }
 
-  createSheet_(ss, CONFIG.SHEETS.STORE_MASTER, [
-    "ID",
-    "STORE_CODE",
-    "STORE_NAME",
-    "STATUS"
-  ]);
+  .store-breakdown th:first-child,
+  .store-breakdown td:first-child{
+    text-align:left;
+  }
 
-  createSheet_(ss, CONFIG.SHEETS.SETTINGS, [
-    "KEY",
-    "VALUE"
-  ]);
+  /* Nama panjang tetap satu baris dan dipotong rapi, bukan membuat tabel melebar */
+  .store-breakdown .store-sales-name,
+  .table-card td:first-child{
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
 
-  // Default admin
-  const users = ss.getSheetByName(CONFIG.SHEETS.USERS);
+  /* Semua nominal compact tetap satu baris: Rp 679,2 jt / Rp 5,28 M */
+  .money,
+  .money-compact,
+  .percent-red,
+  .percent-green,
+  .percent-orange{
+    white-space:nowrap !important;
+  }
 
-  if (users.getLastRow() === 1) {
+  /* Input Target Management tetap memenuhi sel */
+  .target-table input{
+    width:100% !important;
+    min-width:0 !important;
+    padding:5px 3px !important;
+    font-size:9px !important;
+  }
 
-    users.appendRow([
-      Utilities.getUuid(),
-      "admin",
-      "admin123",
-      "Administrator",
-      "ADMIN",
-      "AKTIF",
-      "SES SMB",
+  /* Jarak antar tabel/card konsisten */
+  .table-card,
+  .store-breakdown,
+  .store-week-table{
+    margin-bottom:8px !important;
+  }
+
+  /* Sedikit lebih longgar dari V2 agar tetap nyaman dibaca */
+  .table-card + .table-card,
+  .store-breakdown + .store-breakdown{
+    margin-top:6px !important;
+  }
+}
+
+
+/* ================= PERFORMANCE HIGHLIGHT ================= */
+.performance-highlight{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:12px;margin-top:14px}
+.highlight-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px 16px;box-shadow:0 1px 2px rgba(16,24,40,.03)}
+.highlight-title{font-size:14px;font-weight:800;color:#172033}
+.highlight-subtitle{margin-top:3px;font-size:11px;color:#7a8495}
+.highlight-list{margin-top:10px}
+.highlight-row{display:grid;grid-template-columns:24px 1fr auto;align-items:center;gap:7px;padding:7px 0;border-bottom:1px solid #edf1f5}
+.highlight-row:last-child{border-bottom:0}
+.highlight-rank{font-weight:800;color:#087bea;font-size:12px}
+.highlight-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;font-weight:700}
+.highlight-meta{color:#7a8495;font-size:10px;margin-top:2px}
+.highlight-score{font-size:12px;font-weight:800;white-space:nowrap}
+.highlight-empty{font-size:11px;color:#8b95a5;padding:6px 0}
+.highlight-action{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0}
+.highlight-action-main{font-size:12px;font-weight:700}
+.highlight-action-value{font-size:11px;font-weight:800;white-space:nowrap}
+@media(max-width:700px){
+ .performance-highlight{grid-template-columns:1fr;gap:7px;margin-top:8px}
+ .highlight-card{padding:9px 10px}
+ .highlight-title{font-size:12px}
+ .highlight-subtitle{font-size:9px}
+ .highlight-list{margin-top:6px}
+ .highlight-row{padding:5px 0}
+ .highlight-name,.highlight-score{font-size:10px}
+ .highlight-meta{font-size:8px}
+ .highlight-empty{font-size:9px}
+ .highlight-action{padding:5px 0}
+ .highlight-action-main{font-size:10px}
+ .highlight-action-value{font-size:9px}
+}
+
+
+/* ================= FINAL COMPACT / FILTER / OUTLOOK ================= */
+.custom-period-box{
+  display:flex;
+  align-items:end;
+  gap:8px;
+  margin:-8px 0 12px;
+  padding:9px 10px;
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:10px;
+}
+.custom-period-box label{
+  display:block;
+  font-size:10px;
+  color:#718096;
+  margin-bottom:4px;
+}
+.custom-period-box input{
+  height:34px;
+  border:1px solid #d8e0ea;
+  border-radius:7px;
+  padding:5px 8px;
+  font-size:12px;
+}
+.outlook-card{margin-bottom:12px;}
+.outlook-section-title{
+  padding:9px 11px;
+  font-weight:800;
+  font-size:11px;
+  color:#17324d;
+  background:#f7f9fc;
+  border-bottom:1px solid var(--border);
+}
+.outlook-card table{min-width:760px;}
+.outlook-card th,.outlook-card td{padding:7px 8px;font-size:10.5px;}
+@media(max-width:700px){
+  table{min-width:720px;}
+  th{font-size:9px;padding:7px 5px;}
+  td{font-size:10px;padding:7px 5px;}
+  .custom-period-box{flex-wrap:wrap;align-items:center;}
+  .custom-period-box > div{flex:1 1 135px;}
+  .custom-period-box .btn{flex:0 0 auto;}
+}
+
+.summary-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.summary-grid .card{padding:12px}
+@media(max-width:900px){.summary-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.summary-grid .metric-value{font-size:17px}.summary-grid .metric-label{font-size:9px}}
+
+/* SUMMARY: tabel lebih rapat, terutama saat dibuka dari HP */
+#page-summary .table-wrap{overflow-x:auto;}
+#page-summary .table-wrap table{min-width:650px;}
+#page-summary th,#page-summary td{padding:6px 6px;font-size:9px;white-space:nowrap;}
+@media(max-width:600px){
+  #page-summary .table-wrap table{min-width:610px !important;}
+  #page-summary th{font-size:7.5px !important;padding:5px 4px !important;}
+  #page-summary td{font-size:8px !important;padding:5px 4px !important;}
+  #page-summary .card-title{font-size:15px !important;}
+}
+
+@media (max-width: 600px){
+  /* DATA ERO: lebih kecil/rapat; Overview & Summary formatter tidak diubah */
+  .top-page table th,.top-page table td,
+  #topPageTable th,#topPageTable td,
+  #salesPerformanceTable th,#salesPerformanceTable td{
+    font-size:8px !important;
+    padding:5px 4px !important;
+    white-space:nowrap;
+  }
+  #topPageCards .top-card{padding:12px 8px !important;}
+  #topPageCards .top-amount{font-size:21px !important;}
+  #topPageCards .top-name{font-size:14px !important;}
+}
+
+
+
+/* SUMMARY LOWEST TOP-3: mobile lebih rapat namun nama ERO tetap terbaca */
+@media (max-width:600px){
+  #summaryLowestTable th:nth-child(1), #summaryLowestTable td:nth-child(1){width:14% !important;}
+  #summaryLowestTable th:nth-child(2), #summaryLowestTable td:nth-child(2){width:28% !important;}
+  #summaryLowestTable th:nth-child(n+3), #summaryLowestTable td:nth-child(n+3){width:auto !important;}
+}
+
+/* SUMMARY MOBILE: header & KPI dibuat lebih rapat */
+@media (max-width:600px){
+  #page-summary .summary-grid{
+    gap:6px !important;
+    margin-bottom:10px !important;
+  }
+  #page-summary .summary-grid .card{
+    padding:9px 10px !important;
+  }
+  #page-summary .summary-grid .metric-label{
+    margin-bottom:2px !important;
+    line-height:1.05 !important;
+  }
+  #page-summary .summary-grid .metric-value{
+    line-height:1.05 !important;
+  }
+  #page-summary .summary-priority-card{
+    grid-column:1 / -1 !important;
+    padding:9px 10px !important;
+  }
+  #page-summary .summary-priority-list{
+    margin-top:3px !important;
+  }
+  #page-summary .summary-priority-row{
+    display:grid !important;
+    grid-template-columns:25px minmax(0,1fr) auto auto !important;
+    align-items:center !important;
+    column-gap:5px !important;
+    min-height:25px !important;
+    line-height:1.05 !important;
+  }
+  #page-summary .summary-priority-rank{
+    font-size:10px !important;
+    font-weight:800 !important;
+  }
+  #page-summary .summary-priority-name{
+    min-width:0 !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+    white-space:nowrap !important;
+    font-size:14px !important;
+    font-weight:800 !important;
+  }
+  #page-summary .summary-priority-cat{
+    font-size:10px !important;
+    white-space:nowrap !important;
+    color:#657286 !important;
+  }
+  #page-summary .summary-priority-daily{
+    font-size:10px !important;
+    font-weight:800 !important;
+    white-space:nowrap !important;
+    text-align:right !important;
+  }
+  #page-summary .summary-priority-daily small{
+    font-size:8px !important;
+    font-weight:700 !important;
+    margin-left:2px !important;
+  }
+  #page-summary .summary-priority-empty{
+    font-size:10px !important;
+    padding:3px 0 !important;
+  }
+
+  /* Semua header tabel Summary dipadatkan lagi agar tidak terasa renggang. */
+  #page-summary .table-wrap th{
+    letter-spacing:-0.15px !important;
+    padding:4px 3px !important;
+  }
+  #page-summary .table-wrap td{
+    padding:4px 3px !important;
+  }
+}
+
+/* MOBILE ONLY: RANK -> ERO benar-benar dirapatkan.
+   Catatan: ID seperti #topPageTable adalah TBODY, jadi table-layout
+   harus dipasang ke TABLE induknya agar lebar kolom benar-benar berubah. */
+@media (max-width:600px){
+  /* TOP ERO */
+  #page-top .table-wrap table{
+    table-layout:fixed !important;
+    min-width:0 !important;
+    width:100% !important;
+  }
+  #page-top .table-wrap th:nth-child(1), #page-top .table-wrap td:nth-child(1){width:6% !important; text-align:left;}
+  #page-top .table-wrap th:nth-child(2), #page-top .table-wrap td:nth-child(2){width:34% !important; text-align:left;}
+  #page-top .table-wrap th:nth-child(n+3), #page-top .table-wrap td:nth-child(n+3){width:12% !important;}
+
+  /* SUMMARY PRIORITY */
+  #page-summary #summaryPriorityTable{ }
+  #page-summary .table-wrap table{
+    table-layout:fixed !important;
+    min-width:0 !important;
+    width:100% !important;
+  }
+  #page-summary .table-wrap table:has(#summaryPriorityTable){}
+  #summaryPriorityTable th:nth-child(1), #summaryPriorityTable td:nth-child(1){width:6% !important; text-align:left;}
+  #summaryPriorityTable th:nth-child(2), #summaryPriorityTable td:nth-child(2){width:31% !important; text-align:left;}
+  #summaryPriorityTable th:nth-child(3), #summaryPriorityTable td:nth-child(3){width:17% !important; text-align:left;}
+  #summaryPriorityTable th:nth-child(n+4), #summaryPriorityTable td:nth-child(n+4){width:11.5% !important;}
+
+  /* SUMMARY ERO TERENDAH */
+  #summaryLowestTable th:nth-child(1), #summaryLowestTable td:nth-child(1){width:10% !important; text-align:left;}
+  #summaryLowestTable th:nth-child(2), #summaryLowestTable td:nth-child(2){width:32% !important; text-align:left;}
+  #summaryLowestTable th:nth-child(n+3), #summaryLowestTable td:nth-child(n+3){width:11.6% !important;}
+
+  /* PERFORMA SALES */
+  #salesPerformanceTable th:nth-child(1), #salesPerformanceTable td:nth-child(1){width:27% !important; text-align:left;}
+  #salesPerformanceTable th:nth-child(n+2), #salesPerformanceTable td:nth-child(n+2){width:10.43% !important;}
+
+  /* BREAKDOWN ERO */
+  .store-breakdown table{
+    table-layout:fixed !important;
+    min-width:0 !important;
+    width:100% !important;
+  }
+  .store-breakdown th:first-child, .store-breakdown td:first-child{width:28% !important;}
+}
+
+/* ================= EXECUTIVE OVERVIEW ================= */
+.exec-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}.exec-kicker{font-size:11px;font-weight:800;letter-spacing:1.2px;color:#087bea}.exec-date{background:#fff;border:1px solid #dbe7f5;border-radius:12px;padding:9px 13px;font-size:12px;font-weight:700;color:#12346b}.exec-motto{margin-bottom:12px}.exec-filter{padding:12px 14px;margin-bottom:12px}.filter-section-title{font-size:13px;font-weight:800;color:#102b63;margin-bottom:8px}.exec-periods{margin:0;display:flex;gap:6px;flex-wrap:wrap}.exec-filter-grid{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px;margin-top:10px;align-items:end}.exec-filter-grid label{display:block;font-size:10px;color:#64748b;font-weight:700;margin:0 0 4px}.filter-reset{height:36px;background:#f5f9ff;color:#087bea;border:1px solid #b9d6f7}.exec-kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:12px}.exec-kpi{background:#fff;border:1px solid #dce8f5;border-radius:13px;padding:13px;position:relative;min-height:158px;box-shadow:0 2px 10px rgba(20,70,130,.05)}.exec-kpi .kpi-icon{font-size:20px;color:#087bea;font-weight:900}.kpi-label{font-size:11px;font-weight:800;color:#17356f;margin-top:4px}.kpi-value{font-size:23px;font-weight:900;color:#092d72;margin-top:4px}.kpi-target{font-size:10px;color:#64748b}.kpi-target b{color:#163875}.kpi-progress{height:7px;background:#e8eef6;border-radius:8px;margin:10px 0 4px;overflow:hidden}.kpi-progress span{display:block;height:100%;width:0;background:#087bea;border-radius:8px}.kpi-percent{text-align:right;font-size:11px;font-weight:900;color:#087bea}.kpi-foot{display:flex;gap:7px;align-items:center;justify-content:space-between;font-size:10px;margin-top:7px;color:#64748b}.kpi-foot b{color:#17356f}.kpi-foot em{font-style:normal;color:#087bea;font-weight:900}.kpi-foot.danger b{color:#f12d3c}.exec-grid{display:grid;gap:10px;margin-bottom:10px}.grid-main{grid-template-columns:1.45fr 1fr .9fr}.grid-mid{grid-template-columns:1.35fr 1fr .9fr}.grid-bottom{grid-template-columns:1.35fr 1fr}.grid-bottom2{grid-template-columns:1.25fr .95fr}.exec-chart-card{background:#fff;border:1px solid #dce8f5;border-radius:13px;padding:12px;min-width:0;box-shadow:0 2px 10px rgba(20,70,130,.04)}.exec-card-head{display:flex;align-items:center;gap:9px;margin-bottom:8px;color:#087bea}.exec-card-head>span:first-child{font-size:20px}.exec-card-head>div{min-width:0;flex:1}.exec-card-head b{display:block;color:#112e68;font-size:14px}.exec-card-head small{display:block;color:#8290a8;font-size:9px;margin-top:2px}.exec-card-head a{font-size:10px;color:#087bea;text-decoration:none;white-space:nowrap}.exec-card-head .top-ero-filter{margin-left:auto;}.legend{font-size:9px;color:#65748b;white-space:nowrap}.dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin:0 3px 0 8px;background:#087bea}.dot.est{background:#6aaeff}.svg-chart{height:220px;min-height:190px}.svg-chart svg{width:100%;height:100%;display:block}.ero-bars{height:210px;display:flex;align-items:flex-end;gap:8px;padding:12px 4px 20px;border-bottom:1px solid #d9e4f1;overflow:hidden}.ero-bar-item{height:100%;flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;min-width:0}.ero-bar-track{height:145px;width:min(30px,70%);background:#edf2f8;border-radius:6px 6px 2px 2px;display:flex;align-items:flex-end;position:relative}.ero-bar-fill{width:100%;border-radius:6px 6px 2px 2px;background:#087bea;min-height:2px}.ero-bar-fill.good{background:#16b96b}.ero-bar-fill.warn{background:#f39b20}.ero-bar-fill.bad{background:#f13b4c}.ero-bar-value{font-size:10px;font-weight:900;color:#12346b;margin-bottom:4px}.ero-bar-name{font-size:8px;color:#435676;text-align:center;line-height:1.15;margin-top:5px;max-width:55px;word-break:break-word}.top-ero-filter{font-size:10px;padding:5px 8px}.mini-podium{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;height:205px;align-items:stretch}.mini-podium .pod{border:1px solid #dce8f5;border-radius:10px;padding:9px 5px;text-align:center;display:flex;flex-direction:column;justify-content:center}.mini-podium .pod:first-child{border-color:#f0c928;background:#fffdf2}.pod-medal{font-size:24px}.pod-rank{font-size:9px;color:#74839b}.pod-name{font-size:10px;font-weight:800;color:#12346b;margin:5px 0;word-break:break-word}.pod-est{font-size:21px;font-weight:900;color:#087bea}.pod-est.good{color:#16a765}.pod-est.bad{color:#f13b4c}.gauge-wrap{height:205px;display:flex;align-items:center;justify-content:center;position:relative}.gauge{width:145px;height:145px;border-radius:50%;background:conic-gradient(#087bea var(--p),#e7edf5 0);display:flex;align-items:center;justify-content:center}.gauge:after{content:"";width:105px;height:105px;border-radius:50%;background:#fff}.gauge-center{position:absolute;text-align:center;color:#12346b}.gauge-center strong{display:block;font-size:27px}.gauge-center small{font-size:10px;color:#64748b}.series-legend{font-size:9px}.category-performance-row{display:grid;grid-template-columns:92px 1fr 38px;gap:6px;align-items:center;padding:7px 0;border-bottom:1px solid #edf1f6;font-size:10px}.category-performance-row:last-child{border-bottom:0}.cat-name{font-weight:800;color:#17356f}.cat-track{height:8px;background:#edf1f6;border-radius:8px;overflow:hidden}.cat-fill{height:100%;background:#087bea;border-radius:8px}.cat-est{font-weight:900;color:#087bea;text-align:right}.lowest-table{width:100%;border-collapse:collapse;font-size:9px}.lowest-table th{background:#f5f9ff;color:#60708b;text-align:left;font-weight:800}.lowest-table th,.lowest-table td{padding:6px 5px;border-bottom:1px solid #edf1f6}.lowest-table td:nth-child(4){font-weight:900;color:#f13b4c}.lowest-table td:nth-child(5){color:#f13b4c;font-weight:800}.donut-chart{height:220px;display:flex;align-items:center;justify-content:center}.donut{width:145px;height:145px;border-radius:50%;background:conic-gradient(#087bea 0 85%,#63aef5 85% 93%,#9eafc5 93% 93%,#e8edf4 93% 100%);position:relative}.donut:after{content:"";position:absolute;inset:35px;border-radius:50%;background:#fff}.donut-center{position:absolute;z-index:2;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;font-weight:900;color:#12346b}.donut-center small{font-size:9px;font-weight:500}.donut-list{margin-left:18px;font-size:10px}.donut-row{display:flex;gap:6px;margin:8px 0;align-items:center}.donut-swatch{width:9px;height:9px;border-radius:2px;background:#087bea}.insight-stack{display:grid;gap:10px}.insight-card,.action-card{padding:12px;border-radius:13px}.insight-card{background:#eaf5ff;border:1px solid #d2e9ff}.action-card{background:#e9fbf3;border:1px solid #ccefe0}.insight-list,.action-list{font-size:10px;line-height:1.6;color:#294a75;margin:5px 0 0 28px;padding:0}.action-list{color:#23634d}.action-list li::marker{color:#14ad72}.legacy-overview-data{display:none}.exec-chart-card.wide{min-width:0}
+@media(max-width:900px){.exec-head{align-items:center}.exec-date{font-size:9px;padding:7px}.exec-kicker{font-size:8px}.page-title{font-size:20px}.exec-motto{padding:9px}.exec-filter{padding:9px}.exec-filter-grid{grid-template-columns:1fr 1fr;gap:6px}.exec-filter-grid .filter-reset{grid-column:1/-1}.exec-periods{overflow-x:auto;flex-wrap:nowrap;padding-bottom:2px}.exec-periods .filter-btn{white-space:nowrap;font-size:9px;padding:7px 9px}.exec-kpi-grid{grid-template-columns:repeat(2,1fr);gap:6px}.exec-kpi{min-height:140px;padding:9px}.exec-kpi.kpi-main{grid-column:1/-1}.kpi-value{font-size:20px}.kpi-label{font-size:10px}.kpi-target,.kpi-foot{font-size:9px}.grid-main,.grid-mid,.grid-bottom,.grid-bottom2{grid-template-columns:1fr}.exec-chart-card{padding:9px}.exec-card-head{gap:6px}.exec-card-head b{font-size:12px}.exec-card-head small{font-size:8px}.exec-card-head .top-ero-filter{width:100px;min-width:100px;max-width:100px;flex-basis:100px;font-size:9px}.svg-chart{height:190px}.ero-bars{height:190px;gap:4px}.ero-bar-track{height:125px;width:24px}.ero-bar-name{font-size:7px;max-width:42px}.ero-bar-value{font-size:9px}.mini-podium{height:175px}.pod-name{font-size:9px}.pod-est{font-size:19px}.gauge-wrap{height:180px}.lowest-table{font-size:8px}.lowest-table th,.lowest-table td{padding:5px 3px}.donut-chart{height:180px}.donut{width:125px;height:125px}.donut:after{inset:30px}.exec-filter-grid .select{width:100%}}
+
+@media(max-width:900px){
+  .exec-filter-grid{grid-template-columns:1fr 1fr!important;}
+  .exec-filter-grid>div{min-width:0;}
+  .exec-filter-grid .select{min-width:0;width:100%;font-size:10px;padding:7px 8px;}
+  .exec-filter-grid label{font-size:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .exec-filter-grid .filter-reset{grid-column:1/-1;}
+}
+@media(min-width:901px){
+  .exec-filter-grid{grid-template-columns:1fr 1fr 1fr auto;}
+  .exec-filter-grid>div{min-width:0;}
+  .exec-filter-grid .select{width:100%;min-width:0;}
+}
+</style>
+
+<style>
+.exec-period-compact{display:flex;align-items:center;gap:12px;padding:9px 12px}.exec-period-compact .filter-section-title{margin:0;white-space:nowrap}.exec-period-compact .exec-periods{flex:1}.device-value-only{min-height:132px}.device-value-only .device-date-label{margin-top:12px;font-size:10px;color:#64748b}.operator-sub-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px}.operator-sub-card{padding:12px;background:#fff;border:1px solid #dce8f5;border-radius:13px;box-shadow:0 2px 10px rgba(20,70,130,.04)}.operator-sub-head{display:flex;gap:8px;align-items:center;color:#087bea}.operator-sub-head>span{font-size:20px}.operator-sub-head b{display:block;color:#112e68;font-size:13px}.operator-sub-head small{font-size:9px;color:#8290a8}.operator-sub-value{font-size:21px;font-weight:900;color:#092d72;margin-top:8px}.operator-sub-target{font-size:10px;color:#64748b}.operator-sub-target b{color:#17356f}.operator-sub-row{display:flex;align-items:center;gap:7px;justify-content:space-between;font-size:10px;color:#64748b;margin-top:7px}.operator-sub-row b{color:#17356f}.operator-sub-row em{font-style:normal;color:#087bea;font-weight:900}.operator-sub-row.gap b{color:#f13b4c}.operator-chart{height:220px;display:flex;align-items:flex-end;justify-content:space-around;gap:18px;padding:12px 12px 20px;border-bottom:1px solid #d9e4f1}.operator-chart-item{height:100%;flex:1;max-width:90px;display:flex;flex-direction:column;justify-content:flex-end;align-items:center}.operator-chart-track{height:145px;width:42px;background:#edf2f8;border-radius:7px 7px 2px 2px;display:flex;align-items:flex-end;overflow:hidden}.operator-chart-fill{width:100%;min-height:2px;border-radius:7px 7px 2px 2px}.operator-chart-value{font-size:11px;font-weight:900;color:#12346b;margin-bottom:5px}.operator-chart-name{font-size:10px;font-weight:800;color:#435676;margin-top:6px}.exec-filter-grid{display:none!important}
+@media(max-width:900px){.operator-sub-grid{grid-template-columns:1fr}.exec-period-compact{display:block;padding:7px 8px}.exec-period-compact .filter-section-title{margin-bottom:5px}.exec-period-compact .exec-periods{overflow-x:auto}.operator-sub-grid{grid-template-columns:1fr;gap:6px}.operator-sub-card{padding:9px}.operator-sub-value{font-size:19px}.operator-chart{height:190px;gap:8px;padding:10px 6px 18px}.operator-chart-track{height:120px;width:34px}.operator-chart-name{font-size:9px}.operator-chart-value{font-size:10px}.device-value-only{min-height:120px}.device-value-only .device-date-label{font-size:9px}}
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+
+<div id="loginScreen" class="login-screen">
+
+  <div class="login-box">
+
+    <div class="login-logo">↗</div>
+
+    <div class="login-title">
+      Sales Performance
+    </div>
+
+    <div class="login-sub">
+      Dashboard SES SMB
+    </div>
+
+    <input
+      id="loginUsername"
+      placeholder="Username"
+      autocomplete="username"
+    >
+
+    <input
+      id="loginPassword"
+      type="password"
+      placeholder="Password"
+      autocomplete="current-password"
+    >
+
+    <button
+      class="login-btn"
+      onclick="login()"
+    >
+      Login
+    </button>
+
+    <div id="loginError" class="login-error"></div>
+
+  </div>
+
+</div>
+
+
+<!-- APPLICATION -->
+
+<div id="app" class="app" style="display:none">
+
+  <!-- SIDEBAR -->
+
+  <aside id="sidebar" class="sidebar">
+
+    <div class="brand">
+
+      <div class="brand-icon">↗</div>
+
+      <div>
+        <div class="brand-title">Sales</div>
+        <div class="brand-sub">Performance</div>
+      </div>
+
+    </div>
+
+    <div class="menu">
+
+      <button
+        id="menu-overview"
+        class="active"
+        onclick="showPage('overview')"
+      >
+        <span class="menu-icon">▦</span>
+        Overview
+      </button>
+
+      <button
+        id="menu-store"
+        onclick="showPage('store')"
+      >
+        <span class="menu-icon">♧</span>
+        Performa ERO
+      </button>
+
+      <button
+        id="menu-sales"
+        onclick="showPage('sales')"
+      >
+        <span class="menu-icon">♧</span>
+        Performa Sales
+      </button>
+
+      <button
+        id="menu-top"
+        onclick="showPage('top')"
+      >
+        <span class="menu-icon">🏆</span>
+        Top ERO
+      </button>
+
+      <button
+        id="menu-summary"
+        onclick="showPage('summary')"
+      >
+        <span class="menu-icon">▤</span>
+        Summary
+      </button>
+
+      <button
+        id="menu-outlook"
+        onclick="showPage('outlook')"
+      >
+        <span class="menu-icon">◔</span>
+        Outlook Kategori
+      </button>
+
+      <button
+        id="menu-target"
+        onclick="showPage('target')"
+      >
+        <span class="menu-icon">◎</span>
+        Target Management
+      </button>
+
+      <button
+        id="menu-manage"
+        onclick="showPage('manage')"
+      >
+        <span class="menu-icon">♙</span>
+        Manage Sales
+      </button>
+
+    </div>
+
+    <div class="sidebar-footer">
+      v1.0.0 • Sales Dashboard
+    </div>
+
+  </aside>
+
+
+  <!-- MAIN -->
+
+  <main class="main">
+
+    <header class="topbar">
+
+      <button
+        class="mobile-menu"
+        onclick="toggleSidebar()"
+      >
+        ☰
+      </button>
+
+      <div class="user-badge">
+
+        <div class="user-circle" id="userInitial">
+          A
+        </div>
+
+        <span id="userName">
+          Administrator
+        </span>
+
+        <button
+          class="logout"
+          onclick="logout()"
+        >
+          Logout
+        </button>
+
+      </div>
+
+    </header>
+
+
+    <section class="content">
+
+      <!-- ================= OVERVIEW ================= -->
+
+      <div id="page-overview" class="page">
+
+        <div class="exec-head">
+          <div>
+            <div class="exec-kicker">EXECUTIVE SALES PERFORMANCE</div>
+            <h1 class="page-title">Overview</h1>
+            <div class="page-subtitle">Ringkasan performa SES SMB • data H-1</div>
+          </div>
+          <div class="exec-date">📅 <span id="overviewMonth"></span></div>
+        </div>
+
+        <div class="ero-motto exec-motto">
+          <div class="ero-motto-title">🔥 HAI KALIAN SEMUA ERO SMB!</div>
+          <div class="ero-motto-text" id="eroMottoText">Jualan yang semangat ya! 💪🔥</div>
+        </div>
+
+        <div class="exec-filter card exec-period-compact">
+          <div class="filter-section-title">📅 Periode</div>
+          <div class="filters exec-periods">
+            <button class="filter-btn" onclick="setPeriodMode('lastweek',this)">Minggu Lalu</button>
+            <button class="filter-btn" onclick="setPeriodMode('week',this)">Minggu Ini</button>
+            <button class="filter-btn active" onclick="setPeriodMode('month',this)">Bulan Ini</button>
+            <button class="filter-btn" onclick="setPeriodMode('year',this)">Tahun Ini</button>
+            <button class="filter-btn" onclick="setPeriodMode('custom',this)">Custom</button>
+          </div>
+          <div id="customPeriodBox" class="custom-period-box" style="display:none">
+            <div><label>Tanggal Mulai</label><input type="date" id="customStartDate"></div>
+            <div><label>Tanggal Akhir</label><input type="date" id="customEndDate"></div>
+            <button class="btn primary" onclick="applyCustomPeriod()">Terapkan</button>
+          </div>
+        </div>
+
+        <div class="exec-kpi-grid">
+          <div class="exec-kpi kpi-main"><div class="kpi-icon">▥</div><div class="kpi-label">SALES ALL</div><div class="kpi-value" id="overviewActual">Rp 0</div><div class="kpi-target">dari target <b id="overviewTarget">Rp 0</b></div><div class="kpi-progress"><span id="overviewProgress"></span></div><div class="kpi-percent" id="overviewAch">0%</div><div class="kpi-foot"><span>Estimasi</span><b id="overviewEst">Rp 0</b><em id="overviewEstPercent">0%</em></div><div class="kpi-foot danger"><span>Kekurangan</span><b id="overviewShort">Rp 0</b></div></div>
+          <div class="exec-kpi device-value-only"><div class="kpi-icon">▣</div><div class="kpi-label">DEVICE</div><div class="kpi-value" id="deviceActual">Rp 0</div><div class="device-date-label">📅 <span id="deviceDateLabel">Periode terpilih</span></div></div>
+          <div class="exec-kpi"><div class="kpi-icon">◉</div><div class="kpi-label">ACCESSORIES</div><div class="kpi-value" id="accActual">Rp 0</div><div class="kpi-target">dari target <b id="accTarget">Rp 0</b></div><div class="kpi-progress"><span id="accProgress"></span></div><div class="kpi-percent" id="accAch">0%</div><div class="kpi-foot"><span>Estimasi</span><b id="accEst">Rp 0</b><em id="accEstPercent">0%</em></div><div class="kpi-foot danger"><span>Kekurangan</span><b id="accShort">Rp 0</b></div></div>
+          <div class="exec-kpi"><div class="kpi-icon">◆</div><div class="kpi-label">SCP</div><div class="kpi-value" id="repairActual">Rp 0</div><div class="kpi-target">dari target <b id="repairTarget">Rp 0</b></div><div class="kpi-progress"><span id="repairProgress"></span></div><div class="kpi-percent" id="repairAch">0%</div><div class="kpi-foot"><span>Estimasi</span><b id="repairEst">Rp 0</b><em id="repairEstPercent">0%</em></div><div class="kpi-foot danger"><span>Kekurangan</span><b id="repairShort">Rp 0</b></div></div>
+          <div class="exec-kpi"><div class="kpi-icon">⌁</div><div class="kpi-label">OPERATOR</div><div class="kpi-value" id="operatorActual">Rp 0</div><div class="kpi-target">dari target <b id="operatorTarget">Rp 0</b></div><div class="kpi-progress"><span id="operatorProgress"></span></div><div class="kpi-percent" id="operatorAch">0%</div><div class="kpi-foot"><span>Estimasi</span><b id="operatorEst">Rp 0</b><em id="operatorEstPercent">0%</em></div><div class="kpi-foot danger"><span>Kekurangan</span><b id="operatorShort">Rp 0</b></div></div>
+        </div>
+
+        <div class="exec-grid grid-main">
+          <div class="card exec-chart-card wide"><div class="exec-card-head"><span>⌁</span><div><b>Operator by Sub Kategori</b><small>Target • Pencapaian • Estimasi • Est % • Gap</small></div></div><div class="operator-sub-grid" id="overviewOperatorSubGrid">
+            <div class="operator-sub-card"><div class="operator-sub-head"><span>◉</span><div><b>Indosat</b><small>Operator</small></div></div><div class="operator-sub-value" id="overviewIndosatActual">Rp 0</div><div class="operator-sub-target">Target <b id="overviewIndosatTarget">Rp 0</b></div><div class="operator-sub-row"><span>Pencapaian</span><b id="overviewIndosatAch">0%</b></div><div class="operator-sub-row"><span>Estimasi</span><b id="overviewIndosatEst">Rp 0</b><em id="overviewIndosatEstPercent">0%</em></div><div class="operator-sub-row gap"><span>Gap</span><b id="overviewIndosatGap">Rp 0</b></div></div>
+            <div class="operator-sub-card"><div class="operator-sub-head"><span>ⓧ</span><div><b>XL</b><small>Operator</small></div></div><div class="operator-sub-value" id="overviewXLActual">Rp 0</div><div class="operator-sub-target">Target <b id="overviewXLTarget">Rp 0</b></div><div class="operator-sub-row"><span>Pencapaian</span><b id="overviewXLAch">0%</b></div><div class="operator-sub-row"><span>Estimasi</span><b id="overviewXLEst">Rp 0</b><em id="overviewXLEstPercent">0%</em></div><div class="operator-sub-row gap"><span>Gap</span><b id="overviewXlGap">Rp 0</b></div></div>
+            <div class="operator-sub-card"><div class="operator-sub-head"><span>⌁</span><div><b>Telkomsel</b><small>Operator</small></div></div><div class="operator-sub-value" id="overviewTelkomselActual">Rp 0</div><div class="operator-sub-target">Target <b id="overviewTelkomselTarget">Rp 0</b></div><div class="operator-sub-row"><span>Pencapaian</span><b id="overviewTelkomselAch">0%</b></div><div class="operator-sub-row"><span>Estimasi</span><b id="overviewTelkomselEst">Rp 0</b><em id="overviewTelkomselEstPercent">0%</em></div><div class="operator-sub-row gap"><span>Gap</span><b id="overviewTelkomselGap">Rp 0</b></div></div>
+          </div></div>
+          <div class="card exec-chart-card"><div class="exec-card-head"><span>▥</span><div><b>Sales by Series</b><small>Device • Actual</small></div></div><div id="overviewSeriesChart" class="svg-chart"></div></div>
+          <div class="card exec-chart-card"><div class="exec-card-head"><span>◔</span><div><b>Kontribusi Kategori</b><small>Nilai sales</small></div></div><div id="overviewContributionChart" class="donut-chart"></div></div>
+        </div>
+
+        <div class="exec-grid grid-mid">
+          <div class="card exec-chart-card"><div class="exec-card-head"><span>👥</span><div><b>Estimasi % by ERO</b><small>Posisi estimasi terhadap target</small></div><select id="topEroCategory" class="top-ero-filter" onchange="renderTopERO();renderOverviewCharts()"><option value="Sales All">Sales All</option><option value="Device">Device</option><option value="Accessories">Accessories</option><option value="Operator">Operator</option></select></div><div id="overviewEroChart" class="ero-bars"></div></div>
+          <div class="card exec-chart-card"><div class="exec-card-head"><span>🏆</span><div><b>Top 3 ERO (Est %)</b><small>Performa terbaik</small></div><a href="javascript:void(0)" onclick="showPage('top')">Lihat Semua →</a></div><div id="overviewTop3" class="mini-podium"></div></div>
+          <div class="card exec-chart-card"><div class="exec-card-head"><span>🎯</span><div><b>Progress Target Sales All</b><small>Actual H-1 & estimasi</small></div></div><div id="overviewGauge" class="gauge-wrap"></div></div>
+        </div>
+
+        <div class="exec-grid grid-bottom">
+          <div class="card exec-chart-card wide"><div class="exec-card-head"><span>▥</span><div><b>Sales by Series Trend</b><small>Device • harian</small></div></div><div id="overviewSeriesTrend" class="svg-chart"></div></div>
+          <div class="card exec-chart-card"><div class="exec-card-head"><span>▥</span><div><b>Pencapaian per Kategori</b><small>Actual / target / est %</small></div></div><div id="overviewCategoryPerformance"></div></div>
+        </div>
+
+        <div class="exec-grid grid-bottom2">
+          <div class="card exec-chart-card wide"><div class="exec-card-head"><span>⚠</span><div><b>ERO Terendah (Est %)</b><small>Per kategori</small></div></div><div id="overviewLowest"></div></div>
+          <div class="insight-stack"><div class="card insight-card"><div class="exec-card-head"><span>💡</span><div><b>Insight Hari Ini</b></div></div><div id="overviewInsight"></div></div><div class="card action-card"><div class="exec-card-head"><span>✓</span><div><b>Action Plan</b></div></div><div id="overviewAction"></div></div></div>
+        </div>
+
+        <div class="legacy-overview-data" aria-hidden="true">
+          <span id="indosatTarget"></span><span id="indosatActual"></span><span id="indosatEst"></span><span id="indosatEstPercent"></span><span id="indosatShort"></span><span id="indosatAch"></span>
+          <span id="xlTarget"></span><span id="xlActual"></span><span id="xlEst"></span><span id="xlEstPercent"></span><span id="xlShort"></span><span id="xlAch"></span>
+          <span id="telkomselTarget"></span><span id="telkomselActual"></span><span id="telkomselEst"></span><span id="telkomselEstPercent"></span><span id="telkomselShort"></span><span id="telkomselAch"></span>
+          <span id="topSalesHighlight"></span><span id="bestCategoryHighlight"></span><span id="quickActionHighlight"></span>
+        </div>
+      </div>
+
+
+      <!-- ================= STORE ================= -->
+
+      <div id="page-store" class="page" style="display:none">
+
+        <div class="page-head">
+          <div>
+            <h1 class="page-title">Performa ERO</h1>
+            <div class="page-subtitle">Performa H-1 & perbandingan 3 minggu terakhir</div>
+          </div>
+          <div class="month-badge">📅 <span id="storeMonth"></span></div>
+        </div>
+
+        <div class="filters store-filter-row">
+          <div class="store-mode">
+            <button id="storeModeAll" class="filter-btn active" onclick="setStoreMode('ALL')">Semua</button>
+            <button id="storeModeCat" class="filter-btn" onclick="setStoreMode('CATEGORY')">Per Kategori</button>
+          </div>
+
+          <select class="select" id="storeCategory" onchange="updateStoreTypeOptions();renderStore()">
+            <option value="ALL">Sales All</option>
+            <option value="Device">Device</option>
+            <option value="Accessories">Accessories</option>
+            <option value="Repair Contract">Repair Contract</option>
+            <option value="Operator">Operator</option>
+          </select>
+
+          <select class="select" id="storeType" onchange="renderStore()">
+            <option value="ALL">Semua</option>
+          </select>
+        </div>
+
+        <div class="store-kpis">
+          <div class="store-kpi"><div class="label">ACTUAL H-1</div><div class="value" id="storeActualKpi">Rp0</div></div>
+          <div class="store-kpi"><div class="label">TARGET</div><div class="value" id="storeTargetKpi">Rp0</div></div>
+          <div class="store-kpi"><div class="label">ACHIEVEMENT</div><div class="value" id="storeAchKpi">0%</div></div>
+          <div class="store-kpi"><div class="label">ESTIMASI H-1</div><div class="value" id="storeEstKpi">Rp0</div></div>
+        </div>
+
+        <div class="store-week-title">Breakdown Target per Sales</div>
+        <div class="page-subtitle" style="margin-bottom:8px">Setiap sales dapat melihat target, actual H-1, estimasi dan kekurangan per kategori.</div>
+        <div id="storeSalesBreakdown"></div>
+
+        <div class="store-week-title">3 Minggu Terakhir — WoW & Gap Value</div>
+        <div class="table-card store-week-table">
+          <table>
+            <thead>
+              <tr>
+                <th>PERIODE</th>
+                <th>SALES</th>
+                <th>WoW</th>
+                <th>GAP VALUE</th>
+              </tr>
+            </thead>
+            <tbody id="storeWeeklyTable"></tbody>
+          </table>
+        </div>
+
+      </div>
+
+
+      <!-- ================= SALES ================= -->
+
+      <div id="page-sales" class="page" style="display:none">
+
+        <div class="page-head">
+
+          <div>
+            <h1 class="page-title">
+              Performa Sales
+            </h1>
+
+            <div class="page-subtitle">
+              Perbandingan performa setiap sales
+            </div>
+          </div>
+
+          <div class="month-badge">
+            📅 <span id="salesMonth"></span>
+          </div>
+
+        </div>
+
+        <div class="filters">
+
+          <button class="filter-btn active">
+            Per Sales
+          </button>
+
+          <select
+            class="select"
+            id="salesCategory"
+            onchange="renderSalesPerformance()"
+          >
+
+            <option value="ALL">
+              Sales All
+            </option>
+
+            <option value="Device">
+              Device
+            </option>
+
+            <option value="Accessories">
+              Accessories
+            </option>
+
+            <option value="Repair Contract">
+              Repair Contract
+            </option>
+
+            <option value="Operator">
+              Operator
+            </option>
+
+          </select>
+
+        </div>
+
+        <div class="card" style="padding:12px;margin-bottom:12px">
+
+          <b>
+            Time Gone:
+          </b>
+
+          <span id="salesTimeGone">
+            0%
+          </span>
+
+          <div class="progress">
+            <div
+              id="salesTimeProgress"
+              class="progress-bar"
+              style="width:0%"
+            ></div>
+          </div>
+
+        </div>
+
+        <div class="table-card">
+
+          <table>
+
+            <thead>
+
+              <tr>
+                <th>SALES</th>
+                <th>TARGET</th>
+                <th>ACTUAL</th>
+                <th>ACH%</th>
+                <th>ESTIMASI</th>
+                <th>EST%</th>
+                <th>KONTRIBUSI</th>
+                <th>MELESET</th>
+              </tr>
+
+            </thead>
+
+            <tbody id="salesPerformanceTable"></tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+
+      <!-- ================= OUTLOOK KATEGORI ================= -->
+      <div id="page-outlook" class="page" style="display:none">
+        <div class="page-head">
+          <div>
+            <h1 class="page-title">Outlook Kategori</h1>
+            <div class="page-subtitle">Week-on-Week kategori & 3 minggu terakhir berdasarkan Sales Name</div>
+          </div>
+          <div class="month-badge">📊 WoW</div>
+        </div>
+
+        <div class="table-card outlook-card">
+          <div class="outlook-section-title">WEEK-ON-WEEK KATEGORI</div>
+          <table>
+            <thead>
+              <tr>
+                <th>KATEGORI</th>
+                <th id="outW1">MINGGU 1</th>
+                <th id="outW2">MINGGU 2</th>
+                <th id="outW3">MINGGU 3</th>
+                <th>WOW</th>
+                <th>GAP</th>
+              </tr>
+            </thead>
+            <tbody id="outlookCategoryTable"></tbody>
+          </table>
+        </div>
+
+        <div class="table-card outlook-card">
+          <div class="outlook-section-title">CONTRIBUTION BY SERIES — DEVICE</div>
+          <table>
+            <thead>
+              <tr>
+                <th>SERIES</th>
+                <th>ACTUAL</th>
+                <th>CONTRIBUSI</th>
+              </tr>
+            </thead>
+            <tbody id="outlookSeriesContributionTable"></tbody>
+          </table>
+        </div>
+
+        <div class="table-card outlook-card">
+          <div class="outlook-section-title">WEEK-ON-WEEK BY SERIES — DEVICE</div>
+          <table>
+            <thead>
+              <tr>
+                <th>SERIES</th>
+                <th id="outSerW1">MINGGU 1</th>
+                <th id="outSerW2">MINGGU 2</th>
+                <th id="outSerW3">MINGGU 3</th>
+                <th>WOW</th>
+                <th>GAP</th>
+              </tr>
+            </thead>
+            <tbody id="outlookSeriesTable"></tbody>
+          </table>
+        </div>
+
+        <div class="table-card outlook-card">
+          <div class="outlook-section-title">WEEK-ON-WEEK BY SALES NAME</div>
+          <table>
+            <thead>
+              <tr>
+                <th>SALES</th>
+                <th id="outSW1">MINGGU 1</th>
+                <th id="outSW2">MINGGU 2</th>
+                <th id="outSW3">MINGGU 3</th>
+                <th>WOW</th>
+                <th>GAP</th>
+              </tr>
+            </thead>
+            <tbody id="outlookSalesTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ================= TOP ERO ================= -->
+
+      <div id="page-top" class="page" style="display:none">
+
+        <div class="page-head">
+          <div>
+            <h1 class="page-title">Top ERO</h1>
+            <div class="page-subtitle">Ranking ERO berdasarkan Achievement % H-1</div>
+          </div>
+          <div class="month-badge">📅 <span id="topEroMonth"></span></div>
+        </div>
+
+        <div class="filters" style="margin-bottom:10px">
+          <select class="select top-ero-filter" id="topPageCategory" onchange="renderTopEROPage()">
+            <option value="Sales All">Sales All</option>
+            <option value="Device">Device</option>
+            <option value="Accessories">Accessories</option>
+            <option value="Operator">Operator</option>
+          </select>
+        </div>
+
+        <div class="top-grid" id="topPageCards"></div>
+
+        <div class="table-card">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>RANK</th>
+                  <th>ERO</th>
+                  <th>TARGET</th>
+                  <th>ACTUAL H-1</th>
+                  <th>ACH%</th>
+                  <th>ESTIMASI</th>
+                  <th>EST%</th>
+                </tr>
+              </thead>
+              <tbody id="topPageTable"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+
+      <!-- ================= SUMMARY ================= -->
+
+      <div id="page-summary" class="page" style="display:none">
+
+        <div class="page-head">
+          <div>
+            <h1 class="page-title">Summary</h1>
+            <div class="page-subtitle">Prioritas ERO berdasarkan estimasi pencapaian menuju 100% • Operator dipecah per sub operator</div>
+          </div>
+          <div class="month-badge">📅 <span id="summaryMonth"></span></div>
+        </div>
+
+        <div class="summary-grid" id="summaryKpis"></div>
+
+        <div class="table-card" style="margin-bottom:14px">
+          <div class="card-title" style="padding:14px 14px 8px">🔻 ERO TERENDAH PER KATEGORI</div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>KATEGORI</th><th>ERO</th><th>TARGET</th><th>ACTUAL H-1</th><th>ACH%</th><th>ESTIMASI</th><th>EST%</th><th>KURANG</th>
+                </tr>
+              </thead>
+              <tbody id="summaryLowestTable"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="table-card" style="margin-bottom:14px">
+          <div class="card-title" style="padding:14px 14px 8px">🎯 TARGET MENUJU 100%</div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>KATEGORI</th><th>TARGET</th><th>ACTUAL H-1</th><th>ACH%</th><th>SISA TARGET</th><th>SISA HARI</th><th>KEJAR / HARI</th>
+                </tr>
+              </thead>
+              <tbody id="summaryCategoryTable"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <div class="card-title" style="padding:14px 14px 8px">🚨 PRIORITY ERO — ESTIMASI &lt; 100%</div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>PRIORITAS</th><th>ERO</th><th>KATEGORI</th><th>ACH%</th><th>EST%</th><th>KURANG TARGET</th><th>KEJAR / HARI</th>
+                </tr>
+              </thead>
+              <tbody id="summaryPriorityTable"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+
+      <!-- ================= TARGET ================= -->
+
+      <div id="page-target" class="page" style="display:none">
+
+        <div class="page-head">
+
+          <div>
+            <h1 class="page-title">
+              Target Management
+            </h1>
+
+            <div class="page-subtitle">
+              Target otomatis mengikuti Sales yang terdaftar di Manage Sales
+            </div>
+          </div>
+
+          <div class="month-badge">
+            📅 <span id="targetMonth"></span>
+          </div>
+
+        </div>
+
+        <div class="card" style="padding:18px;margin-bottom:14px">
+
+          <div class="card-title">
+            TOTAL TARGET STORE
+          </div>
+
+          <div class="metrics">
+
+            <div>
+              <div class="metric-label">Target All</div>
+              <div class="metric-value" id="targetTotalAll">
+                Rp 0
+              </div>
+            </div>
+
+            <div>
+              <div class="metric-label">Device</div>
+              <div class="metric-value" id="targetTotalDevice">
+                Rp 0
+              </div>
+            </div>
+
+            <div>
+              <div class="metric-label">Accessories</div>
+              <div class="metric-value" id="targetTotalAcc">
+                Rp 0
+              </div>
+            </div>
+
+            <div>
+              <div class="metric-label">Operator</div>
+              <div class="metric-value" id="targetTotalOperator">
+                Rp 0
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="form-card">
+
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px">
+
+            <b>
+              Target Per Sales
+            </b>
+
+            <button
+              class="btn btn-primary"
+              onclick="saveAllTargets()"
+            >
+              💾 Save
+            </button>
+
+          </div>
+
+          <div class="target-wrapper">
+
+            <table class="target-table">
+
+              <thead>
+
+                <tr>
+
+                  <th>SALES</th>
+
+                  <th>TARGET ALL</th>
+
+                  <th>DEVICE</th>
+
+                  <th>ACCESSORIES</th>
+
+                  <th>REPAIR CONTRACT</th>
+
+                  <th>OPERATOR</th>
+
+                  <th>INDOSAT</th>
+
+                  <th>XL</th>
+
+                  <th>TELKOMSEL</th>
+
+                </tr>
+
+              </thead>
+
+              <tbody id="targetTable"></tbody>
+
+            </table>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- ================= MANAGE ================= -->
+
+      <div id="page-manage" class="page" style="display:none">
+
+        <div class="page-head">
+
+          <div>
+
+            <h1 class="page-title">
+              Manage Sales
+            </h1>
+
+            <div class="page-subtitle">
+              Daftar Sales yang terdaftar di sistem
+            </div>
+
+          </div>
+
+          <button
+            class="btn btn-primary"
+            onclick="openSalesModal()"
+          >
+            + Tambah Sales
+          </button>
+
+        </div>
+
+        <div class="table-card">
+
+          <table>
+
+            <thead>
+
+              <tr>
+                <th>NAMA SALES</th>
+                <th>STATUS</th>
+                <th>AKSI</th>
+              </tr>
+
+            </thead>
+
+            <tbody id="manageSalesTable"></tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+</div>
+
+
+<!-- SALES MODAL -->
+
+<div id="salesModal" class="modal">
+
+  <div class="modal-box">
+
+    <div class="modal-head">
+
+      <h3 id="salesModalTitle">
+        Tambah Sales
+      </h3>
+
+      <button
+        class="close"
+        onclick="closeSalesModal()"
+      >
+        ×
+      </button>
+
+    </div>
+
+    <input
+      type="hidden"
+      id="editSalesId"
+    >
+
+    <div class="form-group">
+      <label>Nama Sales</label>
+
+      <input
+        id="salesNameInput"
+        placeholder="Nama lengkap"
+      >
+    </div>
+
+    <br>
+
+    <div class="form-group">
+      <label>NIK</label>
+
+      <input
+        id="salesNikInput"
+        placeholder="NIK"
+      >
+    </div>
+
+    <br>
+
+    <div class="form-group">
+
+      <label>Role</label>
+
+      <select id="salesRoleInput">
+
+        <option value="SALES">
+          SALES
+        </option>
+
+        <option value="SL">
+          SL
+        </option>
+
+        <option value="TSH">
+          TSH
+        </option>
+
+        <option value="ADMIN">
+          ADMIN
+        </option>
+
+      </select>
+
+    </div>
+
+    <br>
+
+    <div class="form-group">
+
+      <label>Status</label>
+
+      <select id="salesStatusInput">
+
+        <option value="AKTIF">
+          AKTIF
+        </option>
+
+        <option value="NONAKTIF">
+          NONAKTIF
+        </option>
+
+      </select>
+
+    </div>
+
+    <br>
+
+    <button
+      class="btn btn-primary"
+      onclick="saveSales()"
+    >
+      Simpan
+    </button>
+
+  </div>
+
+</div>
+
+
+<div id="toast" class="toast"></div>
+
+
+<script>
+
+/* =====================================================
+   CONFIG
+===================================================== */
+
+const API_URL =
+"https://script.google.com/macros/s/AKfycbwdf99iMhurOAjIfR4VaJ7qRMz-SBPkXPcR03w0gVziMYt3q-Dgfo82LIF3eQVjWqEhaQ/exec";
+
+const API_KEY =
+"SALES2026";
+
+
+/* =====================================================
+   STATE
+===================================================== */
+
+let currentUser = null;
+
+let dashboardData = null;
+
+let salesList = [];
+
+let targets = [];
+
+let currentPage = "overview";
+
+let periodMode = "month";
+let customStartDate = "";
+let customEndDate = "";
+
+
+/* =====================================================
+   INIT
+===================================================== */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function(){
+
+    const saved =
+      localStorage.getItem("ses_user");
+
+    if(saved){
+
+      try{
+
+        currentUser =
+          JSON.parse(saved);
+
+        startApp();
+
+      }catch(e){
+
+        localStorage.removeItem("ses_user");
+
+      }
+
+    }
+
+    document
+      .getElementById("inputDate")
+      .value =
       new Date()
-    ]);
+        .toISOString()
+        .slice(0,10);
 
   }
-
-  // Default store
-  const store = ss.getSheetByName(CONFIG.SHEETS.STORE_MASTER);
-
-  if (store.getLastRow() === 1) {
-
-    store.appendRow([
-      Utilities.getUuid(),
-      "SMB",
-      "Samsung Store Summarecon Mall Bekasi",
-      "AKTIF"
-    ]);
-
-  }
-
-  SpreadsheetApp.flush();
-
-  return "DATABASE BERHASIL DIBUAT";
-}
+);
 
 
-/*************************************************
- * CREATE SHEET
- *************************************************/
+/* =====================================================
+   API JSONP
+===================================================== */
 
-function createSheet_(ss, name, headers) {
+function api(params){
 
-  let sheet = ss.getSheetByName(name);
+  return new Promise(
+    function(resolve,reject){
 
-  if (!sheet) {
-    sheet = ss.insertSheet(name);
-  }
+      const callback =
+        "cb_" +
+        Date.now() +
+        "_" +
+        Math.floor(
+          Math.random()*10000
+        );
 
-  if (sheet.getLastRow() === 0) {
-    sheet.appendRow(headers);
-  }
+      const script =
+        document.createElement("script");
 
-  sheet.setFrozenRows(1);
+      params.key =
+        API_KEY;
 
-  const header = sheet.getRange(
-    1,
-    1,
-    1,
-    headers.length
-  );
+      params.callback =
+        callback;
 
-  header.setFontWeight("bold");
+      window[callback] =
+        function(data){
 
-}
+          resolve(data);
 
+          cleanup();
 
-/*************************************************
- * GET
- *************************************************/
-
-function doGet(e) {
-
-  try {
-
-    const params = e.parameter || {};
-
-    const action = params.action || "dashboard";
-    const key = params.key || "";
-
-    if (key !== CONFIG.API_KEY) {
-      return output_({
-        success: false,
-        message: "API KEY SALAH"
-      }, params.callback);
-    }
-
-    let result;
-
-    switch (action) {
-
-      case "login":
-        result = login_(params);
-        break;
-
-      case "dashboard":
-        result = getDashboard_(params);
-        break;
-
-      case "sales":
-        result = getSales_(params);
-        break;
-
-      case "transactions":
-        result = getTransactions_(params);
-        break;
-
-      case "targets":
-        result = getTargets_(params);
-        break;
-
-      case "saveSales":
-        result = saveSales_(params);
-        break;
-
-      case "deleteSales":
-        result = deleteSales_(params);
-        break;
-
-      case "saveTarget":
-        result = saveTarget_(params);
-        break;
-
-      case "saveTransaction":
-        result = saveTransaction_(params);
-        break;
-
-      case "deleteTransaction":
-        result = deleteTransaction_(params);
-        break;
-
-      default:
-        result = {
-          success: false,
-          message: "ACTION TIDAK DIKENAL"
         };
-    }
 
-    return output_(result, params.callback);
+      script.onerror =
+        function(){
 
-  } catch (err) {
+          reject(
+            new Error(
+              "Gagal terhubung ke Google Apps Script"
+            )
+          );
 
-    return output_({
-      success: false,
-      message: err.message
-    }, e.parameter && e.parameter.callback);
+          cleanup();
 
-  }
+        };
 
-}
+      const query =
+        Object.keys(params)
+          .map(function(k){
 
+            return encodeURIComponent(k)
+              + "=" +
+              encodeURIComponent(params[k]);
 
-/*************************************************
- * JSON / JSONP
- *************************************************/
+          })
+          .join("&");
 
-function output_(data, callback) {
+      script.src =
+        API_URL + "?" + query;
 
-  const json = JSON.stringify(data);
-
-  if (callback) {
-
-    const safeCallback =
-      callback.replace(/[^\w.$]/g, "");
-
-    return ContentService
-      .createTextOutput(
-        safeCallback + "(" + json + ")"
-      )
-      .setMimeType(
-        ContentService.MimeType.JAVASCRIPT
+      document.body.appendChild(
+        script
       );
 
-  }
 
-  return ContentService
-    .createTextOutput(json)
-    .setMimeType(ContentService.MimeType.JSON);
-}
+      function cleanup(){
 
+        delete window[callback];
 
-/*************************************************
- * LOGIN
- *************************************************/
+        if(script.parentNode){
 
-function login_(p) {
+          script.parentNode.removeChild(
+            script
+          );
 
-  const username = p.username || "";
-  const password = p.password || "";
-
-  const sheet =
-    SpreadsheetApp
-      .getActive()
-      .getSheetByName(CONFIG.SHEETS.USERS);
-
-  const data = sheet
-    .getDataRange()
-    .getValues();
-
-  for (let i = 1; i < data.length; i++) {
-
-    if (
-      String(data[i][1]) === username &&
-      String(data[i][2]) === password &&
-      String(data[i][5]).toUpperCase() === "AKTIF"
-    ) {
-
-      return {
-        success: true,
-        user: {
-          id: data[i][0],
-          username: data[i][1],
-          name: data[i][3],
-          role: data[i][4],
-          store: data[i][6]
         }
-      };
 
-    }
-
-  }
-
-  return {
-    success: false,
-    message: "Username atau password salah"
-  };
-
-}
-
-
-/*************************************************
- * GET SALES
- *************************************************/
-
-function getSales_() {
-
-  const key = cacheKey_('SALES');
-  const cached = cacheJsonGet_(key);
-  if (cached) return { success: true, data: cached };
-
-  const sheet =
-    SpreadsheetApp
-      .getActive()
-      .getSheetByName(CONFIG.SHEETS.SALES_MASTER);
-
-  const data =
-    sheet.getDataRange().getValues();
-
-  const result = [];
-
-  for (let i = 1; i < data.length; i++) {
-    if (!data[i][0]) continue;
-
-    result.push({
-      id: data[i][0],
-      name: data[i][1],
-      nik: data[i][2],
-      role: data[i][3],
-      status: data[i][4],
-      store: data[i][5]
-    });
-  }
-
-  cacheJsonPut_(key, result, CACHE_CONFIG.SALES_TTL);
-
-  return { success: true, data: result };
-}
-
-
-/*************************************************
- * SAVE SALES
- *************************************************/
-
-function saveSales_(p) {
-
-  const sheet =
-    SpreadsheetApp
-      .getActive()
-      .getSheetByName(CONFIG.SHEETS.SALES_MASTER);
-
-  const id = p.id || Utilities.getUuid();
-
-  const name = p.name || "";
-  const nik = p.nik || "";
-  const role = p.role || "SALES";
-  const status = p.status || "AKTIF";
-  const store = p.store || "SES SMB";
-
-  const data =
-    sheet.getDataRange().getValues();
-
-  let found = false;
-
-  for (let i = 1; i < data.length; i++) {
-
-    if (String(data[i][0]) === String(id)) {
-
-      sheet.getRange(i + 1, 1, 1, 7)
-        .setValues([[
-          id,
-          name,
-          nik,
-          role,
-          status,
-          store,
-          data[i][6] || new Date()
-        ]]);
-
-      found = true;
-      break;
-
-    }
-
-  }
-
-  if (!found) {
-
-    sheet.appendRow([
-      id,
-      name,
-      nik,
-      role,
-      status,
-      store,
-      new Date()
-    ]);
-
-  }
-
-  bumpCacheVersion_();
-  return {
-    success: true,
-    message: "Sales berhasil disimpan"
-  };
-
-}
-
-
-/*************************************************
- * DELETE SALES
- *************************************************/
-
-function deleteSales_(p) {
-
-  const id = p.id;
-
-  const sheet =
-    SpreadsheetApp
-      .getActive()
-      .getSheetByName(CONFIG.SHEETS.SALES_MASTER);
-
-  const data =
-    sheet.getDataRange().getValues();
-
-  for (let i = 1; i < data.length; i++) {
-
-    if (String(data[i][0]) === String(id)) {
-
-      sheet.deleteRow(i + 1);
-
-      bumpCacheVersion_();
-      return {
-        success: true,
-        message: "Sales berhasil dihapus"
-      };
-
-    }
-
-  }
-
-  return {
-    success: false,
-    message: "Sales tidak ditemukan"
-  };
-
-}
-
-
-/*************************************************
- * SAVE TRANSACTION
- *************************************************/
-
-function saveTransaction_(p) {
-
-  const sheet =
-    SpreadsheetApp
-      .getActive()
-      .getSheetByName(CONFIG.SHEETS.SALES_DATA);
-
-  const id = Utilities.getUuid();
-
-  sheet.appendRow([
-    id,
-    p.date || Utilities.formatDate(
-      new Date(),
-      Session.getScriptTimeZone(),
-      "yyyy-MM-dd"
-    ),
-    p.salesId || "",
-    p.salesName || "",
-    p.category || "",
-    p.subcategory || "",
-    p.product || "",
-    Number(p.qty || 1),
-    Number(p.amount || 0),
-    p.customer || "",
-    p.phone || "",
-    new Date()
-  ]);
-
-  bumpCacheVersion_();
-  return {
-    success: true,
-    message: "Transaksi berhasil disimpan",
-    id: id
-  };
-
-}
-
-
-/*************************************************
- * GET TRANSACTIONS
- *************************************************/
-
-function getTransactions_(p) {
-
-  const cache = CacheService.getScriptCache();
-  const baseKey = cacheKey_('TX');
-  const countKey = baseKey + '_COUNT';
-
-  try {
-    const countRaw = cache.get(countKey);
-    if (countRaw !== null) {
-      const count = Number(countRaw);
-      const keys = [];
-      for (let i = 0; i < count; i++) keys.push(baseKey + '_' + i);
-
-      const chunks = cache.getAll(keys);
-      if (Object.keys(chunks).length === count) {
-        const result = [];
-        for (let i = 0; i < count; i++) {
-          const part = JSON.parse(chunks[baseKey + '_' + i]);
-          for (let j = 0; j < part.length; j++) result.push(part[j]);
-        }
-        return { success: true, data: result };
       }
-    }
-  } catch (e) {
-    // Cache miss / partial cache -> rebuild dari Spreadsheet.
-  }
-
-  const sheet =
-    SpreadsheetApp
-      .getActive()
-      .getSheetByName(CONFIG.SHEETS.SALES_DATA);
-
-  const data = sheet.getDataRange().getValues();
-  const result = [];
-
-  for (let i = 1; i < data.length; i++) {
-    if (!data[i][0]) continue;
-
-    result.push({
-      id: data[i][0],
-      date: formatDate_(data[i][1]),
-      salesId: data[i][2],
-      salesName: data[i][3],
-      category: data[i][4],
-      subcategory: data[i][5],
-      product: data[i][6],
-      qty: Number(data[i][7] || 0),
-      amount: Number(data[i][8] || 0),
-      customer: data[i][9],
-      phone: data[i][10]
-    });
-  }
-
-  const chunks = [];
-  for (let i = 0; i < result.length; i += CACHE_CONFIG.TX_CHUNK_SIZE) {
-    chunks.push(result.slice(i, i + CACHE_CONFIG.TX_CHUNK_SIZE));
-  }
-
-  // Minimal satu chunk agar COUNT=1 tetap valid untuk data kosong.
-  if (!chunks.length) chunks.push([]);
-
-  try {
-    const payload = {};
-    for (let i = 0; i < chunks.length; i++) {
-      payload[baseKey + '_' + i] = JSON.stringify(chunks[i]);
-    }
-    cache.putAll(payload, CACHE_CONFIG.TTL);
-    cache.put(countKey, String(chunks.length), CACHE_CONFIG.TTL);
-  } catch (e) {
-    // Abaikan cache error; data tetap dikembalikan normal.
-  }
-
-  return { success: true, data: result };
-}
-
-
-/*************************************************
- * DELETE TRANSACTION
- *************************************************/
-
-function deleteTransaction_(p) {
-
-  const id = p.id;
-
-  const sheet =
-    SpreadsheetApp
-      .getActive()
-      .getSheetByName(CONFIG.SHEETS.SALES_DATA);
-
-  const data =
-    sheet.getDataRange().getValues();
-
-  for (let i = 1; i < data.length; i++) {
-
-    if (String(data[i][0]) === String(id)) {
-
-      sheet.deleteRow(i + 1);
-
-      bumpCacheVersion_();
-      return {
-        success: true,
-        message: "Transaksi berhasil dihapus"
-      };
 
     }
-
-  }
-
-  return {
-    success: false,
-    message: "Transaksi tidak ditemukan"
-  };
-
-}
-
-
-/*************************************************
- * TARGET
- *************************************************/
-
-function saveTarget_(p) {
-
-  const sheet =
-    SpreadsheetApp
-      .getActive()
-      .getSheetByName(CONFIG.SHEETS.TARGET_SALES);
-
-  const period = normalizePeriod_(p.period);
-
-  const salesId = p.salesId || "";
-  const salesName = p.salesName || "";
-
-  const data =
-    sheet.getDataRange().getValues();
-
-  let found = false;
-
-  for (let i = 1; i < data.length; i++) {
-
-    if (
-      String(data[i][0]) === String(period) &&
-      String(data[i][1]) === String(salesId)
-    ) {
-
-      sheet.getRange(i + 1, 1, 1, 11)
-        .setValues([[
-          period,
-          salesId,
-          salesName,
-          Number(p.targetAll || 0),
-          Number(p.device || 0),
-          Number(p.accessories || 0),
-          Number(p.repairContract || 0),
-          Number(p.operator || 0),
-          Number(p.indosat || 0),
-          Number(p.xl || 0),
-          Number(p.telkomsel || 0)
-        ]]);
-
-      found = true;
-      break;
-
-    }
-
-  }
-
-  if (!found) {
-
-    sheet.appendRow([
-      period,
-      salesId,
-      salesName,
-      Number(p.targetAll || 0),
-      Number(p.device || 0),
-      Number(p.accessories || 0),
-      Number(p.repairContract || 0),
-      Number(p.operator || 0),
-      Number(p.indosat || 0),
-      Number(p.xl || 0),
-      Number(p.telkomsel || 0)
-    ]);
-
-  }
-
-  bumpCacheVersion_();
-  return {
-    success: true,
-    message: "Target berhasil disimpan"
-  };
-
-}
-
-
-/*************************************************
- * GET TARGET
- *************************************************/
-
-function getTargets_(p) {
-
-  const period = normalizePeriod_(p.period);
-  const key = cacheKey_('TARGET_' + period.replace(/[^0-9A-Za-z_-]/g, '_'));
-  const cached = cacheJsonGet_(key);
-  if (cached) return { success: true, data: cached };
-
-  const sheet =
-    SpreadsheetApp
-      .getActive()
-      .getSheetByName(CONFIG.SHEETS.TARGET_SALES);
-
-  const data = sheet.getDataRange().getValues();
-  const result = [];
-
-  for (let i = 1; i < data.length; i++) {
-    if (normalizePeriod_(data[i][0]) !== period) continue;
-
-    result.push({
-      period: data[i][0],
-      salesId: data[i][1],
-      salesName: data[i][2],
-      targetAll: Number(data[i][3] || 0),
-      device: Number(data[i][4] || 0),
-      accessories: Number(data[i][5] || 0),
-      repairContract: Number(data[i][6] || 0),
-      operator: Number(data[i][7] || 0),
-      indosat: Number(data[i][8] || 0),
-      xl: Number(data[i][9] || 0),
-      telkomsel: Number(data[i][10] || 0)
-    });
-  }
-
-  cacheJsonPut_(key, result, CACHE_CONFIG.TARGET_TTL);
-  return { success: true, data: result };
-}
-
-
-/*************************************************
- * PERIOD NORMALIZER
- * Supports:
- * - 2026-09 / 2026/09
- * - 2026-09-01
- * - September 2026 / Sep 2026
- * - Google Sheets Date objects
- *************************************************/
-function normalizePeriod_(value) {
-  const tz = Session.getScriptTimeZone();
-
-  if (value === null || value === undefined || value === "") {
-    return Utilities.formatDate(new Date(), tz, "yyyy-MM");
-  }
-
-  if (Object.prototype.toString.call(value) === "[object Date]" &&
-      !isNaN(value.getTime())) {
-    return Utilities.formatDate(value, tz, "yyyy-MM");
-  }
-
-  const s = String(value).trim();
-
-  // yyyy-MM, yyyy/MM, yyyy-MM-dd, yyyy/MM/dd
-  let m = s.match(/^(\d{4})[-\/](\d{1,2})(?:[-\/](\d{1,2}))?/);
-  if (m) {
-    return m[1] + "-" + String(Number(m[2])).padStart(2, "0");
-  }
-
-  const months = {
-    january:1, jan:1, januari:1,
-    february:2, feb:2, februari:2,
-    march:3, mar:3, maret:3,
-    april:4, apr:4,
-    may:5, mei:5,
-    june:6, jun:6, juni:6,
-    july:7, jul:7, juli:7,
-    august:8, aug:8, agustus:8,
-    september:9, sep:9,
-    october:10, oct:10, oktober:10,
-    november:11, nov:11,
-    december:12, dec:12, desember:12
-  };
-
-  const lower = s.toLowerCase();
-
-  // September 2026 / Sep 2026
-  m = lower.match(/^([a-z]+)\s+(\d{4})$/);
-  if (m && months[m[1]]) {
-    return m[2] + "-" + String(months[m[1]]).padStart(2, "0");
-  }
-
-  // 2026 September
-  m = lower.match(/^(\d{4})\s+([a-z]+)$/);
-  if (m && months[m[2]]) {
-    return m[1] + "-" + String(months[m[2]]).padStart(2, "0");
-  }
-
-  const d = new Date(s);
-  if (!isNaN(d.getTime())) {
-    return Utilities.formatDate(d, tz, "yyyy-MM");
-  }
-
-  return s;
-}
-
-/*************************************************
- * DASHBOARD V2
- * H-1 ESTIMATION + 3 COMPLETED WEEKS + WOW/GAP
- *************************************************/
-function getDashboard_(p) {
-  const period = normalizePeriod_(p.period);
-
-  const sales = getSales_().data;
-  const allTransactions = getTransactions_().data;
-  const targets = getTargets_({period: period}).data;
-
-  const now = new Date();
-  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-  const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-
-  // H-1: hari berjalan TIDAK dihitung.
-  const yesterday = new Date(now);
-  yesterday.setHours(0, 0, 0, 0);
-  yesterday.setDate(yesterday.getDate() - 1);
-
-  const requestedStart = new Date(period + '-01T00:00:00');
-  const requestedEnd = new Date(
-    requestedStart.getFullYear(), requestedStart.getMonth() + 1, 0
   );
 
-  const daysInMonth = requestedEnd.getDate();
-  let daysPassed;
-
-  if (requestedStart.getFullYear() === now.getFullYear() &&
-      requestedStart.getMonth() === now.getMonth()) {
-    daysPassed = Math.min(yesterday.getDate(), daysInMonth);
-  } else if (requestedStart < monthStart) {
-    daysPassed = daysInMonth;
-  } else {
-    daysPassed = 0;
-  }
-
-  const cutoffDate = daysPassed > 0
-    ? period + '-' + String(daysPassed).padStart(2, '0')
-    : '';
-
-  const tx = allTransactions.filter(x => {
-    if (!x.date || !cutoffDate) return false;
-    return x.date >= period + '-01' && x.date <= cutoffDate;
-  }).map(x => {
-    // Nilai 0 tetap 0. Data mentah tidak diubah; hanya nilai efektif
-    // yang dipakai dashboard yang dinormalisasi/ divalidasi.
-    return Object.assign({}, x, {
-      amount: getEffectiveTransactionAmount_(x)
-    });
-  });
-
-  const totalActual = sum_(tx.map(x => x.amount));
-  const targetAll = sum_(targets.map(x => x.targetAll));
-  const achievement = targetAll > 0 ? totalActual / targetAll * 100 : 0;
-  const estimation = daysPassed > 0
-    ? totalActual / daysPassed * daysInMonth
-    : 0;
-  const estimationPercent = targetAll > 0
-    ? estimation / targetAll * 100
-    : 0;
-
-  const categories = {};
-  ['Device', 'Accessories', 'Repair Contract', 'Operator'].forEach(category => {
-    const actual = sum_(tx.filter(x => normalizeCategory_(x.category) === category).map(x => x.amount));
-    let target = 0;
-    targets.forEach(t => {
-      if (category === 'Device') target += Number(t.device || 0);
-      if (category === 'Accessories') target += Number(t.accessories || 0);
-      if (category === 'Repair Contract') target += Number(t.repairContract || 0);
-      if (category === 'Operator') target += Number(t.operator || 0);
-    });
-
-    categories[category] = {
-      actual: actual,
-      target: target,
-      achievement: target > 0 ? actual / target * 100 : 0,
-      estimation: daysPassed > 0 ? actual / daysPassed * daysInMonth : 0,
-      estimationPercent: target > 0 && daysPassed > 0
-        ? (actual / daysPassed * daysInMonth) / target * 100
-        : 0,
-      shortfall: Math.max(target - actual, 0)
-    };
-  });
-
-  const operators = {};
-  ['Indosat', 'XL', 'Telkomsel'].forEach(operator => {
-    const actual = sum_(tx.filter(x =>
-      String(x.subcategory || '').trim().toLowerCase() === operator.toLowerCase()
-    ).map(x => x.amount));
-
-    let target = 0;
-    targets.forEach(t => {
-      if (operator === 'Indosat') target += Number(t.indosat || 0);
-      if (operator === 'XL') target += Number(t.xl || 0);
-      if (operator === 'Telkomsel') target += Number(t.telkomsel || 0);
-    });
-
-    operators[operator] = {
-      actual: actual,
-      target: target,
-      achievement: target > 0 ? actual / target * 100 : 0,
-      estimation: daysPassed > 0 ? actual / daysPassed * daysInMonth : 0
-    };
-  });
-
-  const weekly = buildWeeklyPerformance_(allTransactions, now);
-  const weeklyTransactions = getWeeklyTransactions_(allTransactions, now);
-
-  return {
-    success: true,
-    data: {
-      period: period,
-      daysPassed: daysPassed,
-      daysInMonth: daysInMonth,
-      cutoffDate: cutoffDate,
-      timeGone: daysPassed > 0 ? daysPassed / daysInMonth * 100 : 0,
-      totalActual: totalActual,
-      targetAll: targetAll,
-      achievement: achievement,
-      estimation: estimation,
-      estimationPercent: estimationPercent,
-      shortfall: Math.max(targetAll - totalActual, 0),
-      categories: categories,
-      operators: operators,
-      sales: sales,
-      targets: targets,
-      transactions: tx,
-      weekly: weekly,
-      weeklyTransactions: weeklyTransactions
-    }
-  };
 }
 
-/*************************************************
- * WEEKLY PERFORMANCE
- * 3 minggu terakhir yang SUDAH SELESAI (Senin-Minggu)
- * Minggu berjalan tidak dimasukkan agar perbandingan fair.
- *************************************************/
-function getWeeklyTransactions_(transactions, now) {
-  const today = new Date(now);
-  today.setHours(0, 0, 0, 0);
 
-  // Monday minggu berjalan.
-  const day = today.getDay(); // 0 Minggu, 1 Senin
-  const diffToMonday = day === 0 ? -6 : 1 - day;
-  const currentMonday = new Date(today);
-  currentMonday.setDate(currentMonday.getDate() + diffToMonday);
+/* =====================================================
+   LOGIN
+===================================================== */
 
-  const weeks = [];
-  for (let i = 3; i >= 1; i--) {
-    const start = new Date(currentMonday);
-    start.setDate(start.getDate() - (i * 7));
-    const end = new Date(start);
-    end.setDate(end.getDate() + 6);
-    weeks.push({
-      index: 4 - i,
-      start: start,
-      end: end,
-      label: formatWeekLabel_(start, end)
-    });
+async function login(){
+
+  const username =
+    document
+      .getElementById("loginUsername")
+      .value
+      .trim();
+
+  const password =
+    document
+      .getElementById("loginPassword")
+      .value;
+
+  const error =
+    document
+      .getElementById("loginError");
+
+  error.textContent =
+    "Memproses...";
+
+  try{
+
+    const result =
+      await api({
+
+        action:"login",
+
+        username:username,
+
+        password:password
+
+      });
+
+    if(result.success){
+
+      currentUser =
+        result.user;
+
+      localStorage.setItem(
+        "ses_user",
+        JSON.stringify(
+          currentUser
+        )
+      );
+
+      error.textContent = "";
+
+      startApp();
+
+    }else{
+
+      error.textContent =
+        result.message ||
+        "Login gagal";
+
+    }
+
+  }catch(e){
+
+    error.textContent =
+      e.message;
+
   }
 
-  const result = weeks.map(w => {
-    const rows = transactions.filter(x => {
-      const d = parseDateOnly_(x.date);
-      return d && d >= w.start && d <= w.end;
+}
+
+
+function logout(){
+
+  localStorage.removeItem(
+    "ses_user"
+  );
+
+  location.reload();
+
+}
+
+
+
+/* =====================================================
+   ERO MOTTO ROTATION
+===================================================== */
+const eroMottos = [
+  "Jualan yang semangat ya! 💪🔥",
+  "🎯 Kejar target, jangan kejar alasan!",
+  "🚀 Hari ini harus lebih baik dari kemarin!",
+  "💪 Gas terus, jangan kasih kendor!",
+  "🏆 Target bukan untuk dilihat, tapi untuk dicapai!",
+  "🔥 Satu customer hari ini bisa jadi penentu target!"
+];
+
+let eroMottoIndex = 0;
+
+function startEroMotto(){
+  const el = document.getElementById("eroMottoText");
+  if(!el) return;
+  el.textContent = eroMottos[0];
+  setInterval(() => {
+    el.style.opacity = "0";
+    setTimeout(() => {
+      eroMottoIndex = (eroMottoIndex + 1) % eroMottos.length;
+      el.textContent = eroMottos[eroMottoIndex];
+      el.style.opacity = "1";
+    }, 180);
+  }, 5000);
+}
+
+/* =====================================================
+   START APP
+===================================================== */
+
+async function startApp(){
+
+  document
+    .getElementById("loginScreen")
+    .style.display = "none";
+
+  document
+    .getElementById("app")
+    .style.display = "flex";
+
+  document
+    .getElementById("userName")
+    .textContent =
+    currentUser.name;
+
+  document
+    .getElementById("userInitial")
+    .textContent =
+    currentUser.name
+      .charAt(0)
+      .toUpperCase();
+
+  startEroMotto();
+
+  await loadAll();
+
+}
+
+
+/* =====================================================
+   LOAD DATA
+===================================================== */
+
+async function loadAll(){
+
+  try{
+
+    const dashboard =
+      await api({
+        action:"dashboard",
+        period:getCurrentPeriod(),
+        periodMode: periodMode,
+        startDate: customStartDate,
+        endDate: customEndDate
+      });
+
+    if(
+      dashboard &&
+      dashboard.success
+    ){
+
+      dashboardData =
+        dashboard.data;
+
+      renderOverview();
+      renderOutlook();
+
+    }
+
+    const sales =
+      await api({
+        action:"sales"
+      });
+
+    if(
+      sales &&
+      sales.success
+    ){
+
+      salesList =
+        sales.data || [];
+
+      renderManageSales();
+
+      renderInputSales();
+
+      renderSalesPerformance();
+      renderStore();
+      renderOutlook();
+      if(currentPage === "top") renderTopEROPage();
+      if(currentPage === "summary") renderSummary();
+
+    }
+
+    const targetResult =
+      await api({
+        action:"targets",
+        period:getCurrentPeriod()
+      });
+
+    if(
+      targetResult &&
+      targetResult.success
+    ){
+
+      targets =
+        targetResult.data || [];
+
+      renderTargets();
+
+    }
+
+  }catch(e){
+
+    showToast(
+      "Gagal mengambil data: " +
+      e.message
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   PERIOD
+===================================================== */
+
+function getCurrentPeriod(){
+
+  const d =
+    new Date();
+
+  return d.getFullYear()
+    + "-" +
+    String(
+      d.getMonth()+1
+    ).padStart(2,"0");
+
+}
+
+
+function setPeriodMode(mode,button){
+
+  periodMode = mode;
+
+  document.querySelectorAll(".filters .filter-btn").forEach(function(x){
+    x.classList.remove("active");
+  });
+
+  if(button) button.classList.add("active");
+
+  const box=document.getElementById("customPeriodBox");
+  if(box) box.style.display = mode==="custom" ? "flex" : "none";
+
+  if(mode === "custom"){
+    return;
+  }
+
+  reloadDashboardPeriod_();
+}
+
+async function reloadDashboardPeriod_(){
+  try{
+    const result = await api({
+      action:"dashboard",
+      period:getCurrentPeriod(),
+      periodMode:periodMode,
+      startDate:customStartDate,
+      endDate:customEndDate
     });
-    return {
-      index: w.index,
-      start: formatDateOnly_(w.start),
-      end: formatDateOnly_(w.end),
-      label: w.label,
-      transactions: rows
-    };
+
+    if(result && result.success){
+      dashboardData = result.data || null;
+      renderOverview();
+      renderStore();
+      renderSalesPerformance();
+      renderOutlook();
+      if(typeof renderSummary === "function") renderSummary();
+      if(typeof renderTargets === "function") renderTargets();
+    }else{
+      showToast((result && result.message) || "Gagal memuat filter");
+    }
+  }catch(e){
+    showToast("Gagal memuat filter: " + e.message);
+  }
+}
+
+function applyCustomPeriod(){
+  const start=document.getElementById("customStartDate")?.value || "";
+  const end=document.getElementById("customEndDate")?.value || "";
+
+  if(!start || !end){
+    showToast("Pilih tanggal mulai dan tanggal akhir.");
+    return;
+  }
+  if(start > end){
+    showToast("Tanggal mulai tidak boleh lebih besar dari tanggal akhir.");
+    return;
+  }
+
+  customStartDate=start;
+  customEndDate=end;
+  periodMode="custom";
+
+  reloadDashboardPeriod_();
+}
+
+
+/* =====================================================
+   PAGE
+===================================================== */
+
+function showPage(page){
+
+  currentPage =
+    page;
+
+  document
+    .querySelectorAll(".page")
+    .forEach(
+      p => p.style.display = "none"
+    );
+
+  const el =
+    document.getElementById(
+      "page-" + page
+    );
+
+  if(el){
+
+    el.style.display =
+      "block";
+
+  }
+
+  document
+    .querySelectorAll(".menu button")
+    .forEach(
+      b => b.classList.remove(
+        "active"
+      )
+    );
+
+  const menu =
+    document.getElementById(
+      "menu-" + page
+    );
+
+  if(menu){
+
+    menu.classList.add(
+      "active"
+    );
+
+  }
+
+  if(page === "top") renderTopEROPage();
+
+  if(page === "summary") renderSummary();
+
+  if(page === "overview")
+    renderOverview();
+
+  if(page === "store")
+    renderStore();
+
+  if(page === "sales")
+    renderSalesPerformance();
+
+  if(page === "outlook")
+    renderOutlook();
+
+  if(page === "target")
+    renderTargets();
+
+  if(page === "manage")
+    renderManageSales();
+
+  if(window.innerWidth < 900){
+
+    document
+      .getElementById("sidebar")
+      .classList.remove("open");
+
+  }
+
+}
+
+
+function toggleSidebar(){
+
+  document
+    .getElementById("sidebar")
+    .classList.toggle(
+      "open"
+    );
+
+}
+
+
+/* =====================================================
+   OVERVIEW
+===================================================== */
+
+
+function normalizeOverviewSubcategory_(x){
+  const vals=[x.operator,x.operatorName,x.subCategory,x.subcategory,x.series,x.productSeries,x.seriesName];
+  return vals.map(v=>String(v||'').trim()).find(v=>v)||'';
+}
+function overviewFilteredTransactions(){
+  const tx=(dashboardData&&dashboardData.transactions)||[];
+  const ero=(document.getElementById('overviewEroFilter')||{}).value||'ALL';
+  const cat='ALL';
+  const sub=(document.getElementById('overviewSubcategoryFilter')||{}).value||'ALL';
+  return tx.filter(x=>{
+    if(ero!=='ALL' && String(x.salesId)!==String(ero)) return false;
+    if(cat!=='ALL' && String(x.category||'')!==cat) return false;
+    if(sub!=='ALL'){
+      const v=normalizeOverviewSubcategory_(x).toLowerCase();
+      const wanted=sub.toLowerCase();
+      if(v!==wanted && !v.includes(wanted) && !wanted.includes(v)) return false;
+    }
+    return true;
+  });
+}
+function updateOverviewFilterOptions(){
+  const cat='ALL';
+  const el=document.getElementById('overviewSubcategoryFilter'); if(!el)return;
+  let opts=['ALL'];
+  if(cat==='Device') opts=['ALL','Series A','Series S','Series Z','Series Tab'];
+  if(cat==='Operator') opts=['ALL','Indosat','XL','Telkomsel'];
+  el.innerHTML=opts.map(x=>`<option value="${escapeHtml(x)}">${x==='ALL'?'Semua Sub Kategori':escapeHtml(x)}</option>`).join('');
+  const label=el.closest('div')?.querySelector('label');
+  if(label) label.textContent=cat==='Operator'?'Sub Kategori Operator':cat==='Device'?'Series Device':'Sub Kategori';
+}
+function resetOverviewFilters(){
+  const c=document.getElementById('overviewCategoryFilter'), s=document.getElementById('overviewSubcategoryFilter'), e=document.getElementById('overviewEroFilter');
+  if(c)c.value='ALL'; updateOverviewFilterOptions(); if(s)s.value='ALL'; if(e)e.value='ALL';
+  const top=document.getElementById('topEroCategory'); if(top)top.value='Sales All';
+  renderOverviewCharts();
+}
+function populateOverviewEros(){
+  const el=document.getElementById('overviewEroFilter'); if(!el||!salesList)return;
+  const cur=el.value||'ALL';
+  el.innerHTML='<option value="ALL">Semua ERO</option>'+salesList.map(s=>`<option value="${escapeHtml(String(s.id))}">${escapeHtml(s.name||'-')}</option>`).join('');
+  if([...el.options].some(o=>o.value===cur))el.value=cur;
+}
+function svgLineChart(elId, points, estPoints){
+  const el=document.getElementById(elId); if(!el)return;
+  const w=700,h=220,p=28; const vals=points.concat(estPoints||[]).map(Number); const max=Math.max(1,...vals)*1.12;
+  const x=i=>p+(i*(w-p*2))/Math.max(1,points.length-1); const y=v=>h-p-(v/max)*(h-p*2);
+  let svg=`<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><g stroke="#e7edf5" stroke-width="1">`;
+  for(let i=0;i<5;i++){let yy=p+i*(h-p*2)/4;svg+=`<line x1="${p}" y1="${yy}" x2="${w-p}" y2="${yy}"/>`;} svg+='</g>';
+  const bars=points.map((v,i)=>{const yy=y(v);return `<rect x="${x(i)-7}" y="${yy}" width="14" height="${h-p-yy}" rx="2" fill="#73b5f5" opacity=".78"/>`;}).join('');
+  const line=(estPoints||[]).map((v,i)=>`${x(i)},${y(v)}`).join(' ');
+  const dots=(estPoints||[]).map((v,i)=>`<circle cx="${x(i)}" cy="${y(v)}" r="2.5" fill="#087bea"/>`).join('');
+  svg+=bars+`<polyline fill="none" stroke="#087bea" stroke-width="2.5" points="${line}"/>${dots}`;
+  svg+=`<line x1="${p}" y1="${h-p}" x2="${w-p}" y2="${h-p}" stroke="#b9c8dc"/>`;
+  el.innerHTML=svg+'</svg>';
+}
+function renderOverviewTrend(tx){
+  const dates=[]; const map={}; tx.forEach(x=>{const d=String(x.date||x.transactionDate||x.tanggal||'').slice(0,10); if(!d)return; map[d]=(map[d]||0)+Number(x.amount||0);});
+  Object.keys(map).sort().forEach(d=>dates.push(d));
+  const actual=dates.map(d=>map[d]); const days=Number(dashboardData.daysPassed||dates.length||1); const periodDays=Number(dashboardData.daysInMonth||days); const total=actual.reduce((a,b)=>a+b,0); const run=dates.map((_,i)=>total/(actual.length||1)*(i+1));
+  const vals=actual.length?actual:[0]; const estLine=vals.map((_,i)=>total/(Math.max(1,actual.length))*(i+1));
+  svgLineChart('overviewTrendChart',vals,estLine);
+}
+function getDeviceSeriesKey(value){
+  const r=String(value||'').trim().toLowerCase();
+  if(!r) return null;
+  if(r.includes('tab')) return 'Tab';
+  if(/(^|\b)z(\b|\s|-|series)/.test(r) || r.includes('series z')) return 'Series Z';
+  if(/(^|\b)a(\b|\s|-|series)/.test(r) || r.includes('series a')) return 'Series A';
+  if(/(^|\b)s(\b|\s|-|series)/.test(r) || r.includes('series s')) return 'Series S';
+  return null;
+}
+function renderOverviewSeries(tx){
+  const keys=['Series S','Series Z','Series A','Tab']; const colors=['#087bea','#5d7fe8','#f08a24','#16a765']; const sums={}; keys.forEach(k=>sums[k]=0);
+  tx.filter(x=>String(x.category||'')==='Device').forEach(x=>{const k=getDeviceSeriesKey(x.series);if(k)sums[k]+=Number(x.amount||0);});
+  const max=Math.max(1,...keys.map(k=>Math.abs(sums[k]))); const w=520,h=220,p=28,bw=48,gap=65; let svg=`<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><line x1="${p}" y1="${h-p}" x2="${w-p}" y2="${h-p}" stroke="#b9c8dc"/>`;
+  keys.forEach((k,i)=>{const bh=Math.max(2,Math.abs(sums[k])/max*(h-p*2-20)),x=p+20+i*(bw+gap),y=h-p-bh;svg+=`<rect x="${x}" y="${y}" width="${bw}" height="${bh}" rx="5" fill="${colors[i]}" opacity=".9"/><text x="${x+bw/2}" y="${y-7}" text-anchor="middle" font-size="10" font-weight="800" fill="#17356f">${overviewMoney(sums[k])}</text><text x="${x+bw/2}" y="${h-8}" text-anchor="middle" font-size="9" fill="#50627f">${k==='Tab'?'Tab':k.replace('Series ','')+' Series'}</text>`;});
+  document.getElementById('overviewSeriesChart').innerHTML=svg+'</svg>';
+}
+function renderOverviewSeriesTrend(tx){
+  const keys=['Series S','Series Z','Series A','Tab']; const maps={}; keys.forEach(k=>maps[k]={}); tx.filter(x=>String(x.category||'')==='Device').forEach(x=>{const k=getDeviceSeriesKey(x.series);if(k){const d=String(x.date||'').slice(0,10);if(d)maps[k][d]=(maps[k][d]||0)+Number(x.amount||0);}});
+  const dates=[...new Set(keys.flatMap(k=>Object.keys(maps[k])))].sort(); const w=700,h=220,p=28,max=Math.max(1,...keys.flatMap(k=>dates.map(d=>maps[k][d]||0))); const colors=['#173f91','#6f3ce5','#f08a24','#16a765']; let svg=`<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><g stroke="#e7edf5">`;
+  for(let i=0;i<5;i++){let y=p+i*(h-p*2)/4;svg+=`<line x1="${p}" y1="${y}" x2="${w-p}" y2="${y}"/>`;}svg+='</g>';
+  keys.forEach((k,j)=>{const pts=dates.map((d,i)=>`${p+i*(w-p*2)/Math.max(1,dates.length-1)},${h-p-(maps[k][d]||0)/max*(h-p*2)}`).join(' ');svg+=`<polyline fill="none" stroke="${colors[j]}" stroke-width="2" points="${pts}"/>`;}); document.getElementById('overviewSeriesTrend').innerHTML=svg+'</svg>';
+}
+function renderOverviewEroChart(){
+  const cat=(document.getElementById('topEroCategory')||{}).value||'Sales All'; const days=Number(dashboardData.daysPassed||0); const dim=Number(dashboardData.daysInMonth||days||1);
+  const rows=salesList.map(s=>{const actual=getStoreSalesCategoryActual_(s.id,cat,'ALL');const target=getStoreSalesTarget_(s.id,cat);const est=days>0?actual/days*dim:0;return {name:s.name,estPct:target>0?est/target*100:0};}).filter(x=>x.estPct>0||true).sort((a,b)=>b.estPct-a.estPct);
+  const max=Math.max(100,...rows.map(x=>x.estPct)); document.getElementById('overviewEroChart').innerHTML=rows.map(r=>{const h=Math.min(100,r.estPct/max*100);const cls=r.estPct>=100?'good':r.estPct>=90?'warn':'bad';return `<div class="ero-bar-item"><div class="ero-bar-value">${Math.round(r.estPct)}%</div><div class="ero-bar-track"><div class="ero-bar-fill ${cls}" style="height:${h}%"></div></div><div class="ero-bar-name">${escapeHtml(r.name||'-')}</div></div>`;}).join('');
+}
+function renderOverviewTop3(){
+  const cat=(document.getElementById('topEroCategory')||{}).value||'Sales All'; const days=Number(dashboardData.daysPassed||0); const dim=Number(dashboardData.daysInMonth||days||1);
+  const rows=salesList.map(s=>{const a=getStoreSalesCategoryActual_(s.id,cat,'ALL'),t=getStoreSalesTarget_(s.id,cat),e=days>0?a/days*dim:0;return {name:s.name,estPct:t>0?e/t*100:0};}).sort((a,b)=>b.estPct-a.estPct).slice(0,3); const medals=['🥇','🥈','🥉']; document.getElementById('overviewTop3').innerHTML=rows.map((r,i)=>`<div class="pod"><div class="pod-medal">${medals[i]}</div><div class="pod-rank">#${i+1}</div><div class="pod-name">${escapeHtml(r.name||'-')}</div><div class="pod-est ${r.estPct>=100?'good':r.estPct<50?'bad':''}">${Math.round(r.estPct)}%</div></div>`).join('');
+}
+function renderOverviewContribution(tx){
+  const cats=[['Device','#087bea'],['Accessories','#63aef5'],['Repair Contract','#9eafc5'],['Operator','#dce3ec']]; const vals=cats.map(c=>tx.filter(x=>String(x.category||'')===c[0]).reduce((a,x)=>a+Number(x.amount||0),0));const total=vals.reduce((a,b)=>a+b,0);let acc=0,stops=[];vals.forEach((v,i)=>{const pct=total?v/total*100:0;stops.push(`${cats[i][1]} ${acc}% ${acc+pct}%`);acc+=pct;}); document.getElementById('overviewContributionChart').innerHTML=`<div class="donut" style="background:conic-gradient(${stops.join(',')||'#e8edf4 0 100%'})"><div class="donut-center">${overviewMoney(total)}<small>Sales All</small></div></div><div class="donut-list">${cats.map((c,i)=>`<div class="donut-row"><i class="donut-swatch" style="background:${c[1]}"></i>${c[0]} <b style="margin-left:auto">${total?Math.round(vals[i]/total*100):0}%</b></div>`).join('')}</div>`;}
+function renderOverviewGauge(){const a=Number(dashboardData.totalActual||0),t=Number(dashboardData.targetAll||0),p=t>0?Math.min(100,a/t*100):0;document.getElementById('overviewGauge').innerHTML=`<div class="gauge" style="--p:${p}%"></div><div class="gauge-center"><strong>${Math.round(p)}%</strong><small>Achievement</small></div>`;}
+function renderOverviewCategoryPerformance(){const cats=['Device','Accessories','Repair Contract','Operator'];document.getElementById('overviewCategoryPerformance').innerHTML=cats.map(c=>{const x=(dashboardData.categories||{})[c]||{};const est=Number(x.estimationPercent||0);return `<div class="category-performance-row"><span class="cat-name">${c==='Repair Contract'?'SCP':c}</span><div class="cat-track"><div class="cat-fill" style="width:${Math.min(100,est)}%"></div></div><span class="cat-est">${Math.round(est)}%</span></div>`}).join('');}
+function renderOverviewLowest(){const cat='ALL';const cats=cat==='ALL'?['Sales All','Device','Accessories','Indosat','XL','Telkomsel']:[cat==='Repair Contract'?'SCP':cat];const days=Number(dashboardData.daysPassed||0),dim=Number(dashboardData.daysInMonth||days||1);let html='<table class="lowest-table"><thead><tr><th>KATEGORI</th><th>ERO</th><th>ACTUAL</th><th>EST%</th><th>GAP EST</th></tr></thead><tbody>';cats.forEach(c=>{const base=c==='Sales All'?'Sales All':c;const rows=salesList.map(s=>{let a=getStoreSalesCategoryActual_(s.id,base,'ALL');let t=getStoreSalesTarget_(s.id,base);if(['Indosat','XL','Telkomsel'].includes(c)){a=getStoreSalesCategoryActual_(s.id,'Operator',c);t=getStoreSalesTarget_(s.id,c);}const e=days>0?a/days*dim:0;return {name:s.name,a,t,p:t>0?e/t*100:0,g:Math.max(t-e,0)};}).filter(r=>r.t>0).sort((a,b)=>a.p-b.p)[0];if(rows)html+=`<tr><td>${c}</td><td>${escapeHtml(rows.name)}</td><td>${eroMoney(rows.a)}</td><td>${Math.round(rows.p)}%</td><td>${eroMoney(rows.g)}</td></tr>`;});document.getElementById('overviewLowest').innerHTML=html+'</tbody></table>';}
+function renderOverviewInsights(){const est=Math.round(Number(dashboardData.estimationPercent||0));const cats=Object.entries(dashboardData.categories||{}).filter(([k,v])=>Number(v.target||0)>0).sort((a,b)=>Number(a[1].estimationPercent||0)-Number(b[1].estimationPercent||0));const focus=cats.slice(0,2).map(x=>x[0]==='Repair Contract'?'SCP':x[0]).join(' & ');const top=salesList.map(s=>{const a=getStoreSalesCategoryActual_(s.id,'Sales All','ALL'),t=getStoreSalesTarget_(s.id,'Sales All'),e=(dashboardData.daysPassed||1)>0?a/(dashboardData.daysPassed||1)*(dashboardData.daysInMonth||1):0;return {name:s.name,p:t?e/t*100:0};}).sort((a,b)=>b.p-a.p)[0];document.getElementById('overviewInsight').innerHTML=`<ul class="insight-list"><li>Estimasi Sales All saat ini <b>${est}%</b>.</li><li>Fokus kategori <b>${focus||'prioritas utama'}</b> untuk mengejar target.</li><li>${escapeHtml(top?.name||'ERO terbaik')} memimpin dengan estimasi <b>${Math.round(top?.p||0)}%</b>.</li><li>Gunakan grafik ERO untuk melihat posisi tim secara visual.</li></ul>`;document.getElementById('overviewAction').innerHTML='<ul class="action-list"><li>Push penjualan Device dan flagship.</li><li>Optimalkan aktivasi Operator.</li><li>Tingkatkan attach rate Accessories.</li><li>Follow up ERO dengan estimasi &lt; 100%.</li><li>Review target mingguan dan eksekusi campaign.</li></ul>';}
+function renderOverviewOperatorChart(){
+  const op=dashboardData.operators||{};
+  const keys=['Indosat','XL','Telkomsel'];
+  const rows=keys.map(k=>{const o=op[k]||{};const target=Number(o.target||0);const actual=Number(o.actual||0);const est=Number(o.estimation||0);const ep=target>0?est/target*100:0;return {k,actual,target,est,ep};});
+  const max=Math.max(100,...rows.map(x=>x.ep));
+  const colors=['#f39b20','#087bea','#f13b4c'];
+  document.getElementById('overviewOperatorChart').innerHTML=rows.map((r,i)=>{const h=Math.min(100,r.ep/max*100);return `<div class="operator-chart-item"><div class="operator-chart-value">${Math.round(r.ep)}%</div><div class="operator-chart-track"><div class="operator-chart-fill" style="height:${h}%;background:${colors[i]}"></div></div><div class="operator-chart-name">${r.k}</div></div>`;}).join('');
+}
+
+function renderOverviewCharts(){if(!dashboardData)return;populateOverviewEros();const tx=overviewFilteredTransactions();renderOverviewSeries(tx);renderOverviewSeriesTrend(tx);renderOverviewEroChart();renderOverviewTop3();renderOverviewContribution(tx);renderOverviewGauge();renderOverviewCategoryPerformance();renderOverviewLowest();renderOverviewInsights();}
+
+function getOverviewPeriodLabel(){
+  if(periodMode==='custom' && customStartDate && customEndDate) return `${customStartDate} – ${customEndDate}`;
+  const labels={month:'Bulan Ini',week:'Minggu Ini',lastweek:'Minggu Lalu',year:'Tahun Ini'};
+  return labels[periodMode]||'Periode terpilih';
+}
+
+function renderOverview(){
+
+  if(!dashboardData)
+    return;
+
+  const d =
+    dashboardData;
+
+  const month =
+    d.period || getCurrentPeriod();
+
+  setText(
+    "overviewMonth",
+    formatMonth(month)
+  );
+
+  setText(
+    "overviewActual",
+    overviewMoney(d.totalActual)
+  );
+
+  setText(
+    "overviewTarget",
+    overviewMoney(d.targetAll)
+  );
+
+  setText(
+    "overviewEst",
+    overviewMoney(d.estimation)
+  );
+
+  setHtml(
+    "overviewEstPercent",
+    percent(d.estimationPercent)
+  );
+
+  setText(
+    "overviewShort",
+    overviewMoney(d.shortfall)
+  );
+
+  setHtml(
+    "overviewAch",
+    percent(d.achievement)
+  );
+
+  document
+    .getElementById(
+      "overviewProgress"
+    )
+    .style.width =
+    Math.min(
+      Number(d.achievement || 0),
+      100
+    ) + "%";
+
+
+  renderCategory(
+    "Device",
+    "device"
+  );
+
+  renderCategory(
+    "Accessories",
+    "acc"
+  );
+
+  renderCategory(
+    "Repair Contract",
+    "repair"
+  );
+
+  renderCategory(
+    "Operator",
+    "operator"
+  );
+
+
+  const op =
+    d.operators || {};
+
+  const renderOperator = (key, prefix) => {
+    const o = op[key] || {};
+    const actual = Number(o.actual || 0);
+    const target = Number(o.target || 0);
+    const estimation = Number(o.estimation || 0);
+    const shortfall = Math.max(target - actual, 0);
+
+    setText(prefix + "Target", overviewMoney(target));
+    setText(prefix + "Actual", overviewMoney(actual));
+    setText(prefix + "Est", overviewMoney(estimation));
+    setHtml(prefix + "EstPercent", percent(
+      o.estimationPercent != null
+        ? Number(o.estimationPercent)
+        : (target > 0 ? estimation / target * 100 : 0)
+    ));
+    setText(prefix + "Short", overviewMoney(shortfall));
+
+    setHtml(prefix + "Ach", percent(
+      o.achievement != null
+        ? Number(o.achievement)
+        : (target > 0 ? actual / target * 100 : 0)
+    ));
+  };
+
+  renderOperator("Indosat", "indosat");
+  renderOperator("XL", "xl");
+  renderOperator("Telkomsel", "telkomsel");
+
+  const subCards=[['Indosat','overviewIndosat'],['XL','overviewXL'],['Telkomsel','overviewTelkomsel']];
+  subCards.forEach(([key,prefix])=>{
+    const o=op[key]||{}; const target=Number(o.target||0); const actual=Number(o.actual||0); const est=Number(o.estimation||0);
+    setText(prefix+'Actual',overviewMoney(actual));
+    setText(prefix+'Target',overviewMoney(target));
+    setHtml(prefix+'Ach',percent(o.achievement!=null?Number(o.achievement):(target?actual/target*100:0)));
+    setText(prefix+'Est',overviewMoney(est));
+    setHtml(prefix+'EstPercent',percent(o.estimationPercent!=null?Number(o.estimationPercent):(target?est/target*100:0)));
+    setText(prefix+'Gap',overviewMoney(Math.max(target-actual,0)));
+  });
+  setText('deviceDateLabel', getOverviewPeriodLabel());
+
+  renderPerformanceHighlight();
+  updateOverviewFilterOptions();
+  renderOverviewCharts();
+}
+
+
+function renderCategory(category,prefix){
+
+  const c =
+    dashboardData
+      .categories
+      ? dashboardData
+          .categories[category]
+      : null;
+
+  if(!c)
+    return;
+
+  setText(
+    prefix+"Actual",
+    overviewMoney(c.actual)
+  );
+
+  setText(
+    prefix+"Target",
+    overviewMoney(c.target)
+  );
+
+  setHtml(
+    prefix+"Ach",
+    percent(c.achievement)
+  );
+
+  setText(
+    prefix+"Est",
+    overviewMoney(c.estimation)
+  );
+
+  setHtml(
+    prefix+"EstPercent",
+    percent(c.estimationPercent)
+  );
+
+  setText(
+    prefix+"Short",
+    overviewMoney(c.shortfall)
+  );
+  const pb=document.getElementById(prefix+"Progress");
+  if(pb) pb.style.width=Math.min(Number(c.achievement||0),100)+"%";
+
+}
+
+
+
+function renderTopERO(){
+  renderPerformanceHighlight();
+}
+
+function renderPerformanceHighlight(){
+  if(!dashboardData)return;
+
+  const tx=dashboardData.transactions||[];
+  const categoryEl=document.getElementById("topEroCategory");
+  const category=categoryEl ? categoryEl.value : "Sales All";
+
+  const stats=salesList.map(s=>{
+    const actual=getStoreSalesCategoryActual_(s.id,category,"ALL");
+    const target=getStoreSalesTarget_(s.id,category);
+    return {name:s.name,actual,target,ach:target>0?actual/target*100:0};
+  }).sort((a,b)=>{
+    if(b.ach!==a.ach)return b.ach-a.ach;
+    return b.actual-a.actual;
+  });
+
+  const topEl=document.getElementById("topSalesHighlight");
+  const top=stats.filter(x=>x.actual>0).slice(0,3);
+  if(topEl){
+    topEl.innerHTML=top.length?top.map((x,i)=>`
+      <div class="highlight-row">
+        <div class="highlight-rank">#${i+1}</div>
+        <div><div class="highlight-name">${escapeHtml(x.name)}</div><div class="highlight-meta">Actual ${overviewMoney(x.actual)}</div></div>
+        <div class="highlight-score">${percent(x.ach)}</div>
+      </div>`).join(""):'<div class="highlight-empty">Belum ada transaksi H-1 untuk diranking.</div>';
+  }
+
+  const cats=["Device","Accessories","Repair Contract","Operator"].map(name=>{
+    const c=(dashboardData.categories||{})[name]||{};
+    return {name,actual:Number(c.actual||0),target:Number(c.target||0),ach:Number(c.achievement||0)};
+  }).sort((a,b)=>b.ach-a.ach);
+
+  const bestEl=document.getElementById("bestCategoryHighlight");
+  const best=cats.find(x=>x.actual>0);
+  if(bestEl){
+    bestEl.innerHTML=best?`
+      <div class="highlight-row">
+        <div class="highlight-rank">★</div>
+        <div><div class="highlight-name">${escapeHtml(best.name)}</div><div class="highlight-meta">Actual ${overviewMoney(best.actual)} • Target ${overviewMoney(best.target)}</div></div>
+        <div class="highlight-score">${percent(best.ach)}</div>
+      </div>`:'<div class="highlight-empty">Belum ada transaksi H-1.</div>';
+  }
+
+  const quickEl=document.getElementById("quickActionHighlight");
+  const focus=cats.filter(x=>x.target>0).sort((a,b)=>a.ach-b.ach)[0];
+  if(quickEl){
+    quickEl.innerHTML=focus?`
+      <div class="highlight-action">
+        <div><div class="highlight-action-main">Kejar ${escapeHtml(focus.name)}</div><div class="highlight-meta">Time Gone ${Math.round(Number(dashboardData.timeGone||0))}%</div></div>
+        <div class="highlight-action-value">${overviewMoney(Math.max(focus.target-focus.actual,0))}</div>
+      </div>`:'<div class="highlight-empty">Target belum tersedia.</div>';
+  }
+}
+
+/* =====================================================
+   SALES PERFORMANCE
+===================================================== */
+
+function getSalesStats(){
+
+  if(!dashboardData)
+    return [];
+
+  const tx =
+    dashboardData.transactions || [];
+
+  const targetMap = {};
+
+  (dashboardData.targets || [])
+    .forEach(function(t){
+
+      targetMap[t.salesId] =
+        t;
+
+    });
+
+
+  const result = [];
+
+  salesList.forEach(function(s){
+
+    const transactions =
+      tx.filter(
+        x =>
+          String(x.salesId) ===
+          String(s.id)
+      );
+
+    const actual =
+      transactions.reduce(
+        (sum,x)=>
+          sum +
+          Number(x.amount || 0),
+        0
+      );
+
+    const t =
+      targetMap[s.id] || {};
+
+    const target =
+      Number(
+        t.targetAll || 0
+      );
+
+    const est =
+      dashboardData.daysPassed > 0
+      ?
+      actual /
+      dashboardData.daysPassed *
+      dashboardData.daysInMonth
+      :
+      0;
+
+    result.push({
+
+      id:s.id,
+
+      name:s.name,
+
+      nik:s.nik,
+
+      actual:actual,
+
+      target:target,
+
+      achievement:
+        target > 0
+        ? actual / target * 100
+        : 0,
+
+      estimation:est,
+
+      estPercent:
+        target > 0
+        ? est / target * 100
+        : 0
+
+    });
+
   });
 
   return result;
+
 }
 
-function buildWeeklyPerformance_(transactions, now) {
-  const weekly = getWeeklyTransactions_(transactions, now);
 
-  function calc(rows) {
-    const actual = sum_(rows.map(x => x.amount));
-    return {actual: actual};
-  }
+function renderSalesPerformance(){
 
-  function withComparison(values) {
-    return values.map((v, i) => {
-      if (i === 0) {
-        return {actual: v.actual, wow: null, gap: null};
-      }
-      const prev = Number(values[i - 1].actual || 0);
-      const curr = Number(v.actual || 0);
-      return {
-        actual: curr,
-        wow: prev !== 0 ? (curr - prev) / prev * 100 : null,
-        gap: curr - prev
-      };
-    });
-  }
+  const tbody =
+    document.getElementById(
+      "salesPerformanceTable"
+    );
 
-  function rowsFor(category, subcategory) {
-    const values = weekly.map(w => {
-      const rows = w.transactions.filter(x => {
-        if (category && normalizeCategory_(x.category) !== category) return false;
-        if (subcategory && String(x.subcategory || '').toLowerCase() !== String(subcategory).toLowerCase()) return false;
-        return true;
-      });
-      return calc(rows);
-    });
-    return withComparison(values);
-  }
+  if(!tbody)
+    return;
 
-  function seriesRows(series) {
-    const values = weekly.map(w => {
-      const rows = w.transactions.filter(x =>
-        normalizeCategory_(x.category) === 'Device' && normalizeDeviceSeries_(x.subcategory, x.product) === series
+  const rows = getSalesStats();
+  const totalActual = rows.reduce(function(sum,r){ return sum + Number(r.actual||0); },0);
+
+  tbody.innerHTML =
+    rows.map(function(r){
+
+      return `
+        <tr>
+
+          <td>
+            <b>${escapeHtml(r.name)}</b>
+            <br>
+            <span style="color:#718096;font-size:11px">
+              ${escapeHtml(r.nik || "")}
+            </span>
+          </td>
+
+          <td class="money">
+            ${eroMoney(r.target)}
+          </td>
+
+          <td class="money">
+            ${eroMoney(r.actual)}
+          </td>
+
+          <td class="percent-red">
+            ${eroPercent(r.achievement)}
+          </td>
+
+          <td class="money">
+            ${eroMoney(r.estimation)}
+          </td>
+
+          <td class="percent-red">
+            ${eroPercent(r.estPercent)}
+          </td>
+
+          <td>
+            ${totalActual !== 0 ? eroPercent(Number(r.actual||0) / totalActual * 100) : eroPercent(0)}
+          </td>
+
+          <td>
+            —
+          </td>
+
+        </tr>
+      `;
+
+    }).join("");
+
+  if(
+    dashboardData
+  ){
+
+    setText(
+      "salesTimeGone",
+      Math.round(
+        dashboardData.timeGone
+      ) + "%"
+    );
+
+    const p =
+      document.getElementById(
+        "salesTimeProgress"
       );
-      return calc(rows);
-    });
-    return withComparison(values);
-  }
 
-  return {
-    weeks: weekly.map(w => ({
-      index: w.index,
-      start: w.start,
-      end: w.end,
-      label: w.label
-    })),
-    rows: {
-      'Sales All': rowsFor(null, null),
-      'Device': rowsFor('Device', null),
-      'Accessories': rowsFor('Accessories', null),
-      'Repair Contract': rowsFor('Repair Contract', null),
-      'Operator': rowsFor('Operator', null)
-    },
-    deviceRows: {
-      'Series A': seriesRows('Series A'),
-      'Series S': seriesRows('Series S'),
-      'Series Z': seriesRows('Series Z'),
-      'Tab Series': seriesRows('Tab Series')
-    },
-    operatorRows: {
-      'Indosat': rowsFor('Operator', 'Indosat'),
-      'XL': rowsFor('Operator', 'XL'),
-      'Telkomsel': rowsFor('Operator', 'Telkomsel')
+    if(p){
+
+      p.style.width =
+        Math.min(
+          dashboardData.timeGone,
+          100
+        ) + "%";
+
     }
+
+  }
+
+}
+
+
+/* =====================================================
+   OUTLOOK KATEGORI
+===================================================== */
+
+function effectiveClientAmount_(x){
+  return Number(x && x.amount || 0);
+}
+
+function outlookWeeks_(){
+  const weeks=(dashboardData && dashboardData.weeklyTransactions) || [];
+  return weeks.slice(-3);
+}
+
+function renderOutlook(){
+  if(!dashboardData) return;
+
+  const weeks=outlookWeeks_();
+  const catNames=["Sales All","Device","Accessories","Repair Contract","Operator"];
+
+  weeks.forEach(function(w,i){
+    const label=w.label || ((w.start||"")+" - "+(w.end||""));
+    setText("outW"+(i+1),label);
+    setText("outSW"+(i+1),label);
+    setText("outSerW"+(i+1),label);
+  });
+
+  function sumRows(rows){
+    return (rows||[]).reduce(function(sum,x){ return sum + effectiveClientAmount_(x); },0);
+  }
+
+  const catRows=catNames.map(function(cat){
+    const vals=weeks.map(function(w){
+      const rows=(w.transactions||[]).filter(function(x){
+        if(cat==="Sales All") return true;
+        return String(x.category||"").trim().toLowerCase()===cat.toLowerCase();
+      });
+      return sumRows(rows);
+    });
+    while(vals.length<3) vals.unshift(0);
+    const prev=Number(vals[1]||0), curr=Number(vals[2]||0);
+    return {name:cat, vals:vals, wow:prev!==0?(curr-prev)/prev*100:null, gap:curr-prev};
+  });
+
+  const catEl=document.getElementById("outlookCategoryTable");
+  if(catEl){
+    catEl.innerHTML=catRows.map(function(r){
+      return `<tr>
+        <td><b>${escapeHtml(r.name)}</b></td>
+        <td class="money">${money(r.vals[0])}</td>
+        <td class="money">${money(r.vals[1])}</td>
+        <td class="money">${money(r.vals[2])}</td>
+        <td>${r.wow===null?"—":percent(r.wow)}</td>
+        <td class="${r.gap>=0?'gap-up':'gap-down'}">${money(r.gap)}</td>
+      </tr>`;
+    }).join("");
+  }
+
+  /* DEVICE SERIES: CONTRIBUTION + WOW */
+  const seriesNames=["Series A","Series S","Series Z","Series Tab"];
+  const seriesRows=seriesNames.map(function(series){
+    const vals=weeks.map(function(w){
+      return sumRows((w.transactions||[]).filter(function(x){
+        return String(x.category||"").trim().toLowerCase()==="device" && normalizeSeriesClient_(x)===series;
+      }));
+    });
+    while(vals.length<3) vals.unshift(0);
+    const prev=Number(vals[1]||0), curr=Number(vals[2]||0);
+    return {name:series, vals:vals, wow:prev!==0?(curr-prev)/prev*100:null, gap:curr-prev};
+  });
+
+  const latestDeviceTotal=seriesRows.reduce(function(s,r){return s+r.vals[2];},0);
+  const seriesContribEl=document.getElementById("outlookSeriesContributionTable");
+  if(seriesContribEl){
+    seriesContribEl.innerHTML=seriesRows.map(function(r){
+      const contribution=latestDeviceTotal!==0?(r.vals[2]/latestDeviceTotal*100):0;
+      return `<tr>
+        <td><b>${escapeHtml(r.name)}</b></td>
+        <td class="money">${money(r.vals[2])}</td>
+        <td>${percent(contribution)}</td>
+      </tr>`;
+    }).join("");
+  }
+
+  const seriesEl=document.getElementById("outlookSeriesTable");
+  if(seriesEl){
+    seriesEl.innerHTML=seriesRows.map(function(r){
+      return `<tr>
+        <td><b>${escapeHtml(r.name)}</b></td>
+        <td class="money">${money(r.vals[0])}</td>
+        <td class="money">${money(r.vals[1])}</td>
+        <td class="money">${money(r.vals[2])}</td>
+        <td>${r.wow===null?"—":percent(r.wow)}</td>
+        <td class="${r.gap>=0?'gap-up':'gap-down'}">${money(r.gap)}</td>
+      </tr>`;
+    }).join("");
+  }
+
+  const activeSales=(salesList||[]).filter(function(s){
+    return String(s.status||"AKTIF").toUpperCase()!=="NONAKTIF";
+  });
+
+  const salesRows=activeSales.map(function(s){
+    const vals=weeks.map(function(w){
+      return sumRows((w.transactions||[]).filter(function(x){
+        return String(x.salesId)===String(s.id);
+      }));
+    });
+    while(vals.length<3) vals.unshift(0);
+    const prev=Number(vals[1]||0), curr=Number(vals[2]||0);
+    return {name:s.name, vals:vals, wow:prev!==0?(curr-prev)/prev*100:null, gap:curr-prev};
+  }).sort(function(a,b){ return b.vals[2]-a.vals[2]; });
+
+  const salesEl=document.getElementById("outlookSalesTable");
+  if(salesEl){
+    salesEl.innerHTML=salesRows.map(function(r){
+      return `<tr>
+        <td><b>${escapeHtml(r.name)}</b></td>
+        <td class="money">${money(r.vals[0])}</td>
+        <td class="money">${money(r.vals[1])}</td>
+        <td class="money">${money(r.vals[2])}</td>
+        <td>${r.wow===null?"—":percent(r.wow)}</td>
+        <td class="${r.gap>=0?'gap-up':'gap-down'}">${money(r.gap)}</td>
+      </tr>`;
+    }).join("");
+  }
+}
+
+/* =====================================================
+   STORE
+===================================================== */
+
+function setStoreMode(mode){
+  const allBtn=document.getElementById("storeModeAll");
+  const catBtn=document.getElementById("storeModeCat");
+  const cat=document.getElementById("storeCategory");
+  const type=document.getElementById("storeType");
+  if(allBtn) allBtn.classList.toggle("active",mode==="ALL");
+  if(catBtn) catBtn.classList.toggle("active",mode!=="ALL");
+  if(cat){
+    cat.style.display=mode==="ALL"?"none":"";
+    if(mode==="ALL") cat.value="ALL";
+  }
+  if(type){
+    type.style.display=mode==="ALL"?"none":"";
+  }
+  updateStoreTypeOptions();
+  renderStore();
+}
+
+function updateStoreTypeOptions(){
+  const cat=document.getElementById("storeCategory");
+  const type=document.getElementById("storeType");
+  if(!cat||!type)return;
+  const c=cat.value;
+  let opts=[{v:"ALL",t:"Semua"}];
+  if(c==="Device") opts.push(
+    {v:"Series A",t:"Series A"},{v:"Series S",t:"Series S"},
+    {v:"Series Z",t:"Series Z"},{v:"Series Tab",t:"Series Tab"}
+  );
+  if(c==="Operator") opts.push(
+    {v:"Indosat",t:"Indosat"},{v:"XL",t:"XL"},{v:"Telkomsel",t:"Telkomsel"}
+  );
+  type.innerHTML=opts.map(o=>`<option value="${o.v}">${o.t}</option>`).join("");
+}
+
+function normalizeSeriesClient_(tx){
+  const raw=String(tx.subcategory||tx.product||"").toLowerCase();
+  if(raw.includes("series a")||raw.includes("a series")||/^a\d/.test(raw)||raw.includes("galaxy a"))return "Series A";
+  if(raw.includes("series s")||raw.includes("s series")||/^s\d/.test(raw)||raw.includes("galaxy s"))return "Series S";
+  if(raw.includes("series z")||raw.includes("z series")||/^z\w/.test(raw)||raw.includes("fold")||raw.includes("flip"))return "Series Z";
+  if(raw.includes("series tab")||raw.includes("tab series")||raw.includes("tab"))return "Series Tab";
+  return String(tx.subcategory||"");
+}
+
+function getStoreFilteredTransactions(){
+  if(!dashboardData)return [];
+  const tx=dashboardData.transactions||[];
+  const cat=document.getElementById("storeCategory");
+  const type=document.getElementById("storeType");
+  const c=cat?cat.value:"ALL";
+  const t=type?type.value:"ALL";
+  if(c==="ALL")return tx;
+  return tx.filter(x=>{
+    if(String(x.category)!==c)return false;
+    if(t==="ALL")return true;
+    if(c==="Device")return normalizeSeriesClient_(x)===t;
+    if(c==="Operator")return String(x.subcategory||"")===t;
+    return String(x.subcategory||"")===t;
+  });
+}
+
+function getStoreTarget(){
+  if(!dashboardData)return 0;
+  const targets=dashboardData.targets||[];
+  const cat=document.getElementById("storeCategory");
+  const type=document.getElementById("storeType");
+  const c=cat?cat.value:"ALL";
+  const t=type?type.value:"ALL";
+  if(c==="ALL")return targets.reduce((s,x)=>s+Number(x.targetAll||0),0);
+  if(c==="Device")return targets.reduce((s,x)=>s+Number(x.device||0),0);
+  if(c==="Accessories")return targets.reduce((s,x)=>s+Number(x.accessories||0),0);
+  if(c==="Repair Contract")return targets.reduce((s,x)=>s+Number(x.repairContract||0),0);
+  if(c==="Operator"){
+    if(t==="Indosat")return targets.reduce((s,x)=>s+Number(x.indosat||0),0);
+    if(t==="XL")return targets.reduce((s,x)=>s+Number(x.xl||0),0);
+    if(t==="Telkomsel")return targets.reduce((s,x)=>s+Number(x.telkomsel||0),0);
+    return targets.reduce((s,x)=>s+Number(x.operator||0),0);
+  }
+  return 0;
+}
+
+function sumStore_(arr){return arr.reduce((s,x)=>s+Number(x.amount||0),0);}
+function storeWeekLabel_(w){return w.label||w.period||"-";}
+
+function renderStore(){
+  if(!dashboardData)return;
+  const tx=getStoreFilteredTransactions();
+  const target=getStoreTarget();
+  const actual=sumStore_(tx);
+  const days=Number(dashboardData.daysPassed||0);
+  const dim=Number(dashboardData.daysInMonth||0);
+  const est=days>0?actual/days*dim:0;
+  const ach=target>0?actual/target*100:0;
+  const estPct=target>0?est/target*100:0;
+
+  setText("storeMonth",dashboardData.period||"");
+  setText("storeActualKpi",money(actual));
+  setText("storeTargetKpi",money(target));
+  setHtml("storeAchKpi",percent(ach));
+  setText("storeEstKpi",money(est));
+
+  renderStoreSalesBreakdown_();
+  renderStoreWeekly_(tx);
+}
+
+function getStoreSalesCategoryActual_(salesId, category, type){
+  const tx=dashboardData.transactions||[];
+  return sumStore_(tx.filter(x=>{
+    if(String(x.salesId)!==String(salesId)) return false;
+
+    // Sales All = seluruh transaksi valid milik sales tersebut.
+    // Jangan mencari category "Sales All" karena SALES_DATA tidak memiliki category itu.
+    if(category==='Sales All') return true;
+
+    // Gunakan normalisasi category agar data seperti accessories/ACCESSORIES tetap terbaca.
+    const rawCat=String(x.category||'').trim().toLowerCase();
+    const wantedCat=String(category||'').trim().toLowerCase();
+    const catAlias={
+      'device':'device',
+      'accessories':'accessories',
+      'accessory':'accessories',
+      'acc':'accessories',
+      'repair contract':'repair contract',
+      'repaircontract':'repair contract',
+      'rc':'repair contract',
+      'operator':'operator',
+      'op':'operator'
+    };
+    if((catAlias[rawCat]||rawCat)!==(catAlias[wantedCat]||wantedCat)) return false;
+
+    if(!type || type==='ALL') return true;
+    if(category==='Device') return normalizeSeriesClient_(x)===type;
+    return String(x.subcategory||'').trim().toLowerCase()===String(type).trim().toLowerCase();
+  }));
+}
+
+function getStoreSalesTarget_(salesId, category){
+  const t=(dashboardData.targets||[]).find(x=>String(x.salesId)===String(salesId))||{};
+  if(category==='Sales All') return Number(t.targetAll||0);
+  if(category==='Device') return Number(t.device||0);
+  if(category==='Accessories') return Number(t.accessories||0);
+  if(category==='Repair Contract') return Number(t.repairContract||0);
+  if(category==='Operator') return Number(t.operator||0);
+  return 0;
+}
+
+function renderStoreSalesBreakdown_(){
+  const box=document.getElementById('storeSalesBreakdown');
+  if(!box)return;
+
+  const days=Number(dashboardData.daysPassed||0);
+  const dim=Number(dashboardData.daysInMonth||0);
+  const catEl=document.getElementById('storeCategory');
+  const typeEl=document.getElementById('storeType');
+  const mode=document.getElementById('storeModeCat')?.classList.contains('active')?'CATEGORY':'ALL';
+  const selectedCat=catEl?.value||'ALL';
+  const selectedType=typeEl?.value||'ALL';
+
+  const categories=mode==='ALL'
+    ? ['Sales All','Device','Accessories','Repair Contract','Operator']
+    : [selectedCat==='ALL'?'Sales All':selectedCat];
+
+  const activeSales=(salesList||[]).filter(s=>String(s.status||'AKTIF').toUpperCase()!=='NONAKTIF');
+  if(!activeSales.length){
+    box.innerHTML='<div class="table-card" style="padding:14px">Belum ada sales aktif.</div>';
+    return;
+  }
+
+  box.innerHTML=categories.map(category=>{
+    const typeLabel=(mode==='CATEGORY' && selectedType!=='ALL') ? ' • '+escapeHtml(selectedType) : '';
+    const rows=activeSales.map(s=>{
+      const target=getStoreSalesTarget_(s.id,category);
+      const actual=getStoreSalesCategoryActual_(s.id,category, mode==='CATEGORY'?selectedType:'ALL');
+      const est=days>0?actual/days*dim:0;
+      const ach=target>0?actual/target*100:0;
+      const estPct=target>0?est/target*100:0;
+      const shortfall=Math.max(target-actual,0);
+      return {s,target,actual,est,ach,estPct,shortfall};
+    }).sort((a,b)=>b.ach-a.ach);
+
+    const total=rows.reduce((a,r)=>({target:a.target+r.target,actual:a.actual+r.actual,est:a.est+r.est,shortfall:a.shortfall+r.shortfall}),{target:0,actual:0,est:0,shortfall:0});
+    const totalAch=total.target>0?total.actual/total.target*100:0;
+    const totalEstPct=total.target>0?total.est/total.target*100:0;
+
+    return `
+      <div class="store-breakdown">
+        <div class="store-breakdown-head">
+          <div><div class="title">${escapeHtml(category)}${typeLabel}</div><div class="sub">Target dan pencapaian masing-masing sales • H-1</div></div>
+          <div class="sub">${rows.length} sales</div>
+        </div>
+        <div class="store-breakdown-wrap">
+          <table>
+            <thead><tr>
+              <th>SALES NAME</th><th>TARGET</th><th>ACTUAL H-1</th><th>ACH%</th><th>ESTIMASI</th><th>EST%</th><th>KEKURANGAN</th>
+            </tr></thead>
+            <tbody>
+              ${rows.map(r=>`<tr>
+                <td><span class="store-sales-name">${escapeHtml(r.s.name||'-')}</span></td>
+                <td class="money">${eroMoney(r.target)}</td>
+                <td class="money">${eroMoney(r.actual)}</td>
+                <td>${eroPercent(r.ach)}</td>
+                <td class="money">${eroMoney(r.est)}</td>
+                <td>${eroPercent(r.estPct)}</td>
+                <td class="money ${shortfallClass_(r.shortfall,r.target)}">${eroMoney(r.shortfall)}</td>
+              </tr>`).join('')}
+              <tr class="store-breakdown-total">
+                <td>TOTAL</td><td class="money">${eroMoney(total.target)}</td><td class="money">${eroMoney(total.actual)}</td><td>${eroPercent(totalAch)}</td><td class="money">${eroMoney(total.est)}</td><td>${eroPercent(totalEstPct)}</td><td class="money ${shortfallClass_(total.shortfall,total.target)}">${eroMoney(total.shortfall)}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        ${category==='Operator' && !(mode==='CATEGORY' && selectedType!=='ALL') ? renderOperatorEROBySubcategory_(activeSales, days, dim) : ''}
+      </div>`;
+  }).join('');
+}
+
+function getOperatorTarget_(salesId, subcategory){
+  const t=(dashboardData.targets||[]).find(x=>String(x.salesId)===String(salesId))||{};
+  const key=String(subcategory||'').toLowerCase();
+  if(key==='indosat') return Number(t.indosat||0);
+  if(key==='xl') return Number(t.xl||0);
+  if(key==='telkomsel') return Number(t.telkomsel||0);
+  return 0;
+}
+
+function renderOperatorEROBySubcategory_(activeSales, days, dim){
+  const subs=['Indosat','XL','Telkomsel'];
+  return `
+    <div style="margin-top:10px">
+      <div class="store-breakdown-head" style="border-top:1px solid #e5e7eb;padding-top:10px">
+        <div><div class="title">Operator by Sub Kategori</div><div class="sub">Ranking berdasarkan Achievement % • H-1</div></div>
+      </div>
+      ${subs.map(sub=>{
+        const rows=activeSales.map(s=>{
+          const target=getOperatorTarget_(s.id,sub);
+          const actual=getStoreSalesCategoryActual_(s.id,'Operator',sub);
+          const est=days>0?actual/days*dim:0;
+          const ach=target>0?actual/target*100:0;
+          const estPct=target>0?est/target*100:0;
+          const shortfall=Math.max(target-actual,0);
+          return {s,target,actual,est,ach,estPct,shortfall};
+        }).sort((a,b)=>b.ach-a.ach);
+        const total=rows.reduce((a,r)=>({target:a.target+r.target,actual:a.actual+r.actual,est:a.est+r.est,shortfall:a.shortfall+r.shortfall}),{target:0,actual:0,est:0,shortfall:0});
+        const totalAch=total.target>0?total.actual/total.target*100:0;
+        const top=rows[0], bottom=rows[rows.length-1];
+        return `
+          <div class="store-breakdown" style="margin-top:8px">
+            <div class="store-breakdown-head">
+              <div><div class="title">${sub}</div><div class="sub">Tertinggi: ${escapeHtml(top?.s?.name||'-')} • Terendah: ${escapeHtml(bottom?.s?.name||'-')}</div></div>
+              <div class="sub">Kurang total ${eroMoney(total.shortfall)}</div>
+            </div>
+            <div class="store-breakdown-wrap">
+              <table><thead><tr><th>SALES NAME</th><th>TARGET</th><th>ACTUAL H-1</th><th>ACH%</th><th>ESTIMASI</th><th>EST%</th><th>KEKURANGAN</th></tr></thead>
+              <tbody>
+                ${rows.map(r=>`<tr>
+                  <td><span class="store-sales-name">${escapeHtml(r.s.name||'-')}</span></td>
+                  <td class="money">${eroMoney(r.target)}</td>
+                  <td class="money">${eroMoney(r.actual)}</td>
+                  <td>${eroPercent(r.ach)}</td>
+                  <td class="money">${eroMoney(r.est)}</td>
+                  <td>${eroPercent(r.estPct)}</td>
+                  <td class="money ${shortfallClass_(r.shortfall,r.target)}">${eroMoney(r.shortfall)}</td>
+                </tr>`).join('')}
+                <tr class="store-breakdown-total"><td>TOTAL</td><td class="money">${eroMoney(total.target)}</td><td class="money">${eroMoney(total.actual)}</td><td>${eroPercent(totalAch)}</td><td class="money">${eroMoney(total.est)}</td><td>${eroPercent(total.target>0?total.est/total.target*100:0)}</td><td class="money ${shortfallClass_(total.shortfall,total.target)}">${eroMoney(total.shortfall)}</td></tr>
+              </tbody></table>
+            </div>
+          </div>`;
+      }).join('')}
+    </div>`;
+}
+
+function renderStoreWeekly_(tx){
+  const body=document.getElementById("storeWeeklyTable");
+  if(!body)return;
+  const rows=(dashboardData.weekly&&dashboardData.weekly.rows)||[];
+  const deviceRows=(dashboardData.weekly&&dashboardData.weekly.deviceRows)||[];
+  const operatorRows=(dashboardData.weekly&&dashboardData.weekly.operatorRows)||[];
+  const cat=document.getElementById("storeCategory");
+  const type=document.getElementById("storeType");
+  const c=cat?cat.value:"ALL", t=type?type.value:"ALL";
+  let source=rows;
+  if(c==="Device")source=t==="ALL"?rows.filter(r=>r.name==="Device"):deviceRows.filter(r=>r.name===t);
+  else if(c==="Operator")source=t==="ALL"?rows.filter(r=>r.name==="Operator"):operatorRows.filter(r=>r.name===t);
+  else if(c!=="ALL")source=rows.filter(r=>r.name===c);
+  const r=source[0];
+  if(!r){body.innerHTML=`<tr><td colspan="4">Belum ada data weekly.</td></tr>`;return;}
+  const vals=r.values||[];
+  body.innerHTML=vals.map(v=>`<tr><td>${storeWeekLabel_(v)}</td><td class="money">${money(v.sales||0)}</td><td>${v.wow==null?"—":formatWowClient_(v.wow)}</td><td>${v.gap==null?"—":formatGapClient_(v.gap)}</td></tr>`).join("");
+}
+
+function formatWowClient_(v){return (Number(v)>=0?"+":"")+Number(v).toFixed(1)+"%";}
+function formatGapClient_(v){return (Number(v)>=0?"+":"-")+money(Math.abs(Number(v)));}
+
+
+/* =====================================================
+   CONTRIBUTION
+===================================================== */
+
+function renderContribution(){
+
+  const tbody =
+    document.getElementById(
+      "contributionTable"
+    );
+
+  if(!tbody)
+    return;
+
+  const rows =
+    getSalesStats()
+      .sort(
+        (a,b)=>
+          b.actual-a.actual
+      );
+
+  const total =
+    rows.reduce(
+      (s,r)=>
+        s+r.actual,
+      0
+    );
+
+  tbody.innerHTML =
+    rows.map(
+      function(r,i){
+
+        const contribution =
+          total > 0
+          ? r.actual / total * 100
+          : 0;
+
+        return `
+          <tr>
+
+            <td>
+              #${i+1}
+            </td>
+
+            <td>
+              <b>${escapeHtml(r.name)}</b>
+            </td>
+
+            <td class="money">
+              ${money(r.actual)}
+            </td>
+
+            <td style="width:35%">
+
+              <div style="font-weight:700">
+                ${percent(contribution)}
+              </div>
+
+              <div class="progress">
+                <div
+                  class="progress-bar"
+                  style="width:${Math.min(contribution,100)}%"
+                ></div>
+              </div>
+
+            </td>
+
+          </tr>
+        `;
+
+      }
+    ).join("");
+
+}
+
+
+function summaryCategoryTarget_(t, category){
+  if(category==='Sales All') return Number(t.targetAll||0);
+  if(category==='Device') return Number(t.device||0);
+  if(category==='Accessories') return Number(t.accessories||0);
+  if(category==='Indosat') return Number(t.indosat||0);
+  if(category==='XL') return Number(t.xl||0);
+  if(category==='Telkomsel') return Number(t.telkomsel||0);
+  return 0;
+}
+
+function summaryCategoryMatch_(x, category){
+  const raw=String(x.category||'').trim().toLowerCase();
+  if(category==='Sales All') return true;
+  if(category==='Device') return raw==='device';
+  if(category==='Accessories') return ['acc','accessory','accessories'].includes(raw);
+  if(['Indosat','XL','Telkomsel'].includes(category)){
+    return raw==='operator' && String(x.subcategory||'').trim().toLowerCase()===category.toLowerCase();
+  }
+  return false;
+}
+
+function renderSummary(){
+  if(!dashboardData || !salesList || !salesList.length) return;
+
+  // Summary sengaja TIDAK menampilkan Repair Contract dan Operator All.
+  // Operator hanya ditampilkan per sub-operator: Indosat, XL, Telkomsel.
+  const categories=['Sales All','Device','Accessories','Indosat','XL','Telkomsel'];
+  const days=Number(dashboardData.daysPassed||0);
+  const dim=Number(dashboardData.daysInMonth||0);
+  const remaining=Math.max(dim-days,0);
+  const tx=dashboardData.transactions||[];
+  const activeSales=(salesList||[]).filter(s=>String(s.status||'AKTIF').toUpperCase()!=='NONAKTIF');
+
+  setText('summaryMonth', formatMonth(dashboardData.period || getCurrentPeriod()));
+
+  const calc=(s,cat)=>{
+    const actual=tx.filter(x=>String(x.salesId)===String(s.id) && summaryCategoryMatch_(x,cat))
+      .reduce((sum,x)=>sum+Number(x.amount||0),0);
+
+    const trow=(dashboardData.targets||[]).find(x=>String(x.salesId)===String(s.id))||{};
+    const target=summaryCategoryTarget_(trow,cat);
+    const est=days>0?actual/days*dim:0;
+    const ach=target>0?actual/target*100:0;
+    const estPct=target>0?est/target*100:0;
+    const shortfall=Math.max(target-actual,0);
+    const daily=remaining>0?shortfall/remaining:shortfall;
+    return {s,actual,target,est,ach,estPct,shortfall,daily};
   };
-}
 
-/**
- * Nilai transaksi efektif untuk dashboard.
- * - AMOUNT 0 / kosong => 0
- * - Device hanya dihitung jika SUBCATEGORY sesuai master series dashboard
- * - Operator hanya dihitung jika subcategory Indosat/XL/Telkomsel
- * - Untuk Accessories/Repair Contract, nilai tetap mengikuti AMOUNT sampai
- *   daftar master subcategory-nya tersedia di backend.
- * Data asli di SALES_DATA tidak pernah diubah.
- */
-function getEffectiveTransactionAmount_(tx) {
-  const amount = Number(tx && tx.amount || 0);
-  if (!isFinite(amount) || amount === 0) return 0;
+  const rows=[];
+  categories.forEach(cat=>{
+    activeSales.forEach(s=>{
+      const r=calc(s,cat);
+      if(r.target>0 || r.actual!==0) rows.push(Object.assign({category:cat},r));
+    });
+  });
 
-  const category = normalizeCategory_(tx.category);
-  const sub = String(tx.subcategory || '').trim().toLowerCase();
+  // Ambil TOP 3 ERO terendah untuk SETIAP kategori berdasarkan estimasi %.
+  const lowest=[];
+  categories.forEach(cat=>{
+    const top3=rows
+      .filter(r=>r.category===cat)
+      .sort((a,b)=>a.estPct-b.estPct || a.ach-b.ach || b.shortfall-a.shortfall)
+      .slice(0,3);
+    top3.forEach(r=>lowest.push(r));
+  });
 
-  if (category === 'Device') {
-    const series = normalizeDeviceSeries_(tx.subcategory, tx.product);
-    const valid = ['Series A', 'Series S', 'Series Z', 'Series Tab'].indexOf(series) >= 0;
-    return valid ? amount : 0;
+  const lowEl=document.getElementById('summaryLowestTable');
+  if(lowEl){
+    lowEl.innerHTML=lowest.map(r=>`<tr>
+      <td><b>${escapeHtml(r.category)}</b></td><td><b>${escapeHtml(r.s.name||'-')}</b></td>
+      <td class="money">${eroMoney(r.target)}</td><td class="money">${eroMoney(r.actual)}</td><td>${eroPercent(r.ach)}</td>
+      <td class="money">${eroMoney(r.est)}</td><td>${eroPercent(r.estPct)}</td><td class="money">${eroMoney(r.shortfall)}</td>
+    </tr>`).join('') || '<tr><td colspan="8">Belum ada data.</td></tr>';
   }
 
-  if (category === 'Operator') {
-    const valid = ['indosat', 'xl', 'telkomsel'].indexOf(sub) >= 0;
-    return valid ? amount : 0;
+  const catTotals=categories.map(cat=>{
+    const rs=rows.filter(r=>r.category===cat);
+    const target=rs.reduce((a,r)=>a+r.target,0);
+    const actual=rs.reduce((a,r)=>a+r.actual,0);
+    const ach=target>0?actual/target*100:0;
+    const shortfall=Math.max(target-actual,0);
+    const daily=remaining>0?shortfall/remaining:shortfall;
+    return {cat,target,actual,ach,shortfall,daily};
+  });
+
+  const catEl=document.getElementById('summaryCategoryTable');
+  if(catEl){
+    catEl.innerHTML=catTotals.map(r=>`<tr>
+      <td><b>${escapeHtml(r.cat)}</b></td><td class="money">${eroMoney(r.target)}</td><td class="money">${eroMoney(r.actual)}</td>
+      <td>${eroPercent(r.ach)}</td><td class="money">${eroMoney(r.shortfall)}</td><td>${remaining} hari</td><td class="money">${eroMoney(r.daily)}</td>
+    </tr>`).join('') || '<tr><td colspan="7">Belum ada data.</td></tr>';
   }
 
-  return amount;
-}
-
-function normalizeCategory_(value) {
-  const s = String(value || '').trim().toLowerCase();
-  if (s === 'device') return 'Device';
-  if (s === 'accessories' || s === 'accessory' || s === 'acc') return 'Accessories';
-  if (s === 'repair contract' || s === 'repaircontract' || s === 'rc') return 'Repair Contract';
-  if (s === 'operator' || s === 'op') return 'Operator';
-  return String(value || '').trim();
-}
-
-function normalizeDeviceSeries_(subcategory, product) {
-  const s = String(subcategory || '').trim().toLowerCase();
-  const p = String(product || '').trim().toLowerCase();
-  const value = s + ' ' + p;
-
-  // Master yang digunakan dashboard: Series A, Series S, Series Z, Series Tab.
-  // Alias lama seperti A Series tetap diterima agar transaksi lama tidak rusak.
-  if (s === 'series a' || s === 'a series' || s.indexOf('series a') >= 0 || s.indexOf('a series') >= 0 || /(^|\s)a\d/.test(value) || value.indexOf('galaxy a') >= 0) return 'Series A';
-  if (s === 'series s' || s === 's series' || s.indexOf('series s') >= 0 || s.indexOf('s series') >= 0 || /(^|\s)s\d/.test(value) || value.indexOf('galaxy s') >= 0) return 'Series S';
-  if (s === 'series z' || s === 'z series' || s.indexOf('series z') >= 0 || s.indexOf('z series') >= 0 || /(^|\s)z\w/.test(value) || value.indexOf('fold') >= 0 || value.indexOf('flip') >= 0 || value.indexOf('galaxy z') >= 0) return 'Series Z';
-  if (s === 'series tab' || s === 'tab series' || s.indexOf('series tab') >= 0 || s.indexOf('tab series') >= 0 || s.indexOf('tab') >= 0 || value.indexOf('galaxy tab') >= 0) return 'Series Tab';
-  return '';
-}
-
-function parseDateOnly_(value) {
-  if (!value) return null;
-  if (Object.prototype.toString.call(value) === '[object Date]' && !isNaN(value.getTime())) {
-    return new Date(value.getFullYear(), value.getMonth(), value.getDate());
+  const priority=rows.filter(r=>r.estPct<100)
+    .sort((a,b)=>a.estPct-b.estPct || b.shortfall-a.shortfall);
+  const priEl=document.getElementById('summaryPriorityTable');
+  if(priEl){
+    priEl.innerHTML=priority.slice(0,20).map((r,i)=>`<tr>
+      <td><b>#${i+1}</b></td><td><b>${escapeHtml(r.s.name||'-')}</b></td><td>${escapeHtml(r.category)}</td>
+      <td>${eroPercent(r.ach)}</td><td>${eroPercent(r.estPct)}</td><td class="money">${eroMoney(r.shortfall)}</td><td class="money">${eroMoney(r.daily)}</td>
+    </tr>`).join('') || '<tr><td colspan="7">🎉 Semua ERO sudah estimasi 100% atau lebih.</td></tr>';
   }
 
-  const s = String(value).substring(0, 10);
-  const parts = s.split('-');
-  if (parts.length === 3 && !isNaN(Number(parts[0])) && !isNaN(Number(parts[1])) && !isNaN(Number(parts[2]))) {
-    return new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+  const topPriority=priority.slice(0,3);
+  const kpi=document.getElementById('summaryKpis');
+  if(kpi){
+    const priorityHtml = topPriority.length
+      ? topPriority.map((r,i)=>`
+          <div class="summary-priority-row">
+            <span class="summary-priority-rank">#${i+1}</span>
+            <span class="summary-priority-name">${escapeHtml(r.s.name||'-')}</span>
+            <span class="summary-priority-cat">${escapeHtml(r.category)}</span>
+            <span class="summary-priority-daily">${eroMoney(r.daily)}<small>/hari</small></span>
+          </div>
+        `).join('')
+      : `<div class="summary-priority-empty">🎉 Semua ERO sudah estimasi 100% atau lebih.</div>`;
+
+    kpi.innerHTML=`
+      <div class="card">
+        <div class="metric-label">SISA HARI</div>
+        <div class="metric-value">${remaining}</div>
+      </div>
+      <div class="card">
+        <div class="metric-label">ERO PERLU DIKEJAR</div>
+        <div class="metric-value">${priority.length}</div>
+      </div>
+      <div class="card summary-priority-card">
+        <div class="metric-label">PRIORITAS UTAMA</div>
+        <div class="summary-priority-list">${priorityHtml}</div>
+      </div>`;
   }
-  return null;
 }
 
-function formatDateOnly_(date) {
-  return Utilities.formatDate(date, Session.getScriptTimeZone(), 'yyyy-MM-dd');
+function renderTopEROPage(){
+  if(!dashboardData || !salesList || !salesList.length) return;
+
+  const categoryEl=document.getElementById("topPageCategory");
+  const category=categoryEl ? categoryEl.value : "Sales All";
+  const days=Number(dashboardData.daysPassed || dashboardData.days || 0);
+  const dim=Number(dashboardData.daysInMonth || new Date(new Date().getFullYear(),new Date().getMonth()+1,0).getDate());
+
+  const rows=salesList.map(s=>{
+    const actual=getStoreSalesCategoryActual_(s.id,category,"ALL");
+    const target=getStoreSalesTarget_(s.id,category);
+    const est=days>0 ? actual/days*dim : 0;
+    const ach=target>0 ? actual/target*100 : 0;
+    const estPct=target>0 ? est/target*100 : 0;
+    return {s,actual,target,est,ach,estPct};
+  }).filter(r=>r.target>0 || r.actual!==0).sort((a,b)=>b.ach-a.ach || b.actual-a.actual);
+
+  const medals=["🥇","🥈","🥉"];
+  const cards=document.getElementById("topPageCards");
+  if(cards){
+    cards.innerHTML=rows.slice(0,3).map((r,i)=>`
+      <div class="top-card rank${i+1}">
+        <div class="medal">${medals[i]}</div>
+        <div class="top-name">${escapeHtml(r.s.name||"-")}</div>
+        <div class="top-amount">${eroMoney(r.actual)}</div>
+        <div class="badge">Ach ${eroPercent(r.ach)}</div>
+      </div>`).join("") || '<div class="highlight-empty">Belum ada data untuk diranking.</div>';
+  }
+
+  const tbody=document.getElementById("topPageTable");
+  if(tbody){
+    tbody.innerHTML=rows.map((r,i)=>`
+      <tr>
+        <td>#${i+1}</td>
+        <td><b>${escapeHtml(r.s.name||"-")}</b></td>
+        <td class="money">${eroMoney(r.target)}</td>
+        <td class="money">${eroMoney(r.actual)}</td>
+        <td>${eroPercent(r.ach)}</td>
+        <td class="money">${eroMoney(r.est)}</td>
+        <td>${eroPercent(r.estPct)}</td>
+      </tr>`).join("") || '<tr><td colspan="7">Belum ada data.</td></tr>';
+  }
+  setText("topEroMonth", formatMonth(dashboardData.period || getCurrentPeriod()));
 }
 
-function formatWeekLabel_(start, end) {
-  const tz = Session.getScriptTimeZone();
-  const s = Utilities.formatDate(start, tz, 'dd MMM');
-  const e = Utilities.formatDate(end, tz, 'dd MMM yyyy');
-  return s + ' - ' + e;
+/* =====================================================
+   TOP SALES
+===================================================== */
+
+function renderTopSales(){
+
+  const rows =
+    getSalesStats()
+      .sort(
+        (a,b)=>
+          b.actual-a.actual
+      );
+
+  const top =
+    rows.slice(0,3);
+
+  const cards =
+    document.getElementById(
+      "topCards"
+    );
+
+  if(cards){
+
+    const medals =
+      ["🥇","🥈","🥉"];
+
+    cards.innerHTML =
+      top.map(
+        function(r,i){
+
+          return `
+            <div class="top-card rank${i+1}">
+
+              <div class="medal">
+                ${medals[i]}
+              </div>
+
+              <div class="top-name">
+                ${escapeHtml(r.name)}
+              </div>
+
+              <div style="font-size:11px;color:#718096">
+                ${escapeHtml(r.nik || "")}
+              </div>
+
+              <div class="top-amount">
+                ${eroMoney(r.actual)}
+              </div>
+
+              <div class="badge">
+                Ach ${eroPercent(r.achievement)}
+              </div>
+
+              <div style="font-size:12px;margin-top:8px;color:#64748b">
+                Est ${eroMoney(r.estimation)}
+              </div>
+
+            </div>
+          `;
+
+        }
+      ).join("");
+
+  }
+
+
+  const tbody =
+    document.getElementById(
+      "topTable"
+    );
+
+  if(!tbody)
+    return;
+
+  tbody.innerHTML =
+    rows.map(
+      function(r,i){
+
+        return `
+          <tr>
+
+            <td>
+              #${i+1}
+            </td>
+
+            <td>
+              <b>${escapeHtml(r.name)}</b>
+              <br>
+              <span style="font-size:11px;color:#718096">
+                ${escapeHtml(r.nik || "")}
+              </span>
+            </td>
+
+            <td class="money">
+              ${eroMoney(r.target)}
+            </td>
+
+            <td class="money">
+              ${eroMoney(r.actual)}
+            </td>
+
+            <td class="percent-red">
+              ${eroPercent(r.achievement)}
+            </td>
+
+            <td class="money">
+              ${eroMoney(r.estimation)}
+            </td>
+
+            <td class="percent-red">
+              ${eroPercent(r.estPercent)}
+            </td>
+
+          </tr>
+        `;
+
+      }
+    ).join("");
+
 }
 
-/*************************************************
- * HELPERS
- *************************************************/
 
-function sum_(arr) {
+/* =====================================================
+   TARGET
+===================================================== */
 
-  return arr.reduce(
-    (a, b) =>
-      a + Number(b || 0),
-    0
+function renderTargets(){
+
+  const tbody =
+    document.getElementById(
+      "targetTable"
+    );
+
+  if(!tbody)
+    return;
+
+  const targetMap = {};
+
+  targets.forEach(
+    t =>
+      targetMap[t.salesId] =
+      t
+  );
+
+  tbody.innerHTML =
+    salesList.map(
+      function(s){
+
+        const t =
+          targetMap[s.id] || {};
+
+        return `
+          <tr>
+
+            <td>
+              <b>${escapeHtml(s.name)}</b>
+              <br>
+              <span style="font-size:11px;color:#718096">
+                ${escapeHtml(s.nik || "")}
+              </span>
+            </td>
+
+            ${targetInput(
+              s.id,
+              "targetAll",
+              t.targetAll
+            )}
+
+            ${targetInput(
+              s.id,
+              "device",
+              t.device
+            )}
+
+            ${targetInput(
+              s.id,
+              "accessories",
+              t.accessories
+            )}
+
+            ${targetInput(
+              s.id,
+              "repairContract",
+              t.repairContract
+            )}
+
+            ${targetInput(
+              s.id,
+              "operator",
+              t.operator
+            )}
+
+            ${targetInput(
+              s.id,
+              "indosat",
+              t.indosat
+            )}
+
+            ${targetInput(
+              s.id,
+              "xl",
+              t.xl
+            )}
+
+            ${targetInput(
+              s.id,
+              "telkomsel",
+              t.telkomsel
+            )}
+
+          </tr>
+        `;
+
+      }
+    ).join("");
+
+  updateTargetTotals();
+
+}
+
+
+function targetInput(id,key,value){
+
+  return `
+    <td>
+
+      <input
+        type="number"
+        min="0"
+        data-sales="${escapeAttr(id)}"
+        data-key="${key}"
+        value="${Number(value || 0)}"
+        oninput="updateTargetTotals()"
+      >
+
+    </td>
+  `;
+
+}
+
+
+function updateTargetTotals(){
+
+  const keys =
+    [
+      "targetAll",
+      "device",
+      "accessories",
+      "operator"
+    ];
+
+  const totals = {};
+
+  keys.forEach(
+    k =>
+      totals[k]=0
+  );
+
+  document
+    .querySelectorAll(
+      "#targetTable input"
+    )
+    .forEach(
+      input => {
+
+        const key =
+          input.dataset.key;
+
+        if(
+          totals.hasOwnProperty(key)
+        ){
+
+          totals[key] +=
+            Number(
+              input.value || 0
+            );
+
+        }
+
+      }
+    );
+
+  setText(
+    "targetTotalAll",
+    money(totals.targetAll)
+  );
+
+  setText(
+    "targetTotalDevice",
+    money(totals.device)
+  );
+
+  setText(
+    "targetTotalAcc",
+    money(totals.accessories)
+  );
+
+  setText(
+    "targetTotalOperator",
+    money(totals.operator)
   );
 
 }
 
 
-function formatDate_(value) {
-  if (!value) return "";
+async function saveAllTargets(){
 
-  if (Object.prototype.toString.call(value) === "[object Date]") {
-    if (isNaN(value.getTime())) return "";
-    return Utilities.formatDate(
-      value,
-      Session.getScriptTimeZone(),
-      "yyyy-MM-dd"
+  const inputs =
+    document.querySelectorAll(
+      "#targetTable input"
     );
-  }
 
-  const s = String(value).trim();
+  const grouped = {};
 
-  // yyyy-MM-dd / yyyy/MM/dd
-  let m = s.match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/);
-  if (m) {
-    return m[1] + "-" +
-      String(Number(m[2])).padStart(2, "0") + "-" +
-      String(Number(m[3])).padStart(2, "0");
-  }
+  inputs.forEach(
+    function(input){
 
-  // dd/MM/yyyy or dd-MM-yyyy (Indonesia)
-  m = s.match(/^(\d{1,2})[-\/](\d{1,2})[-\/](\d{4})/);
-  if (m) {
-    return m[3] + "-" +
-      String(Number(m[2])).padStart(2, "0") + "-" +
-      String(Number(m[1])).padStart(2, "0");
-  }
+      const id =
+        input.dataset.sales;
 
-  const d = new Date(s);
-  if (!isNaN(d.getTime())) {
-    return Utilities.formatDate(
-      d,
-      Session.getScriptTimeZone(),
-      "yyyy-MM-dd"
+      const key =
+        input.dataset.key;
+
+      if(!grouped[id])
+        grouped[id]={};
+
+      grouped[id][key] =
+        Number(
+          input.value || 0
+        );
+
+    }
+  );
+
+  try{
+
+    for(
+      const id of Object.keys(grouped)
+    ){
+
+      const s =
+        salesList.find(
+          x =>
+            String(x.id) ===
+            String(id)
+        );
+
+      if(!s)
+        continue;
+
+      await api({
+
+        action:"saveTarget",
+
+        period:getCurrentPeriod(),
+
+        salesId:s.id,
+
+        salesName:s.name,
+
+        targetAll:
+          grouped[id].targetAll || 0,
+
+        device:
+          grouped[id].device || 0,
+
+        accessories:
+          grouped[id].accessories || 0,
+
+        repairContract:
+          grouped[id].repairContract || 0,
+
+        operator:
+          grouped[id].operator || 0,
+
+        indosat:
+          grouped[id].indosat || 0,
+
+        xl:
+          grouped[id].xl || 0,
+
+        telkomsel:
+          grouped[id].telkomsel || 0
+
+      });
+
+    }
+
+    showToast(
+      "Target berhasil disimpan"
     );
+
+    await loadAll();
+
+  }catch(e){
+
+    showToast(
+      "Gagal menyimpan target"
+    );
+
   }
 
-  return s.substring(0, 10);
 }
+
+
+/* =====================================================
+   MANAGE SALES
+===================================================== */
+
+function renderManageSales(){
+
+  const tbody =
+    document.getElementById(
+      "manageSalesTable"
+    );
+
+  if(!tbody)
+    return;
+
+  tbody.innerHTML =
+    salesList.map(
+      function(s){
+
+        const active =
+          String(s.status)
+            .toUpperCase()
+            === "AKTIF";
+
+        return `
+          <tr>
+
+            <td>
+              <b>${escapeHtml(s.name)}</b>
+            </td>
+
+            <td>
+              <span
+                style="
+                  background:${active ? "#d7f8eb" : "#ffe1e3"};
+                  color:${active ? "#0caf75" : "#e62939"};
+                  padding:5px 10px;
+                  border-radius:14px;
+                  font-size:12px;
+                  font-weight:700
+                "
+              >
+                ${active ? "Aktif" : "Nonaktif"}
+              </span>
+
+            </td>
+
+            <td>
+
+              <div class="actions">
+
+                <button
+                  class="btn btn-secondary"
+                  onclick="editSales('${escapeAttr(s.id)}')"
+                >
+                  ✏
+                </button>
+
+                <button
+                  class="btn btn-danger"
+                  onclick="deleteSales('${escapeAttr(s.id)}')"
+                >
+                  🗑
+                </button>
+
+              </div>
+
+            </td>
+
+          </tr>
+        `;
+
+      }
+    ).join("");
+
+}
+
+
+function openSalesModal(){
+
+  document
+    .getElementById(
+      "salesModal"
+    )
+    .classList.add("show");
+
+  document
+    .getElementById(
+      "salesModalTitle"
+    )
+    .textContent =
+    "Tambah Sales";
+
+  document
+    .getElementById(
+      "editSalesId"
+    )
+    .value = "";
+
+  document
+    .getElementById(
+      "salesNameInput"
+    )
+    .value = "";
+
+  document
+    .getElementById(
+      "salesNikInput"
+    )
+    .value = "";
+
+}
+
+
+function closeSalesModal(){
+
+  document
+    .getElementById(
+      "salesModal"
+    )
+    .classList.remove(
+      "show"
+    );
+
+}
+
+
+function editSales(id){
+
+  const s =
+    salesList.find(
+      x =>
+        String(x.id) ===
+        String(id)
+    );
+
+  if(!s)
+    return;
+
+  openSalesModal();
+
+  document
+    .getElementById(
+      "salesModalTitle"
+    )
+    .textContent =
+    "Edit Sales";
+
+  document
+    .getElementById(
+      "editSalesId"
+    )
+    .value =
+    s.id;
+
+  document
+    .getElementById(
+      "salesNameInput"
+    )
+    .value =
+    s.name || "";
+
+  document
+    .getElementById(
+      "salesNikInput"
+    )
+    .value =
+    s.nik || "";
+
+  document
+    .getElementById(
+      "salesRoleInput"
+    )
+    .value =
+    s.role || "SALES";
+
+  document
+    .getElementById(
+      "salesStatusInput"
+    )
+    .value =
+    s.status || "AKTIF";
+
+}
+
+
+async function saveSales(){
+
+  const id =
+    document
+      .getElementById(
+        "editSalesId"
+      )
+      .value;
+
+  const name =
+    document
+      .getElementById(
+        "salesNameInput"
+      )
+      .value
+      .trim();
+
+  const nik =
+    document
+      .getElementById(
+        "salesNikInput"
+      )
+      .value
+      .trim();
+
+  const role =
+    document
+      .getElementById(
+        "salesRoleInput"
+      )
+      .value;
+
+  const status =
+    document
+      .getElementById(
+        "salesStatusInput"
+      )
+      .value;
+
+  if(!name){
+
+    showToast(
+      "Nama sales wajib diisi"
+    );
+
+    return;
+
+  }
+
+  try{
+
+    const result =
+      await api({
+
+        action:"saveSales",
+
+        id:id,
+
+        name:name,
+
+        nik:nik,
+
+        role:role,
+
+        status:status,
+
+        store:"SES SMB"
+
+      });
+
+    if(result.success){
+
+      closeSalesModal();
+
+      showToast(
+        "Sales berhasil disimpan"
+      );
+
+      await loadAll();
+
+    }else{
+
+      showToast(
+        result.message ||
+        "Gagal menyimpan"
+      );
+
+    }
+
+  }catch(e){
+
+    showToast(
+      e.message
+    );
+
+  }
+
+}
+
+
+async function deleteSales(id){
+
+  if(
+    !confirm(
+      "Hapus sales ini?"
+    )
+  )
+    return;
+
+  try{
+
+    const result =
+      await api({
+
+        action:"deleteSales",
+
+        id:id
+
+      });
+
+    if(result.success){
+
+      showToast(
+        "Sales berhasil dihapus"
+      );
+
+      await loadAll();
+
+    }else{
+
+      showToast(
+        result.message
+      );
+
+    }
+
+  }catch(e){
+
+    showToast(
+      e.message
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   INPUT SALES
+===================================================== */
+
+function renderInputSales(){
+
+  const select =
+    document.getElementById(
+      "inputSales"
+    );
+
+  if(!select)
+    return;
+
+  select.innerHTML =
+    `<option value="">
+      Pilih Sales
+    </option>` +
+    salesList
+      .filter(
+        x =>
+          String(x.status)
+            .toUpperCase()
+          !== "NONAKTIF"
+      )
+      .map(
+        s =>
+          `
+          <option value="${escapeAttr(s.id)}">
+            ${escapeHtml(s.name)}
+          </option>
+          `
+      )
+      .join("");
+
+}
+
+
+function updateSubcategory(){
+
+  const category =
+    document
+      .getElementById(
+        "inputCategory"
+      )
+      .value;
+
+  const select =
+    document
+      .getElementById(
+        "inputSubcategory"
+      );
+
+  let values = [];
+
+  if(category === "Operator"){
+
+    values =
+      [
+        "Indosat",
+        "XL",
+        "Telkomsel"
+      ];
+
+  }
+
+  select.innerHTML =
+    `<option value="">
+      -
+    </option>` +
+    values.map(
+      x =>
+        `<option value="${x}">
+          ${x}
+        </option>`
+    ).join("");
+
+}
+
+
+async function saveTransaction(){
+
+  const salesId =
+    document
+      .getElementById(
+        "inputSales"
+      )
+      .value;
+
+  const s =
+    salesList.find(
+      x =>
+        String(x.id) ===
+        String(salesId)
+    );
+
+  if(!s){
+
+    showToast(
+      "Pilih sales terlebih dahulu"
+    );
+
+    return;
+
+  }
+
+  const params = {
+
+    action:"saveTransaction",
+
+    date:
+      document
+        .getElementById(
+          "inputDate"
+        )
+        .value,
+
+    salesId:s.id,
+
+    salesName:s.name,
+
+    category:
+      document
+        .getElementById(
+          "inputCategory"
+        )
+        .value,
+
+    subcategory:
+      document
+        .getElementById(
+          "inputSubcategory"
+        )
+        .value,
+
+    product:
+      document
+        .getElementById(
+          "inputProduct"
+        )
+        .value,
+
+    qty:
+      document
+        .getElementById(
+          "inputQty"
+        )
+        .value,
+
+    amount:
+      document
+        .getElementById(
+          "inputAmount"
+        )
+        .value,
+
+    customer:
+      document
+        .getElementById(
+          "inputCustomer"
+        )
+        .value,
+
+    phone:
+      document
+        .getElementById(
+          "inputPhone"
+        )
+        .value
+
+  };
+
+
+  try{
+
+    const result =
+      await api(params);
+
+    if(result.success){
+
+      showToast(
+        "Transaksi berhasil disimpan"
+      );
+
+      document
+        .getElementById(
+          "inputProduct"
+        )
+        .value = "";
+
+      document
+        .getElementById(
+          "inputAmount"
+        )
+        .value = "";
+
+      document
+        .getElementById(
+          "inputCustomer"
+        )
+        .value = "";
+
+      document
+        .getElementById(
+          "inputPhone"
+        )
+        .value = "";
+
+      await loadAll();
+
+      showPage("overview");
+
+    }else{
+
+      showToast(
+        result.message
+      );
+
+    }
+
+  }catch(e){
+
+    showToast(
+      e.message
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   IMPORT EXCEL
+===================================================== */
+
+function processExcel(input){
+
+  const file =
+    input.files[0];
+
+  if(!file)
+    return;
+
+  const reader =
+    new FileReader();
+
+  reader.onload =
+    async function(e){
+
+      try{
+
+        const workbook =
+          XLSX.read(
+            e.target.result,
+            {
+              type:"array"
+            }
+          );
+
+        const sheet =
+          workbook
+            .Sheets[
+              workbook.SheetNames[0]
+            ];
+
+        const rows =
+          XLSX.utils.sheet_to_json(
+            sheet,
+            {
+              defval:""
+            }
+          );
+
+        if(!rows.length){
+
+          showToast(
+            "File tidak memiliki data"
+          );
+
+          return;
+
+        }
+
+        const preview =
+          document
+            .getElementById(
+              "importPreview"
+            );
+
+        preview.innerHTML = `
+
+          <div class="form-card">
+
+            <b>
+              Preview ${rows.length} data
+            </b>
+
+            <p style="color:#64748b;font-size:13px">
+              Sistem akan mencoba membaca kolom:
+              tanggal, sales, kategori, produk,
+              qty, nominal, customer, phone.
+            </p>
+
+            <button
+              class="btn btn-primary"
+              onclick="importRows()"
+            >
+              Import Data
+            </button>
+
+          </div>
+
+        `;
+
+        window.importData =
+          rows;
+
+      }catch(err){
+
+        showToast(
+          "Gagal membaca file: " +
+          err.message
+        );
+
+      }
+
+    };
+
+  reader.readAsArrayBuffer(
+    file
+  );
+
+}
+
+
+async function importRows(){
+
+  const rows =
+    window.importData || [];
+
+  if(!rows.length)
+    return;
+
+  let success = 0;
+
+  showToast(
+    "Import sedang berjalan..."
+  );
+
+  for(
+    const row of rows
+  ){
+
+    const normalized =
+      normalizeImportRow(
+        row
+      );
+
+    if(
+      !normalized.salesName ||
+      !normalized.amount
+    )
+      continue;
+
+    let sales =
+      salesList.find(
+        s =>
+          String(s.name)
+            .toLowerCase()
+          ===
+          String(
+            normalized.salesName
+          )
+            .toLowerCase()
+      );
+
+    if(!sales)
+      continue;
+
+    try{
+
+      const result =
+        await api({
+
+          action:
+            "saveTransaction",
+
+          date:
+            normalized.date,
+
+          salesId:
+            sales.id,
+
+          salesName:
+            sales.name,
+
+          category:
+            normalized.category,
+
+          subcategory:
+            normalized.subcategory,
+
+          product:
+            normalized.product,
+
+          qty:
+            normalized.qty,
+
+          amount:
+            normalized.amount,
+
+          customer:
+            normalized.customer,
+
+          phone:
+            normalized.phone
+
+        });
+
+      if(
+        result &&
+        result.success
+      ){
+
+        success++;
+
+      }
+
+    }catch(e){}
+
+  }
+
+  showToast(
+    success +
+    " transaksi berhasil diimport"
+  );
+
+  await loadAll();
+
+}
+
+
+function normalizeImportRow(row){
+
+  const get =
+    function(names){
+
+      for(
+        const name of names
+      ){
+
+        const key =
+          Object.keys(row)
+            .find(
+              k =>
+                String(k)
+                  .toLowerCase()
+                  .replace(/\s/g,"")
+                ===
+                String(name)
+                  .toLowerCase()
+                  .replace(/\s/g,"")
+            );
+
+        if(key)
+          return row[key];
+
+      }
+
+      return "";
+
+    };
+
+
+  let date =
+    get([
+      "tanggal",
+      "date",
+      "tgl"
+    ]);
+
+  if(
+    typeof date === "number"
+  ){
+
+    const excelDate =
+      XLSX.SSF.parse_date_code(
+        date
+      );
+
+    date =
+      excelDate.y +
+      "-" +
+      String(excelDate.m)
+        .padStart(2,"0") +
+      "-" +
+      String(excelDate.d)
+        .padStart(2,"0");
+
+  }else{
+
+    date =
+      normalizeDate(
+        date
+      );
+
+  }
+
+
+  let amount =
+    get([
+      "nominal",
+      "amount",
+      "sales",
+      "penjualan",
+      "value"
+    ]);
+
+  amount =
+    Number(
+      String(amount)
+        .replace(/[^\d.-]/g,"")
+    ) || 0;
+
+
+  return {
+
+    date:
+      date ||
+      getCurrentDate(),
+
+    salesName:
+      get([
+        "sales",
+        "salesname",
+        "nama",
+        "nama sales"
+      ]),
+
+    category:
+      get([
+        "kategori",
+        "category"
+      ]) ||
+      "Device",
+
+    subcategory:
+      get([
+        "subkategori",
+        "subcategory"
+      ]),
+
+    product:
+      get([
+        "produk",
+        "product",
+        "item"
+      ]),
+
+    qty:
+      Number(
+        get([
+          "qty",
+          "quantity",
+          "jumlah"
+        ]) || 1
+      ),
+
+    amount:
+      amount,
+
+    customer:
+      get([
+        "customer",
+        "customername",
+        "nama customer"
+      ]),
+
+    phone:
+      get([
+        "phone",
+        "nohp",
+        "no hp",
+        "nomor hp"
+      ])
+
+  };
+
+}
+
+
+/* =====================================================
+   HELPERS
+===================================================== */
+
+function setText(id,value){
+
+  const el =
+    document.getElementById(id);
+
+  if(el)
+    el.textContent =
+      value;
+
+}
+
+
+function setHtml(id,value){
+
+  const el =
+    document.getElementById(id);
+
+  if(el)
+    el.innerHTML =
+      value;
+
+}
+
+
+function money(value){
+  const n = Number(value || 0);
+
+  if (!Number.isFinite(n)) return "Rp 0";
+
+  const abs = Math.abs(n);
+  const sign = n < 0 ? "-" : "";
+
+  if (abs >= 1000000000) {
+    const v = n / 1000000000;
+    return "Rp " + sign + compactNumber_(v) + " M";
+  }
+
+  if (abs >= 1000000) {
+    const v = n / 1000000;
+    return "Rp " + sign + compactNumber_(v) + " jt";
+  }
+
+  if (abs >= 1000) {
+    const v = n / 1000;
+    return "Rp " + sign + compactNumber_(v) + " rb";
+  }
+
+  return "Rp " + n.toLocaleString("id-ID");
+}
+
+function compactNumber_(value){
+  const n = Number(value) || 0;
+  // Tampilkan sampai 2 angka desimal, tetapi hilangkan nol di belakang.
+  // Contoh: 1.000.000 -> 1 jt, 2.048.735 -> 2,05 jt.
+  return n.toLocaleString('id-ID', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2
+  });
+}
+
+
+// Formatter khusus DATA ERO (bukan Overview/Summary):
+// nominal dibulatkan ke angka terdekat, persen ke bilangan bulat.
+function eroMoney(value){
+  const n = Number(value || 0);
+  if (!Number.isFinite(n)) return "Rp 0";
+  const abs = Math.abs(n);
+  const sign = n < 0 ? "-" : "";
+  const fmt = v => Math.round(v).toLocaleString("id-ID");
+  if (abs >= 1000000000) return "Rp " + sign + fmt(abs / 1000000000) + " M";
+  if (abs >= 1000000) return "Rp " + sign + fmt(abs / 1000000) + " jt";
+  if (abs >= 1000) return "Rp " + sign + fmt(abs / 1000) + " rb";
+  return "Rp " + sign + Math.round(abs).toLocaleString("id-ID");
+}
+
+function eroPercent(value){
+  const n = Number(value || 0);
+  const cls = n >= 100 ? "percent-green" : n >= 90 ? "percent-orange" : "percent-red";
+  return '<span class="' + cls + '">' + Math.round(n) + "%</span>";
+}
+
+// Formatter khusus OVERVIEW: maksimal 1 angka desimal.
+// Menu lain tetap menggunakan money() yang sudah ada.
+function overviewMoney(value){
+  const n = Number(value || 0);
+  if (!Number.isFinite(n)) return "Rp 0";
+
+  const abs = Math.abs(n);
+  const sign = n < 0 ? "-" : "";
+  const fmt = v => Number(v).toLocaleString("id-ID", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 1
+  });
+
+  if (abs >= 1000000000) return "Rp " + sign + fmt(abs / 1000000000) + " M";
+  if (abs >= 1000000) return "Rp " + sign + fmt(abs / 1000000) + " jt";
+  if (abs >= 1000) return "Rp " + sign + fmt(abs / 1000) + " rb";
+  return "Rp " + sign + Math.round(abs).toLocaleString("id-ID");
+}
+
+
+function percent(value){
+
+  const n = Number(value || 0);
+  const cls = n >= 100
+    ? "percent-green"
+    : n >= 90
+      ? "percent-orange"
+      : "percent-red";
+
+  return '<span class="' + cls + '">' + n.toFixed(1) + "%</span>";
+
+}
+
+function shortfallClass_(shortfall,target){
+
+  const s = Number(shortfall || 0);
+  const t = Number(target || 0);
+
+  if(s <= 0 || t <= 0)
+    return "store-shortfall-green";
+
+  const gapPct = s / t * 100;
+
+  return gapPct <= 10
+    ? "store-shortfall-orange"
+    : "store-shortfall-red";
+
+}
+
+
+function formatMonth(period){
+
+  if(!period)
+    return "-";
+
+  const d =
+    new Date(
+      period + "-01T00:00:00"
+    );
+
+  return d.toLocaleDateString(
+    "id-ID",
+    {
+      month:"long",
+      year:"numeric"
+    }
+  );
+
+}
+
+
+function getCurrentDate(){
+
+  return new Date()
+    .toISOString()
+    .slice(0,10);
+
+}
+
+
+function normalizeDate(value){
+
+  if(!value)
+    return "";
+
+  const s =
+    String(value)
+      .trim();
+
+  if(
+    /^\d{4}-\d{2}-\d{2}$/.test(s)
+  )
+    return s;
+
+  let m =
+    s.match(
+      /^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})$/
+    );
+
+  if(m){
+
+    return m[3] +
+      "-" +
+      String(m[2])
+        .padStart(2,"0") +
+      "-" +
+      String(m[1])
+        .padStart(2,"0");
+
+  }
+
+  return "";
+
+}
+
+
+function escapeHtml(value){
+
+  return String(
+    value == null
+      ? ""
+      : value
+  )
+  .replace(/&/g,"&amp;")
+  .replace(/</g,"&lt;")
+  .replace(/>/g,"&gt;")
+  .replace(/"/g,"&quot;")
+  .replace(/'/g,"&#039;");
+
+}
+
+
+function escapeAttr(value){
+
+  return escapeHtml(value);
+
+}
+
+
+function showToast(message){
+
+  const toast =
+    document.getElementById(
+      "toast"
+    );
+
+  toast.textContent =
+    message;
+
+  toast.classList.add(
+    "show"
+  );
+
+  clearTimeout(
+    window.toastTimer
+  );
+
+  window.toastTimer =
+    setTimeout(
+      function(){
+
+        toast.classList.remove(
+          "show"
+        );
+
+      },
+      3000
+    );
+
+}
+
+</script>
+
+</body>
+</html>
