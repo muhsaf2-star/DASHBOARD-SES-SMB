@@ -1940,6 +1940,46 @@ html,body{
   }
 }
 
+
+/* V14 — Liquid capsule also applied to horizontal operator sub-cards */
+#page-overview .operator-sub-card{position:relative;overflow:hidden;}
+#page-overview .operator-sub-main{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0;}
+#page-overview .operator-sub-main>div:first-child{min-width:0;}
+#page-overview .operator-liquid-capsule{
+  position:relative;flex:0 0 38px;width:38px;height:82px;
+  border:2px solid #c7d8eb;border-radius:21px;
+  background:linear-gradient(180deg,#f8fbff 0%,#eef4fa 100%);
+  overflow:hidden;box-shadow:inset 0 1px 5px rgba(30,80,140,.10),0 2px 5px rgba(20,70,130,.06);
+}
+#page-overview .operator-liquid-capsule>span{
+  position:absolute;left:0;bottom:0;width:100%;height:0;min-height:0;
+  border-radius:19px 19px 16px 16px;transition:height .8s ease;
+  box-shadow:inset 0 4px 8px rgba(255,255,255,.28);
+}
+#page-overview .operator-liquid-capsule>span:before{
+  content:"";position:absolute;left:5px;right:5px;top:-3px;height:8px;border-radius:50%;background:rgba(255,255,255,.42);
+}
+#page-overview .operator-liquid-percent{
+  position:absolute!important;left:50%!important;top:50%!important;right:auto!important;bottom:auto!important;
+  transform:translate(-50%,-50%)!important;width:100%!important;margin:0!important;padding:0!important;
+  display:block!important;text-align:center!important;font-size:9px!important;line-height:1!important;
+  font-weight:900!important;color:#fff!important;text-shadow:0 1px 2px rgba(0,45,100,.6);
+  z-index:5;pointer-events:none;
+}
+#page-overview .operator-liquid-capsule.liquid-good>span{background:linear-gradient(180deg,#37d48a 0%,#16b96b 55%,#0c9b59 100%);}
+#page-overview .operator-liquid-capsule.liquid-warn>span{background:linear-gradient(180deg,#ffc24d 0%,#f39b20 55%,#db7f00 100%);}
+#page-overview .operator-liquid-capsule.liquid-bad>span{background:linear-gradient(180deg,#ff6876 0%,#f13b4c 55%,#d92b3b 100%);}
+/* Keep the main KPI percentage truly centered inside its capsule. */
+#page-overview .exec-kpi .kpi-liquid-percent{
+  position:absolute!important;left:50%!important;top:50%!important;right:auto!important;bottom:auto!important;
+  transform:translate(-50%,-50%)!important;width:100%!important;height:auto!important;inset:auto!important;
+  display:block!important;text-align:center!important;margin:0!important;padding:0!important;
+}
+@media(max-width:900px){
+  #page-overview .operator-liquid-capsule{flex-basis:32px;width:32px;height:72px;}
+  #page-overview .operator-liquid-percent{font-size:8px!important;}
+}
+
 </style>
 </head>
 
@@ -2164,9 +2204,9 @@ html,body{
 
         <div class="exec-grid grid-main">
           <div class="card exec-chart-card wide"><div class="exec-card-head"><span>⌁</span><div><b>Operator by Sub Kategori</b><small>Target • Pencapaian • Estimasi • Est % • Gap</small></div></div><div class="operator-sub-grid" id="overviewOperatorSubGrid">
-            <div class="operator-sub-card operator-indosat"><div class="operator-sub-head"><span>◉</span><div><b>Indosat</b><small>Operator</small></div></div><div class="operator-sub-value" id="overviewIndosatActual">Rp 0</div><div class="operator-sub-target">Target <b id="overviewIndosatTarget">Rp 0</b></div><div class="operator-sub-row"><span>Pencapaian</span><b id="overviewIndosatAch">0%</b></div><div class="operator-sub-row"><span>Estimasi</span><b id="overviewIndosatEst">Rp 0</b><em id="overviewIndosatEstPercent">0%</em></div><div class="operator-sub-row gap"><span>Gap</span><b id="overviewIndosatGap">Rp 0</b></div></div>
-            <div class="operator-sub-card operator-xl"><div class="operator-sub-head"><span>ⓧ</span><div><b>XL</b><small>Operator</small></div></div><div class="operator-sub-value" id="overviewXLActual">Rp 0</div><div class="operator-sub-target">Target <b id="overviewXLTarget">Rp 0</b></div><div class="operator-sub-row"><span>Pencapaian</span><b id="overviewXLAch">0%</b></div><div class="operator-sub-row"><span>Estimasi</span><b id="overviewXLEst">Rp 0</b><em id="overviewXLEstPercent">0%</em></div><div class="operator-sub-row gap"><span>Gap</span><b id="overviewXlGap">Rp 0</b></div></div>
-            <div class="operator-sub-card operator-telkomsel"><div class="operator-sub-head"><span>⌁</span><div><b>Telkomsel</b><small>Operator</small></div></div><div class="operator-sub-value" id="overviewTelkomselActual">Rp 0</div><div class="operator-sub-target">Target <b id="overviewTelkomselTarget">Rp 0</b></div><div class="operator-sub-row"><span>Pencapaian</span><b id="overviewTelkomselAch">0%</b></div><div class="operator-sub-row"><span>Estimasi</span><b id="overviewTelkomselEst">Rp 0</b><em id="overviewTelkomselEstPercent">0%</em></div><div class="operator-sub-row gap"><span>Gap</span><b id="overviewTelkomselGap">Rp 0</b></div></div>
+            <div class="operator-sub-card operator-indosat"><div class="operator-sub-head"><span>◉</span><div><b>Indosat</b><small>Operator</small></div></div><div class="operator-sub-main"><div><div class="operator-sub-value" id="overviewIndosatActual">Rp 0</div><div class="operator-sub-target">Target <b id="overviewIndosatTarget">Rp 0</b></div></div><div class="operator-liquid-capsule liquid-bad" id="overviewIndosatProgress"><span></span><b class="operator-liquid-percent" id="overviewIndosatAch">0%</b></div></div><div class="operator-sub-row"><span>Estimasi</span><b id="overviewIndosatEst">Rp 0</b><em id="overviewIndosatEstPercent">0%</em></div><div class="operator-sub-row gap"><span>Gap</span><b id="overviewIndosatGap">Rp 0</b></div></div>
+            <div class="operator-sub-card operator-xl"><div class="operator-sub-head"><span>ⓧ</span><div><b>XL</b><small>Operator</small></div></div><div class="operator-sub-main"><div><div class="operator-sub-value" id="overviewXLActual">Rp 0</div><div class="operator-sub-target">Target <b id="overviewXLTarget">Rp 0</b></div></div><div class="operator-liquid-capsule liquid-bad" id="overviewXLProgress"><span></span><b class="operator-liquid-percent" id="overviewXLAch">0%</b></div></div><div class="operator-sub-row"><span>Estimasi</span><b id="overviewXLEst">Rp 0</b><em id="overviewXLEstPercent">0%</em></div><div class="operator-sub-row gap"><span>Gap</span><b id="overviewXlGap">Rp 0</b></div></div>
+            <div class="operator-sub-card operator-telkomsel"><div class="operator-sub-head"><span>⌁</span><div><b>Telkomsel</b><small>Operator</small></div></div><div class="operator-sub-main"><div><div class="operator-sub-value" id="overviewTelkomselActual">Rp 0</div><div class="operator-sub-target">Target <b id="overviewTelkomselTarget">Rp 0</b></div></div><div class="operator-liquid-capsule liquid-bad" id="overviewTelkomselProgress"><span></span><b class="operator-liquid-percent" id="overviewTelkomselAch">0%</b></div></div><div class="operator-sub-row"><span>Estimasi</span><b id="overviewTelkomselEst">Rp 0</b><em id="overviewTelkomselEstPercent">0%</em></div><div class="operator-sub-row gap"><span>Gap</span><b id="overviewTelkomselGap">Rp 0</b></div></div>
           </div></div>
           <div class="card exec-chart-card"><div class="exec-card-head"><span>▥</span><div><b>Sales by Series</b><small>Device • Actual</small></div></div><div id="overviewSeriesChart" class="svg-chart"></div></div>
           <div class="card exec-chart-card"><div class="exec-card-head"><span>◔</span><div><b>Kontribusi Kategori</b><small>Nilai sales</small></div></div><div id="overviewContributionChart" class="donut-chart"></div></div>
@@ -3641,7 +3681,10 @@ function renderOverview(){
     const o=op[key]||{}; const target=Number(o.target||0); const actual=Number(o.actual||0); const est=Number(o.estimation||0);
     setText(prefix+'Actual',overviewMoney(actual));
     setText(prefix+'Target',overviewMoney(target));
-    setHtml(prefix+'Ach',percent(o.achievement!=null?Number(o.achievement):(target?actual/target*100:0)));
+    const ach = o.achievement!=null ? Number(o.achievement) : (target?actual/target*100:0);
+    setHtml(prefix+'Ach',percent(ach));
+    const progressId = prefix==='indosat' ? 'overviewIndosatProgress' : prefix==='xl' ? 'overviewXLProgress' : 'overviewTelkomselProgress';
+    setOperatorLiquidCapsule(progressId,ach);
     setText(prefix+'Est',overviewMoney(est));
     setHtml(prefix+'EstPercent',percent(o.estimationPercent!=null?Number(o.estimationPercent):(target?est/target*100:0)));
     setText(prefix+'Gap',overviewMoney(Math.max(target-actual,0)));
@@ -3652,6 +3695,16 @@ function renderOverview(){
 }
 
 
+
+function setOperatorLiquidCapsule(id,value){
+  const el=document.getElementById(id); if(!el)return;
+  const pct=Number(value||0), fill=Math.max(0,Math.min(pct,100));
+  const span=el.querySelector('span'); if(span)span.style.height=fill+"%";
+  el.classList.remove("liquid-good","liquid-warn","liquid-bad");
+  if(pct>=100)el.classList.add("liquid-good");
+  else if(pct>=90)el.classList.add("liquid-warn");
+  else el.classList.add("liquid-bad");
+}
 
 function setLiquidCapsule(id, value){
   const el=document.getElementById(id);
