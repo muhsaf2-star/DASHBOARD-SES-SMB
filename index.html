@@ -2000,6 +2000,84 @@ html,body{
   background:linear-gradient(180deg,#4be39a 0%,#16b96b 55%,#0c9b59 100%) !important;
 }
 
+
+/* V16 — card background fill follows ESTIMATION %, not achievement */
+#page-overview .exec-kpi,
+#page-overview .operator-sub-card{
+  position:relative;
+  overflow:hidden;
+  isolation:isolate;
+}
+
+/* Soft liquid layer inside the card */
+#page-overview .exec-kpi::after,
+#page-overview .operator-sub-card::after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  height:0%;
+  z-index:-1;
+  opacity:.20;
+  border-radius:45% 55% 0 0 / 18px 24px 0 0;
+  transition:height .9s ease, background .3s ease;
+  background:linear-gradient(180deg,#2f93ff,#087bea);
+}
+
+/* A second subtle wave gives the fill a liquid/background feel */
+#page-overview .exec-kpi::before,
+#page-overview .operator-sub-card::before{
+  content:"";
+  position:absolute;
+  left:-8%;
+  width:116%;
+  bottom:0;
+  height:0%;
+  z-index:-1;
+  opacity:.10;
+  border-radius:50% 50% 0 0;
+  transition:height .9s ease, background .3s ease;
+  background:#087bea;
+}
+
+/* Estimation bands */
+#page-overview .est-fill-bad::after,
+#page-overview .est-fill-bad::before{
+  background:linear-gradient(180deg,#ff6876,#f13b4c 55%,#d92b3b);
+}
+#page-overview .est-fill-warn::after,
+#page-overview .est-fill-warn::before{
+  background:linear-gradient(180deg,#ffb84d,#f28c18 55%,#db7100);
+}
+#page-overview .est-fill-yellow::after,
+#page-overview .est-fill-yellow::before{
+  background:linear-gradient(180deg,#ffe66b,#f8c928 55%,#e5aa00);
+}
+#page-overview .est-fill-good::after,
+#page-overview .est-fill-good::before{
+  background:linear-gradient(180deg,#4be39a,#16b96b 55%,#0c9b59);
+}
+
+/* Keep content above the fill */
+#page-overview .exec-kpi > *,
+#page-overview .operator-sub-card > *{
+  position:relative;
+  z-index:2;
+}
+
+/* Hide the old liquid capsules in V16 */
+#page-overview .exec-kpi .liquid-capsule,
+#page-overview .operator-liquid-capsule{
+  display:none !important;
+}
+
+/* Slightly stronger readability over filled background */
+#page-overview .exec-kpi.est-filled,
+#page-overview .operator-sub-card.est-filled{
+  border-color:rgba(8,123,234,.28);
+}
+
 </style>
 </head>
 
@@ -3642,6 +3720,7 @@ function renderOverview(){
   );
 
   setLiquidCapsule("overviewProgress", d.achievement);
+  setOverviewEstimationFills(d);
 
 
   renderCategory(
@@ -3705,6 +3784,8 @@ function renderOverview(){
     setHtml(prefix+'Ach',percent(ach));
     const progressId = prefix==='indosat' ? 'overviewIndosatProgress' : prefix==='xl' ? 'overviewXLProgress' : 'overviewTelkomselProgress';
     setOperatorLiquidCapsule(progressId,ach);
+    const opCard=document.getElementById(progressId)?.closest(".operator-sub-card");
+    if(opCard) setEstimationCardFill(opCard, o.estimation!=null ? Number(o.estimation) : (o.estPercent!=null ? Number(o.estPercent) : 0));
     setText(prefix+'Est',overviewMoney(est));
     setHtml(prefix+'EstPercent',percent(o.estimationPercent!=null?Number(o.estimationPercent):(target?est/target*100:0)));
     setText(prefix+'Gap',overviewMoney(Math.max(target-actual,0)));
@@ -3729,6 +3810,25 @@ function setOperatorLiquidCapsule(id,value){
   else el.classList.add("liquid-bad");
 }
 
+
+function setEstimationCardFill(el, estimation){
+  if(!el) return;
+  const pct=Number(estimation||0);
+  const fill=Math.max(0,Math.min(pct,100));
+  el.classList.remove("est-fill-bad","est-fill-warn","est-fill-yellow","est-fill-good","est-filled");
+  if(pct>=91) el.classList.add("est-fill-good");
+  else if(pct>=81) el.classList.add("est-fill-yellow");
+  else if(pct>=51) el.classList.add("est-fill-warn");
+  else el.classList.add("est-fill-bad");
+  el.classList.add("est-filled");
+  el.style.setProperty("--est-fill",fill+"%");
+  el.style.setProperty("--estimation-pct",pct+"%");
+  el.style.setProperty("--dummy",fill+"%");
+  el.style.setProperty("contain","paint");
+  el.style.setProperty("background-position","0 0");
+  // CSS custom property is applied to both pseudo-elements through inline stylesheet below.
+}
+
 function setLiquidCapsule(id, value){
   const el=document.getElementById(id);
   if(!el) return;
@@ -3742,6 +3842,23 @@ function setLiquidCapsule(id, value){
   else el.classList.add("liquid-bad");
 }
 
+
+
+function setOverviewEstimationFills(d){
+  const progressMap=[
+    ["overviewProgress","overview"],
+    ["deviceProgress","device"],
+    ["accProgress","acc"],
+    ["repairProgress","repair"],
+    ["operatorProgress","operator"]
+  ];
+  progressMap.forEach(([pid,prefix])=>{
+    const p=document.getElementById(pid);
+    if(!p) return;
+    const card=p.closest(".exec-kpi");
+    if(card) setEstimationCardFill(card, d[prefix]?.estimation ?? d[prefix]?.est ?? 0);
+  });
+}
 
 function renderCategory(category,prefix){
 
@@ -3785,6 +3902,8 @@ function renderCategory(category,prefix){
     overviewMoney(c.shortfall)
   );
   setLiquidCapsule(prefix+"Progress", c.achievement);
+  const card = document.getElementById(prefix+"Card") || document.getElementById(prefix+"Kpi") || document.querySelector('[data-kpi-prefix="'+prefix+'"]');
+  if(card) setEstimationCardFill(card, c.estimation);
 
 }
 
@@ -6350,6 +6469,18 @@ function showToast(message){
 }
 
 </script>
+
+
+<style id="estimationFillDynamic">
+#page-overview .exec-kpi.est-filled::after,
+#page-overview .operator-sub-card.est-filled::after{
+  height:var(--est-fill,0%);
+}
+#page-overview .exec-kpi.est-filled::before,
+#page-overview .operator-sub-card.est-filled::before{
+  height:calc(var(--est-fill,0%) + 8px);
+}
+</style>
 
 </body>
 </html>
