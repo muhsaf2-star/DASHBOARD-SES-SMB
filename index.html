@@ -1512,21 +1512,21 @@ html,body{
 @media (max-width:600px){
   /* Top ERO: RANK sangat kecil, ERO langsung menempel dan lebih lebar */
   #topPageTable{table-layout:fixed !important;}
-  #topPageTable th:nth-child(1), #topPageTable td:nth-child(1){width:5% !important; text-align:left;}
-  #topPageTable th:nth-child(2), #topPageTable td:nth-child(2){width:35% !important; text-align:left;}
+  #topPageTable th:nth-child(1), #topPageTable td:nth-child(1){width:6% !important; text-align:left;}
+  #topPageTable th:nth-child(2), #topPageTable td:nth-child(2){width:30% !important; text-align:left;}
   #topPageTable th:nth-child(n+3), #topPageTable td:nth-child(n+3){width:12% !important;}
 
   /* Summary priority: RANK dekat dengan ERO, nama ERO lebih lega */
   #summaryPriorityTable{table-layout:fixed !important;}
-  #summaryPriorityTable th:nth-child(1), #summaryPriorityTable td:nth-child(1){width:5% !important; text-align:left;}
-  #summaryPriorityTable th:nth-child(2), #summaryPriorityTable td:nth-child(2){width:30% !important; text-align:left;}
+  #summaryPriorityTable th:nth-child(1), #summaryPriorityTable td:nth-child(1){width:6% !important; text-align:left;}
+  #summaryPriorityTable th:nth-child(2), #summaryPriorityTable td:nth-child(2){width:27% !important; text-align:left;}
   #summaryPriorityTable th:nth-child(3), #summaryPriorityTable td:nth-child(3){width:17% !important; text-align:left;}
   #summaryPriorityTable th:nth-child(n+4), #summaryPriorityTable td:nth-child(n+4){width:12% !important;}
 
   /* Summary ERO terendah: kategori + ERO dibuat lebih dekat */
   #summaryLowestTable{table-layout:fixed !important;}
   #summaryLowestTable th:nth-child(1), #summaryLowestTable td:nth-child(1){width:12% !important; text-align:left;}
-  #summaryLowestTable th:nth-child(2), #summaryLowestTable td:nth-child(2){width:30% !important; text-align:left;}
+  #summaryLowestTable th:nth-child(2), #summaryLowestTable td:nth-child(2){width:27% !important; text-align:left;}
   #summaryLowestTable th:nth-child(n+3), #summaryLowestTable td:nth-child(n+3){width:11.6% !important;}
 
   /* Performa Sales: nama sales lebih lebar dan tidak terlalu jauh dari kolom kiri */
@@ -4391,17 +4391,21 @@ function renderSummary(){
     });
   });
 
-  const lowest=categories.map(cat=>
-    rows.filter(r=>r.category===cat).sort((a,b)=>a.estPct-b.estPct || a.ach-b.ach)[0]
-  ).filter(Boolean);
+  // Ambil 3 ERO terendah di setiap kategori berdasarkan EST%.
+  const lowestByCategory=categories.map(cat=>({
+    category:cat,
+    items:rows.filter(r=>r.category===cat)
+      .sort((a,b)=>a.estPct-b.estPct || a.ach-b.ach || b.shortfall-a.shortfall)
+      .slice(0,3)
+  })).filter(x=>x.items.length);
 
   const lowEl=document.getElementById('summaryLowestTable');
   if(lowEl){
-    lowEl.innerHTML=lowest.map(r=>`<tr>
-      <td><b>${escapeHtml(r.category)}</b></td><td><b>${escapeHtml(r.s.name||'-')}</b></td>
+    lowEl.innerHTML=lowestByCategory.flatMap(group=>group.items.map((r,idx)=>`<tr>
+      <td><b>${escapeHtml(group.category)}</b></td><td><b>${escapeHtml(r.s.name||'-')}</b></td>
       <td class="money">${eroMoney(r.target)}</td><td class="money">${eroMoney(r.actual)}</td><td>${eroPercent(r.ach)}</td>
       <td class="money">${eroMoney(r.est)}</td><td>${eroPercent(r.estPct)}</td><td class="money">${eroMoney(r.shortfall)}</td>
-    </tr>`).join('') || '<tr><td colspan="8">Belum ada data.</td></tr>';
+    </tr>`)).join('') || '<tr><td colspan="8">Belum ada data.</td></tr>';
   }
 
   const catTotals=categories.map(cat=>{
@@ -4433,11 +4437,19 @@ function renderSummary(){
   }
 
   const focus=priority[0];
+  const topPriorities=priority.slice(0,3);
   const kpi=document.getElementById('summaryKpis');
   if(kpi){
+    const priorityHtml=topPriorities.length
+      ? topPriorities.map((r,i)=>`<div style="display:flex;align-items:center;gap:6px;line-height:1.2;margin-top:${i?5:0}px">
+          <span style="font-size:11px;min-width:18px">#${i+1}</span>
+          <span style="font-size:14px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(r.s.name||'-')}</span>
+          <span style="font-size:10px;color:#64748b;margin-left:auto;white-space:nowrap">${escapeHtml(r.category)}</span>
+        </div>`).join('')
+      : '<div class="metric-value" style="font-size:16px">AMAN</div>';
     kpi.innerHTML=`<div class="card"><div class="metric-label">SISA HARI</div><div class="metric-value">${remaining}</div></div>
       <div class="card"><div class="metric-label">ERO PERLU DIKEJAR</div><div class="metric-value">${priority.length}</div></div>
-      <div class="card"><div class="metric-label">PRIORITAS UTAMA</div><div class="metric-value" style="font-size:16px">${focus?escapeHtml(focus.s.name):'AMAN'}</div></div>
+      <div class="card" style="overflow:hidden"><div class="metric-label">PRIORITAS UTAMA</div>${priorityHtml}</div>
       <div class="card"><div class="metric-label">KEJAR / HARI</div><div class="metric-value">${focus?money(focus.daily):'Rp 0'}</div></div>`;
   }
 }
