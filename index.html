@@ -260,6 +260,81 @@ button{
 .store-filter-row .select{
   min-width:150px;
 }
+
+/* ERO PERFORMANCE CHART */
+.store-ero-chart-card{
+  background:#fff;
+  border:1px solid #e7ebf2;
+  border-radius:10px;
+  padding:12px;
+  margin:12px 0;
+}
+.store-ero-chart-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:10px;
+}
+.store-ero-chart-title{
+  font-weight:800;
+  font-size:14px;
+  color:#17356f;
+}
+.store-ero-chart-sub{
+  font-size:10px;
+  color:#7a8495;
+  margin-top:2px;
+}
+.store-ero-bars{
+  display:grid;
+  gap:7px;
+}
+.store-ero-bar-row{
+  display:grid;
+  grid-template-columns:125px minmax(0,1fr) 58px;
+  align-items:center;
+  gap:8px;
+}
+.store-ero-bar-name{
+  font-size:11px;
+  font-weight:700;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.store-ero-track{
+  height:13px;
+  background:#edf2f8;
+  border-radius:999px;
+  overflow:hidden;
+}
+.store-ero-fill{
+  height:100%;
+  border-radius:999px;
+}
+.store-ero-fill.good{background:#18b56b;}
+.store-ero-fill.warn{background:#f5a623;}
+.store-ero-fill.low{background:#f23b4d;}
+.store-ero-pct{
+  font-size:11px;
+  font-weight:800;
+  text-align:right;
+}
+.store-ero-empty{
+  padding:16px 8px;
+  text-align:center;
+  color:#7a8495;
+  font-size:11px;
+}
+@media(max-width:700px){
+  .store-ero-chart-card{padding:10px;margin:10px 0;}
+  .store-ero-bar-row{grid-template-columns:82px minmax(0,1fr) 48px;gap:5px;}
+  .store-ero-bar-name{font-size:9px;}
+  .store-ero-track{height:10px;}
+  .store-ero-pct{font-size:9px;}
+}
+
 .store-kpis{
   display:grid;
   grid-template-columns:repeat(4,minmax(0,1fr));
@@ -2003,6 +2078,8 @@ html,body{
           <div class="store-kpi"><div class="label">ACHIEVEMENT</div><div class="value" id="storeAchKpi">0%</div></div>
           <div class="store-kpi"><div class="label">ESTIMASI H-1</div><div class="value" id="storeEstKpi">Rp0</div></div>
         </div>
+
+        <div id="storeEroChart"></div>
 
         <div class="store-week-title">Breakdown Target per Sales</div>
         <div class="page-subtitle" style="margin-bottom:8px">Setiap sales dapat melihat target, actual H-1, estimasi dan kekurangan per kategori.</div>
@@ -3945,7 +4022,62 @@ function renderStore(){
   setText("storeEstKpi",money(est));
 
   renderStoreSalesBreakdown_();
+  renderStoreEROChart_();
   renderStoreWeekly_(tx);
+}
+
+
+function renderStoreEROChart_(){
+  const box=document.getElementById('storeEroChart');
+  if(!box || !dashboardData) return;
+
+  const activeSales=(salesList||[]).filter(s=>String(s.status||'AKTIF').toUpperCase()!=='NONAKTIF');
+  const days=Number(dashboardData.daysPassed||0);
+  const dim=Number(dashboardData.daysInMonth||0);
+  const cat=document.getElementById('storeCategory')?.value||'ALL';
+  const type=document.getElementById('storeType')?.value||'ALL';
+
+  const rows=activeSales.map(s=>{
+    const target=getStoreSalesTarget_(s.id,cat);
+    const actual=getStoreSalesCategoryActual_(s.id,cat,type==='ALL'?'ALL':type);
+    const est=days>0?actual/days*dim:0;
+    const ach=target>0?actual/target*100:0;
+    const estPct=target>0?est/target*100:0;
+    return {name:s.name||'-', ach, estPct};
+  }).sort((a,b)=>b.estPct-a.estPct);
+
+  if(!rows.length){
+    box.innerHTML='<div class="store-ero-chart-card"><div class="store-ero-empty">Belum ada sales aktif.</div></div>';
+    return;
+  }
+
+  const max=Math.max(100,...rows.map(r=>r.estPct),1);
+  const label=cat==='Operator' && type!=='ALL'
+    ? `Estimasi % ERO • ${escapeHtml(type)}`
+    : `Estimasi % ERO • ${escapeHtml(cat==='ALL'?'Sales All':cat)}`;
+
+  box.innerHTML=`
+    <div class="store-ero-chart-card">
+      <div class="store-ero-chart-head">
+        <div>
+          <div class="store-ero-chart-title">Performance ERO — Estimasi %</div>
+          <div class="store-ero-chart-sub">${label} • berdasarkan H-1</div>
+        </div>
+        <div class="store-ero-chart-sub">Target 100%</div>
+      </div>
+      <div class="store-ero-bars">
+        ${rows.map(r=>{
+          const width=Math.min((Math.max(r.estPct,0)/max)*100,100);
+          const cls=r.estPct>=100?'good':(r.estPct>=90?'warn':'low');
+          return `
+            <div class="store-ero-bar-row">
+              <div class="store-ero-bar-name" title="${escapeHtml(r.name)}">${escapeHtml(r.name)}</div>
+              <div class="store-ero-track"><div class="store-ero-fill ${cls}" style="width:${width}%"></div></div>
+              <div class="store-ero-pct">${eroPercent(r.estPct)}</div>
+            </div>`;
+        }).join('')}
+      </div>
+    </div>`;
 }
 
 function getStoreSalesCategoryActual_(salesId, category, type){
