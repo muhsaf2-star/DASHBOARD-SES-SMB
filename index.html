@@ -1856,25 +1856,88 @@ html,body{
 }
 
 
-/* KPI progress / volume bar — lebih tebal & terlihat */
-#page-overview .progress,
-#page-overview .progress-bar,
-#page-overview .kpi-progress,
-#page-overview .kpi-progress-fill,
-#page-overview .bar-track{
-  min-height: 9px;
-  height: 9px;
-  border-radius: 999px;
+/* V13 — Vertical liquid capsule KPI */
+#page-overview .exec-kpi{
+  padding-right:78px;
+  overflow:hidden;
+}
+#page-overview .exec-kpi .liquid-capsule{
+  position:absolute;
+  right:13px;
+  top:45px;
+  width:38px;
+  height:92px;
+  margin:0;
+  padding:0;
+  border:2px solid #c7d8eb;
+  border-radius:22px;
+  background:linear-gradient(180deg,#f8fbff 0%,#eef4fa 100%);
+  overflow:hidden;
+  box-shadow:inset 0 1px 5px rgba(30,80,140,.10),0 2px 5px rgba(20,70,130,.06);
+  z-index:2;
+}
+#page-overview .exec-kpi .liquid-capsule > span{
+  position:absolute;
+  left:0;
+  bottom:0;
+  width:100%;
+  height:0;
+  min-height:0;
+  background:linear-gradient(180deg,#2f93ff 0%,#087bea 55%,#0566c9 100%);
+  border-radius:20px 20px 17px 17px;
+  transition:height .8s ease;
+  box-shadow:inset 0 4px 8px rgba(255,255,255,.28);
+}
+#page-overview .exec-kpi .liquid-capsule > span::before{
+  content:"";
+  position:absolute;
+  left:5px;
+  right:5px;
+  top:-3px;
+  height:8px;
+  border-radius:50%;
+  background:rgba(255,255,255,.42);
+}
+#page-overview .kpi-liquid-percent{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:3;
+  font-size:9px;
+  line-height:1;
+  font-weight:900;
+  color:#fff;
+  text-shadow:0 1px 2px rgba(0,45,100,.55);
+  pointer-events:none;
+}
+#page-overview .exec-kpi .kpi-percent{display:none}
+
+/* Achievement color states */
+#page-overview .liquid-capsule.liquid-good > span{
+  background:linear-gradient(180deg,#37d48a 0%,#16b96b 55%,#0c9b59 100%);
+}
+#page-overview .liquid-capsule.liquid-warn > span{
+  background:linear-gradient(180deg,#ffc24d 0%,#f39b20 55%,#db7f00 100%);
+}
+#page-overview .liquid-capsule.liquid-bad > span{
+  background:linear-gradient(180deg,#ff6876 0%,#f13b4c 55%,#d92b3b 100%);
 }
 
-#page-overview .progress > *,
-#page-overview .progress-bar > *,
-#page-overview .kpi-progress > *,
-#page-overview .kpi-progress-fill > *,
-#page-overview .bar-track > *{
-  min-height: 9px;
-  height: 9px;
-  border-radius: 999px;
+@media(max-width:900px){
+  #page-overview .exec-kpi{
+    padding-right:64px;
+  }
+  #page-overview .exec-kpi .liquid-capsule{
+    right:9px;
+    top:40px;
+    width:32px;
+    height:78px;
+  }
+  #page-overview .kpi-liquid-percent{
+    font-size:8px;
+  }
 }
 
 </style>
@@ -2092,11 +2155,11 @@ html,body{
         </div>
 
         <div class="exec-kpi-grid">
-          <div class="exec-kpi kpi-main"><div class="kpi-icon">▥</div><div class="kpi-label">SALES ALL</div><div class="kpi-value" id="overviewActual">Rp 0</div><div class="kpi-target">dari target <b id="overviewTarget">Rp 0</b></div><div class="kpi-progress"><span id="overviewProgress"></span></div><div class="kpi-percent" id="overviewAch">0%</div><div class="kpi-foot"><span>Estimasi</span><b id="overviewEst">Rp 0</b><em id="overviewEstPercent">0%</em></div><div class="kpi-foot danger"><span>Kekurangan</span><b id="overviewShort">Rp 0</b></div></div>
-          <div class="exec-kpi"><div class="kpi-icon">▣</div><div class="kpi-label">DEVICE</div><div class="kpi-value" id="deviceActual">Rp 0</div><div class="kpi-target">dari target <b id="deviceTarget">Rp 0</b></div><div class="kpi-progress"><span id="deviceProgress"></span></div><div class="kpi-percent" id="deviceAch">0%</div><div class="kpi-foot"><span>Estimasi</span><b id="deviceEst">Rp 0</b><em id="deviceEstPercent">0%</em></div><div class="kpi-foot danger"><span>Kekurangan</span><b id="deviceShort">Rp 0</b></div></div>
-          <div class="exec-kpi"><div class="kpi-icon">◉</div><div class="kpi-label">ACCESSORIES</div><div class="kpi-value" id="accActual">Rp 0</div><div class="kpi-target">dari target <b id="accTarget">Rp 0</b></div><div class="kpi-progress"><span id="accProgress"></span></div><div class="kpi-percent" id="accAch">0%</div><div class="kpi-foot"><span>Estimasi</span><b id="accEst">Rp 0</b><em id="accEstPercent">0%</em></div><div class="kpi-foot danger"><span>Kekurangan</span><b id="accShort">Rp 0</b></div></div>
-          <div class="exec-kpi"><div class="kpi-icon">◆</div><div class="kpi-label">SCP</div><div class="kpi-value" id="repairActual">Rp 0</div><div class="kpi-target">dari target <b id="repairTarget">Rp 0</b></div><div class="kpi-progress"><span id="repairProgress"></span></div><div class="kpi-percent" id="repairAch">0%</div><div class="kpi-foot"><span>Estimasi</span><b id="repairEst">Rp 0</b><em id="repairEstPercent">0%</em></div><div class="kpi-foot danger"><span>Kekurangan</span><b id="repairShort">Rp 0</b></div></div>
-          <div class="exec-kpi"><div class="kpi-icon">⌁</div><div class="kpi-label">OPERATOR</div><div class="kpi-value" id="operatorActual">Rp 0</div><div class="kpi-target">dari target <b id="operatorTarget">Rp 0</b></div><div class="kpi-progress"><span id="operatorProgress"></span></div><div class="kpi-percent" id="operatorAch">0%</div><div class="kpi-foot"><span>Estimasi</span><b id="operatorEst">Rp 0</b><em id="operatorEstPercent">0%</em></div><div class="kpi-foot danger"><span>Kekurangan</span><b id="operatorShort">Rp 0</b></div></div>
+          <div class="exec-kpi kpi-main"><div class="kpi-icon">▥</div><div class="kpi-label">SALES ALL</div><div class="kpi-value" id="overviewActual">Rp 0</div><div class="kpi-target">dari target <b id="overviewTarget">Rp 0</b></div><div class="kpi-progress liquid-capsule"><span id="overviewProgress"></span><b class="kpi-liquid-percent" id="overviewAch">0%</b></div><div class="kpi-foot"><span>Estimasi</span><b id="overviewEst">Rp 0</b><em id="overviewEstPercent">0%</em></div><div class="kpi-foot danger"><span>Kekurangan</span><b id="overviewShort">Rp 0</b></div></div>
+          <div class="exec-kpi"><div class="kpi-icon">▣</div><div class="kpi-label">DEVICE</div><div class="kpi-value" id="deviceActual">Rp 0</div><div class="kpi-target">dari target <b id="deviceTarget">Rp 0</b></div><div class="kpi-progress liquid-capsule"><span id="deviceProgress"></span><b class="kpi-liquid-percent" id="deviceAch">0%</b></div><div class="kpi-foot"><span>Estimasi</span><b id="deviceEst">Rp 0</b><em id="deviceEstPercent">0%</em></div><div class="kpi-foot danger"><span>Kekurangan</span><b id="deviceShort">Rp 0</b></div></div>
+          <div class="exec-kpi"><div class="kpi-icon">◉</div><div class="kpi-label">ACCESSORIES</div><div class="kpi-value" id="accActual">Rp 0</div><div class="kpi-target">dari target <b id="accTarget">Rp 0</b></div><div class="kpi-progress liquid-capsule"><span id="accProgress"></span><b class="kpi-liquid-percent" id="accAch">0%</b></div><div class="kpi-foot"><span>Estimasi</span><b id="accEst">Rp 0</b><em id="accEstPercent">0%</em></div><div class="kpi-foot danger"><span>Kekurangan</span><b id="accShort">Rp 0</b></div></div>
+          <div class="exec-kpi"><div class="kpi-icon">◆</div><div class="kpi-label">SCP</div><div class="kpi-value" id="repairActual">Rp 0</div><div class="kpi-target">dari target <b id="repairTarget">Rp 0</b></div><div class="kpi-progress liquid-capsule"><span id="repairProgress"></span><b class="kpi-liquid-percent" id="repairAch">0%</b></div><div class="kpi-foot"><span>Estimasi</span><b id="repairEst">Rp 0</b><em id="repairEstPercent">0%</em></div><div class="kpi-foot danger"><span>Kekurangan</span><b id="repairShort">Rp 0</b></div></div>
+          <div class="exec-kpi"><div class="kpi-icon">⌁</div><div class="kpi-label">OPERATOR</div><div class="kpi-value" id="operatorActual">Rp 0</div><div class="kpi-target">dari target <b id="operatorTarget">Rp 0</b></div><div class="kpi-progress liquid-capsule"><span id="operatorProgress"></span><b class="kpi-liquid-percent" id="operatorAch">0%</b></div><div class="kpi-foot"><span>Estimasi</span><b id="operatorEst">Rp 0</b><em id="operatorEstPercent">0%</em></div><div class="kpi-foot danger"><span>Kekurangan</span><b id="operatorShort">Rp 0</b></div></div>
         </div>
 
         <div class="exec-grid grid-main">
@@ -3518,15 +3581,7 @@ function renderOverview(){
     percent(d.achievement)
   );
 
-  document
-    .getElementById(
-      "overviewProgress"
-    )
-    .style.width =
-    Math.min(
-      Number(d.achievement || 0),
-      100
-    ) + "%";
+  setLiquidCapsule("overviewProgress", d.achievement);
 
 
   renderCategory(
@@ -3597,6 +3652,20 @@ function renderOverview(){
 }
 
 
+
+function setLiquidCapsule(id, value){
+  const el=document.getElementById(id);
+  if(!el) return;
+  const pct=Number(value||0);
+  const fill=Math.max(0,Math.min(pct,100));
+  el.style.height=fill+"%";
+  el.classList.remove("liquid-good","liquid-warn","liquid-bad");
+  if(pct>=100) el.classList.add("liquid-good");
+  else if(pct>=90) el.classList.add("liquid-warn");
+  else el.classList.add("liquid-bad");
+}
+
+
 function renderCategory(category,prefix){
 
   const c =
@@ -3638,8 +3707,7 @@ function renderCategory(category,prefix){
     prefix+"Short",
     overviewMoney(c.shortfall)
   );
-  const pb=document.getElementById(prefix+"Progress");
-  if(pb) pb.style.width=Math.min(Number(c.achievement||0),100)+"%";
+  setLiquidCapsule(prefix+"Progress", c.achievement);
 
 }
 
