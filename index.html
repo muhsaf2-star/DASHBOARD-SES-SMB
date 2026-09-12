@@ -703,6 +703,40 @@ tr:last-child td{
   outline:none;
 }
 
+
+/* ================= AR ALL OVERVIEW ================= */
+.ov2-ar-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:0 0 14px;}
+.ov2-ar-card{padding:12px 13px;position:relative;overflow:hidden;border-top:4px solid #087bea;}
+.ov2-ar-card.ar-acc{border-top-color:#087bea;}
+.ov2-ar-card.ar-scp{border-top-color:#16a66a;}
+.ov2-ar-card.ar-op{border-top-color:#d81b60;}
+.ov2-ar-head{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.ov2-ar-title{font-size:13px;font-weight:800;color:#0a2b55;}
+.ov2-ar-sub{font-size:9px;color:#718096;margin-top:2px;}
+.ov2-ar-target{font-size:9px;font-weight:800;padding:5px 8px;border-radius:8px;background:#eef6ff;color:#087bea;white-space:nowrap;}
+.ar-scp .ov2-ar-target{background:#ecfaf3;color:#148b58;}
+.ar-op .ov2-ar-target{background:#fff0f6;color:#d81b60;}
+.ov2-ar-main{display:flex;align-items:flex-end;justify-content:space-between;gap:8px;margin-top:8px;}
+.ov2-ar-value{font-size:25px;font-weight:900;line-height:1;color:#087bea;}
+.ar-scp .ov2-ar-value{color:#16a66a;}
+.ar-op .ov2-ar-value{color:#d81b60;}
+.ov2-ar-status{font-size:9px;font-weight:800;padding:4px 7px;border-radius:999px;background:#f1f5f9;color:#64748b;white-space:nowrap;}
+.ov2-ar-status.good{background:#eaf8f0;color:#138a52;}
+.ov2-ar-status.bad{background:#fff0f0;color:#d93025;}
+.ov2-ar-track{height:8px;background:#e8eef5;border-radius:999px;margin-top:9px;position:relative;overflow:visible;}
+.ov2-ar-fill{height:100%;border-radius:999px;width:0;transition:width .25s ease;}
+.ov2-ar-fill.good{background:#16a66a;}
+.ov2-ar-fill.bad{background:#ef4444;}
+.ov2-ar-marker{position:absolute;top:-4px;width:2px;height:16px;background:#1f2937;border-radius:2px;}
+.ov2-ar-detail{display:flex;justify-content:space-between;gap:8px;margin-top:6px;font-size:9px;color:#64748b;}
+.ov2-ar-detail b{color:#172033;}
+@media(max-width:700px){
+  .ov2-ar-grid{grid-template-columns:1fr;gap:7px;}
+  .ov2-ar-card{padding:10px 11px;}
+  .ov2-ar-value{font-size:22px;}
+  .ov2-ar-title{font-size:12px;}
+}
+
 /* ================= TOP ERO FILTER ================= */
 .top-ero-filter-wrap{margin:8px 0 10px;}
 .top-ero-filter{width:100%;height:30px;border:1px solid var(--border);border-radius:6px;background:#fff;padding:0 9px;font-size:11px;color:#172033;outline:none;}
@@ -1980,6 +2014,40 @@ html,body{
           </div>
           <div class="ov2-ring" id="overviewEstRing" style="--p:0%;">
             <div class="ov2-ring-content"><div class="ov2-ring-value" id="overviewEstPercent">0%</div><div class="ov2-ring-label">Estimasi</div></div>
+          </div>
+        </div>
+
+
+        <!-- AR ALL -->
+        <div class="ov2-ar-grid" id="overviewArAllGrid">
+          <div class="card ov2-ar-card ar-acc">
+            <div class="ov2-ar-head">
+              <div><div class="ov2-ar-title">🎧 AR ACC</div><div class="ov2-ar-sub">Qty ACC ÷ Qty Device</div></div>
+              <div class="ov2-ar-target">Target ≥ 200%</div>
+            </div>
+            <div class="ov2-ar-main"><div class="ov2-ar-value" id="overviewArAccValue">0%</div><div class="ov2-ar-status" id="overviewArAccStatus">Belum ada data</div></div>
+            <div class="ov2-ar-track"><div class="ov2-ar-fill" id="overviewArAccFill"></div><div class="ov2-ar-marker" style="left:66.67%"></div></div>
+            <div class="ov2-ar-detail"><span><b id="overviewArAccQty">0</b> QTY ACC</span><span><b id="overviewArDeviceQtyAcc">0</b> QTY Device</span></div>
+          </div>
+
+          <div class="card ov2-ar-card ar-scp">
+            <div class="ov2-ar-head">
+              <div><div class="ov2-ar-title">🛡️ AR SCP</div><div class="ov2-ar-sub">Qty SCP ÷ Qty Device</div></div>
+              <div class="ov2-ar-target">Target ≥ 40%</div>
+            </div>
+            <div class="ov2-ar-main"><div class="ov2-ar-value" id="overviewArScpValue">0%</div><div class="ov2-ar-status" id="overviewArScpStatus">Belum ada data</div></div>
+            <div class="ov2-ar-track"><div class="ov2-ar-fill" id="overviewArScpFill"></div><div class="ov2-ar-marker" style="left:66.67%"></div></div>
+            <div class="ov2-ar-detail"><span><b id="overviewArScpQty">0</b> QTY SCP</span><span><b id="overviewArDeviceQtyScp">0</b> QTY Device</span></div>
+          </div>
+
+          <div class="card ov2-ar-card ar-op">
+            <div class="ov2-ar-head">
+              <div><div class="ov2-ar-title">📡 AR OPERATOR</div><div class="ov2-ar-sub">Qty Operator ÷ Qty Device</div></div>
+              <div class="ov2-ar-target">Target &gt; 50%</div>
+            </div>
+            <div class="ov2-ar-main"><div class="ov2-ar-value" id="overviewArOpValue">0%</div><div class="ov2-ar-status" id="overviewArOpStatus">Belum ada data</div></div>
+            <div class="ov2-ar-track"><div class="ov2-ar-fill" id="overviewArOpFill"></div><div class="ov2-ar-marker" style="left:33.33%"></div></div>
+            <div class="ov2-ar-detail"><span><b id="overviewArOpQty">0</b> QTY Operator</span><span><b id="overviewArDeviceQtyOp">0</b> QTY Device</span></div>
           </div>
         </div>
 
@@ -3445,10 +3513,52 @@ function getOverviewStats_(){
   return stats;
 }
 
+
+function overviewARAll_(){
+  const tx=(dashboardData&&dashboardData.transactions)||[];
+  const qtyOf=function(rows){
+    return (rows||[]).reduce(function(sum,x){
+      const q=Number(x&&x.qty);
+      return sum+(Number.isFinite(q)?q:0);
+    },0);
+  };
+  const matchCat=function(x,name){
+    const raw=String(x&&x.category||'').trim().toLowerCase();
+    if(name==='Device') return raw==='device';
+    if(name==='Accessories') return raw==='accessories'||raw==='accessory'||raw==='acc';
+    if(name==='Repair Contract') return raw==='repair contract'||raw==='repaircontract'||raw==='rc';
+    if(name==='Operator') return raw==='operator'||raw==='op';
+    return false;
+  };
+  const deviceQty=qtyOf(tx.filter(function(x){return matchCat(x,'Device');}));
+  const accQty=qtyOf(tx.filter(function(x){return matchCat(x,'Accessories');}));
+  const scpQty=qtyOf(tx.filter(function(x){return matchCat(x,'Repair Contract');}));
+  const opQty=qtyOf(tx.filter(function(x){return matchCat(x,'Operator');}));
+  const calc=function(num,den){return den!==0?(num/den*100):0;};
+  const values={acc:calc(accQty,deviceQty),scp:calc(scpQty,deviceQty),op:calc(opQty,deviceQty)};
+  const configs=[
+    {key:'acc',valueId:'overviewArAccValue',fillId:'overviewArAccFill',statusId:'overviewArAccStatus',qtyId:'overviewArAccQty',devId:'overviewArDeviceQtyAcc',threshold:200,good:function(v){return v>=200;}},
+    {key:'scp',valueId:'overviewArScpValue',fillId:'overviewArScpFill',statusId:'overviewArScpStatus',qtyId:'overviewArScpQty',devId:'overviewArDeviceQtyScp',threshold:40,good:function(v){return v>=40;}},
+    {key:'op',valueId:'overviewArOpValue',fillId:'overviewArOpFill',statusId:'overviewArOpStatus',qtyId:'overviewArOpQty',devId:'overviewArDeviceQtyOp',threshold:50,good:function(v){return v>50;}}
+  ];
+  configs.forEach(function(c){
+    const v=values[c.key];
+    const good=c.good(v);
+    setText(c.valueId,Math.round(v)+'%');
+    setText(c.qtyId,Math.round(c.key==='acc'?accQty:c.key==='scp'?scpQty:opQty));
+    setText(c.devId,Math.round(deviceQty));
+    const st=document.getElementById(c.statusId);
+    if(st){st.className='ov2-ar-status '+(good?'good':'bad');st.textContent=deviceQty===0?'Belum ada data':(good?'✓ Target tercapai':'✕ Di bawah target');}
+    const fill=document.getElementById(c.fillId);
+    if(fill){fill.className='ov2-ar-fill '+(good?'good':'bad');fill.style.width=Math.min(Math.max(v/300*100,0),100)+'%';}
+  });
+}
+
 function renderOverview(){
   if(!dashboardData) return;
   const d=dashboardData;
   const stats=getOverviewStats_();
+  overviewARAll_();
   setText("overviewMonth", formatMonth(d.period || getCurrentPeriod()));
   const basisEl=document.getElementById("overviewValueBasis");
   if(basisEl) basisEl.value=overviewValueBasis;
