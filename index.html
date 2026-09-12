@@ -359,6 +359,8 @@ button{
 }
 .gap-up{font-weight:700;}
 .gap-down{font-weight:700;color:#d93025;}
+.wow-up{font-weight:700;color:#188038;}
+.wow-down{font-weight:700;color:#d93025;}
 @media(max-width:700px){
   .store-kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;}
   .store-kpi{padding:8px 9px;}
@@ -2274,6 +2276,23 @@ html,body{
         </div>
 
         <div class="table-card outlook-card">
+          <div class="outlook-section-title">2 WEEK TERAKHIR — BY DAY</div>
+          <div class="page-subtitle" style="margin:0 0 8px">Perbandingan hari yang sama: Senin W35 vs Senin W36, Selasa W35 vs Selasa W36, dan seterusnya.</div>
+          <table>
+            <thead>
+              <tr>
+                <th>HARI</th>
+                <th id="outDayW1">W-1</th>
+                <th id="outDayW2">W-2</th>
+                <th>WOW</th>
+                <th>GAP</th>
+              </tr>
+            </thead>
+            <tbody id="outlookDayTable"></tbody>
+          </table>
+        </div>
+
+        <div class="table-card outlook-card">
           <div class="outlook-section-title">CONTRIBUTION BY SERIES — DEVICE</div>
           <table>
             <thead>
@@ -3941,13 +3960,62 @@ function renderOutlook(){
         <td class="money">${outlookMoney_(r.vals[0])}</td>
         <td class="money">${outlookMoney_(r.vals[1])}</td>
         <td class="money">${outlookMoney_(r.vals[2])}</td>
-        <td>${r.wow===null?"—":outlookPercent_(r.wow)}</td>
+        <td class="${r.wow===null?'':(r.wow>=0?'wow-up':'wow-down')}">${r.wow===null?"—":outlookPercent_(r.wow)}</td>
         <td class="${r.gap>=0?'gap-up':'gap-down'}">${outlookMoney_(r.gap)}</td>
       </tr>`;
     }).join("");
   }
 
   /* DEVICE SERIES: CONTRIBUTION + WOW */
+  /* 2 WEEK TERAKHIR — BY DAY */
+  const dayNames=["Senin","Selasa","Rabu","Kamis","Jumat","Sabtu","Minggu"];
+  const lastTwoWeeks=weeks.slice(-2);
+  if(lastTwoWeeks.length>=2){
+    setText("outDayW1",outlookWeekLabel_(lastTwoWeeks[0]));
+    setText("outDayW2",outlookWeekLabel_(lastTwoWeeks[1]));
+  }
+
+  function parseOutlookDate_(v){
+    if(!v) return null;
+    const raw=String(v).slice(0,10);
+    let d=new Date(raw+"T00:00:00");
+    if(isNaN(d.getTime())){ d=new Date(v); }
+    return isNaN(d.getTime())?null:d;
+  }
+
+  function dayIndexOutlook_(v){
+    const d=parseOutlookDate_(v);
+    if(!d) return -1;
+    return (d.getDay()+6)%7;
+  }
+
+  const dayRows=dayNames.map(function(day,idx){
+    const vals=lastTwoWeeks.map(function(w){
+      return sumRows((w.transactions||[]).filter(function(x){
+        return dayIndexOutlook_(x.date || x.tanggal || x.trxDate || x.transactionDate)===idx;
+      }));
+    });
+    while(vals.length<2) vals.unshift(0);
+    const prev=Number(vals[0]||0), curr=Number(vals[1]||0);
+    return {name:day,prev:prev,curr:curr,wow:prev!==0?(curr-prev)/prev*100:null,gap:curr-prev};
+  });
+
+  const dayEl=document.getElementById("outlookDayTable");
+  if(dayEl){
+    dayEl.innerHTML=dayRows.map(function(r){
+      const wowClass=r.wow===null?"":(r.wow>=0?"wow-up":"wow-down");
+      const gapClass=r.gap>=0?"gap-up":"gap-down";
+      return `<tr>
+        <td><b>${escapeHtml(r.name)}</b></td>
+        <td class="money">${outlookMoney_(r.prev)}</td>
+        <td class="money">${outlookMoney_(r.curr)}</td>
+        <td class="${wowClass}">${r.wow===null?"—":outlookPercent_(r.wow)}</td>
+        <td class="${gapClass}">${outlookMoney_(r.gap)}</td>
+      </tr>`;
+    }).join("");
+  }
+
+  /* DEVICE SERIES */
   const seriesNames=["Series A","Series S","Series Z","Series Tab"];
   const seriesRows=seriesNames.map(function(series){
     const vals=weeks.map(function(w){
@@ -3981,7 +4049,7 @@ function renderOutlook(){
         <td class="money">${outlookMoney_(r.vals[0])}</td>
         <td class="money">${outlookMoney_(r.vals[1])}</td>
         <td class="money">${outlookMoney_(r.vals[2])}</td>
-        <td>${r.wow===null?"—":outlookPercent_(r.wow)}</td>
+        <td class="${r.wow===null?'':(r.wow>=0?'wow-up':'wow-down')}">${r.wow===null?"—":outlookPercent_(r.wow)}</td>
         <td class="${r.gap>=0?'gap-up':'gap-down'}">${outlookMoney_(r.gap)}</td>
       </tr>`;
     }).join("");
@@ -4010,7 +4078,7 @@ function renderOutlook(){
         <td class="money">${outlookMoney_(r.vals[0])}</td>
         <td class="money">${outlookMoney_(r.vals[1])}</td>
         <td class="money">${outlookMoney_(r.vals[2])}</td>
-        <td>${r.wow===null?"—":outlookPercent_(r.wow)}</td>
+        <td class="${r.wow===null?'':(r.wow>=0?'wow-up':'wow-down')}">${r.wow===null?"—":outlookPercent_(r.wow)}</td>
         <td class="${r.gap>=0?'gap-up':'gap-down'}">${outlookMoney_(r.gap)}</td>
       </tr>`;
     }).join("");
