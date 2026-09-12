@@ -3019,11 +3019,22 @@ function getCurrentPeriod(){
 }
 
 
-function setPeriodMode(mode,button){
+let overviewFilterBusy = false;
 
+function setOverviewFilterBusy_(busy){
+  overviewFilterBusy = !!busy;
+  document.querySelectorAll(".ov2-period .filter-btn").forEach(function(btn){
+    btn.disabled = overviewFilterBusy;
+    btn.style.opacity = overviewFilterBusy ? ".65" : "";
+    btn.style.pointerEvents = overviewFilterBusy ? "none" : "";
+  });
+}
+
+function setPeriodMode(mode,button){
+  if(overviewFilterBusy) return;
   periodMode = mode;
 
-  document.querySelectorAll(".filters .filter-btn").forEach(function(x){
+  document.querySelectorAll(".ov2-period .filter-btn").forEach(function(x){
     x.classList.remove("active");
   });
 
@@ -3040,9 +3051,10 @@ function setPeriodMode(mode,button){
 }
 
 async function reloadDashboardPeriod_(){
+  setOverviewFilterBusy_(true);
   try{
     const result = await api({
-      action:"dashboard",
+      action:"overview",
       period:getCurrentPeriod(),
       periodMode:periodMode,
       startDate:customStartDate,
@@ -3052,16 +3064,13 @@ async function reloadDashboardPeriod_(){
     if(result && result.success){
       dashboardData = result.data || null;
       renderOverview();
-      renderStore();
-      renderSalesPerformance();
-      renderOutlook();
-      if(typeof renderSummary === "function") renderSummary();
-      if(typeof renderTargets === "function") renderTargets();
     }else{
       showToast((result && result.message) || "Gagal memuat filter");
     }
   }catch(e){
     showToast("Gagal memuat filter: " + e.message);
+  }finally{
+    setTimeout(function(){ setOverviewFilterBusy_(false); }, 50);
   }
 }
 
