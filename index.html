@@ -1637,35 +1637,85 @@ html,body{
 }
 
 /* =====================================================
-   V17 MOBILE FIX: RANKING CARDS STACK VERTICALLY
-   Top 10 Produk / Top 10 Brand should be full-width on HP.
-   Desktop remains two-column when the matching grid exists.
+   OVERVIEW V2 — MINIMAL / CLEAN / RESPONSIVE
+   Scoped ONLY to #page-overview
 ===================================================== */
-@media (max-width:600px){
-  /* Common ranking grid/container selectors used by ranking sections. */
-  .top10-grid,
-  .top-product-brand-grid,
-  .product-brand-grid,
-  .top-ranking-grid,
-  .ranking-grid,
-  .top10-wrap{
+#page-overview.overview-v2{max-width:100%;}
+#page-overview .ov2-period{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+#page-overview .ov2-period-label{font-size:12px;font-weight:700;color:#123b86;display:flex;align-items:center;gap:6px;margin-right:2px}
+#page-overview .ov2-period .filter-btn{font-size:11px;padding:7px 11px;border-radius:9px}
+#page-overview .ov2-custom{display:none;align-items:end;gap:8px;padding:10px 12px;background:#f7faff;border:1px solid #dbe8fb;border-radius:12px;margin-bottom:12px}
+#page-overview .ov2-custom label{font-size:10px;color:#62708a;display:block;margin-bottom:3px}
+#page-overview .ov2-custom input{height:32px;border:1px solid #cfdced;border-radius:8px;padding:0 8px;background:#fff;color:#172033}
+#page-overview .ov2-custom .btn{height:32px;font-size:11px;padding:0 14px}
+#page-overview .ov2-salesall{display:grid;grid-template-columns:1.25fr .75fr .75fr;align-items:center;gap:16px;padding:18px 22px;margin-bottom:12px;border:1px solid #e1ebf7;box-shadow:0 4px 18px rgba(20,65,130,.06)}
+#page-overview .ov2-kicker{font-size:11px;font-weight:700;letter-spacing:.08em;color:#4770a8;text-transform:uppercase;margin-bottom:5px}
+#page-overview .ov2-sales-title{font-size:23px;font-weight:800;color:#0b2f76;display:flex;align-items:center;gap:8px}
+#page-overview .ov2-target{font-size:14px;color:#52617a;margin-top:7px}.ov2-target b{color:#0b2f76}
+#page-overview .ov2-ring{width:108px;height:108px;border-radius:50%;margin:auto;display:grid;place-items:center;position:relative;background:conic-gradient(#087bea var(--p),#e9eef5 0)}
+#page-overview .ov2-ring::after{content:"";position:absolute;inset:9px;background:#fff;border-radius:50%}
+#page-overview .ov2-ring-content{position:relative;z-index:1;text-align:center}.ov2-ring-value{font-size:22px;font-weight:800;color:#092f7a;line-height:1}.ov2-ring-label{font-size:10px;color:#69768c;margin-top:5px}
+#page-overview .ov2-section{margin-bottom:12px}
+#page-overview .ov2-section-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+#page-overview .ov2-section-title{font-size:15px;font-weight:800;color:#102f70;display:flex;align-items:center;gap:7px}
+#page-overview .ov2-section-sub{font-size:10px;color:#748198}
+#page-overview .ov2-cat-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+#page-overview .ov2-cat-card{padding:14px 10px 11px;text-align:center;border:1px solid #e2eaf5;box-shadow:0 3px 12px rgba(20,65,130,.045);min-width:0}
+#page-overview .ov2-cat-name{font-size:12px;font-weight:800;color:#183b80;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#page-overview .ov2-cat-icon{font-size:17px;margin-bottom:3px}
+#page-overview .ov2-mini-ring{width:76px;height:76px;margin:9px auto 7px;border-radius:50%;display:grid;place-items:center;position:relative;background:conic-gradient(var(--ring,#087bea) var(--p),#edf1f6 0)}
+#page-overview .ov2-mini-ring::after{content:"";position:absolute;inset:7px;background:#fff;border-radius:50%}.ov2-mini-ring-content{position:relative;z-index:1}.ov2-mini-ring-value{font-size:16px;font-weight:800;color:#0a347d}.ov2-mini-ring-label{font-size:8px;color:#6c7890;margin-top:2px}
+#page-overview .ov2-cat-meta{display:grid;grid-template-columns:1fr 1fr;gap:5px;border-top:1px solid #edf1f6;padding-top:7px}
+#page-overview .ov2-meta-label{font-size:8px;color:#7a879b}.ov2-meta-value{font-size:11px;font-weight:800;color:#163c84;margin-top:2px}
+#page-overview .ov2-cat-target{font-size:10px;color:#64738b;margin-top:7px}.ov2-cat-target b{color:#153d84}
+#page-overview .ov2-op-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+#page-overview .ov2-op-card{padding:12px 14px;border:1px solid #e2eaf5;box-shadow:0 3px 12px rgba(20,65,130,.04)}
+#page-overview .ov2-op-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}.ov2-op-name{font-weight:800;color:#153b7e;font-size:12px}.ov2-op-target{font-size:9px;color:#718097}.ov2-op-target b{color:#163d84}
+#page-overview .ov2-op-bars{display:grid;grid-template-columns:1fr 1fr;gap:10px}.ov2-bar-label{display:flex;justify-content:space-between;font-size:9px;color:#65748c;margin-bottom:4px}.ov2-bar-label b{color:#173f86}.ov2-bar{height:9px;background:#edf1f6;border-radius:999px;overflow:hidden}.ov2-bar-fill{height:100%;border-radius:999px;background:#087bea}.ov2-bar-fill.est{background:#63aaf5}
+#page-overview .ov2-top-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+#page-overview .ov2-top-card{padding:13px 14px;border:1px solid #e2eaf5;box-shadow:0 3px 12px rgba(20,65,130,.04)}
+#page-overview .ov2-section-head>div{min-width:0}
+#page-overview .ov2-control{height:28px;padding:0 9px;border:1px solid #d5e0ef;background:#fff;border-radius:8px;color:#173b7c;font-size:10px;font-weight:700;outline:none}
+#page-overview .ov2-ranking{display:flex;flex-direction:column;gap:7px}.ov2-rank-row{display:grid;grid-template-columns:22px 1fr 90px 65px;align-items:center;gap:7px}.ov2-rank-num{font-size:10px;font-weight:800;color:#71809a}.ov2-rank-name{font-size:10px;color:#203c70;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ov2-rank-track{height:9px;background:#edf2f7;border-radius:99px;overflow:hidden}.ov2-rank-fill{height:100%;background:#087bea;border-radius:99px}.ov2-rank-value{font-size:10px;font-weight:800;text-align:right;color:#153d84}.ov2-empty{font-size:10px;color:#8995a8;padding:10px 0}
+@media(max-width:900px){
+  #page-overview .ov2-salesall{grid-template-columns:1fr 1fr 1fr;padding:14px 12px;gap:8px}
+  #page-overview .ov2-sales-title{font-size:18px}.ov2-target{font-size:11px!important}.ov2-ring{width:78px!important;height:78px!important}.ov2-ring::after{inset:7px!important}.ov2-ring-value{font-size:16px}.ov2-ring-label{font-size:8px}
+  #page-overview .ov2-cat-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.ov2-cat-card{padding:10px 7px 9px!important}.ov2-mini-ring{width:62px!important;height:62px!important}.ov2-mini-ring::after{inset:6px!important}.ov2-mini-ring-value{font-size:14px}
+  #page-overview .ov2-op-grid{grid-template-columns:1fr;gap:7px}.ov2-op-card{padding:10px!important}.ov2-top-grid{grid-template-columns:1fr;gap:8px}.ov2-rank-row{grid-template-columns:20px 1fr 70px 45px;gap:5px}.ov2-rank-name,.ov2-rank-value{font-size:9px}.ov2-rank-track{height:8px}
+  #page-overview .ov2-period{gap:5px}.ov2-period .filter-btn{padding:6px 8px!important;font-size:10px!important}
+}
+@media(max-width:480px){
+  #page-overview .ov2-salesall{grid-template-columns:1.25fr .75fr .75fr}.ov2-sales-title{font-size:16px!important}.ov2-kicker{font-size:9px}.ov2-target{font-size:10px!important}.ov2-ring{width:68px!important;height:68px!important}.ov2-ring-value{font-size:14px}
+  #page-overview .ov2-cat-name{font-size:10px}.ov2-mini-ring{width:56px!important;height:56px!important}.ov2-mini-ring-value{font-size:12px}.ov2-mini-ring-label{font-size:7px}.ov2-meta-value{font-size:9px}.ov2-cat-target{font-size:8px}
+  #page-overview .ov2-section-title{font-size:13px}.ov2-section-sub{font-size:8px}.ov2-control{height:26px;font-size:9px}.ov2-rank-row{grid-template-columns:18px 1fr 60px 40px}.ov2-rank-name,.ov2-rank-value{font-size:8px}
+}
+
+
+/* V19 SAFE MOBILE FIX — only Top 10 cards, desktop unchanged */
+@media (max-width: 900px){
+  #page-overview .ov2-top-grid{
     display:grid !important;
-    grid-template-columns:1fr !important;
+    grid-template-columns:minmax(0,1fr) !important;
     width:100% !important;
     gap:10px !important;
   }
-
-  .top10-grid > .card,
-  .top-product-brand-grid > .card,
-  .product-brand-grid > .card,
-  .top-ranking-grid > .card,
-  .ranking-grid > .card,
-  .top10-wrap > .card{
+  #page-overview .ov2-top-grid > .ov2-top-card{
+    display:block !important;
     width:100% !important;
     min-width:0 !important;
   }
 }
 
+@media (max-width: 600px){
+  #page-overview .ov2-top-grid{
+    grid-template-columns:1fr !important;
+    gap:10px !important;
+  }
+  #page-overview .ov2-top-grid > .ov2-top-card{
+    width:100% !important;
+    min-width:0 !important;
+  }
+}
 </style>
 </head>
 
@@ -1848,518 +1898,102 @@ html,body{
 
       <!-- ================= OVERVIEW ================= -->
 
-      <div id="page-overview" class="page">
+      <div id="page-overview" class="page overview-v2">
 
         <div class="page-head">
-
           <div>
-            <h1 class="page-title">
-              Overview
-            </h1>
-
-            <div class="page-subtitle">
-              Ringkasan performa toko
-            </div>
+            <h1 class="page-title">Overview</h1>
+            <div class="page-subtitle">Ringkasan performa SES SMB • data H-1</div>
           </div>
-
-          <div class="month-badge">
-            📅 <span id="overviewMonth"></span>
-          </div>
-
+          <div class="month-badge">📅 <span id="overviewMonth"></span></div>
         </div>
 
-
-
-        <div class="ero-motto">
-          <div class="ero-motto-title">🔥 HAI KALIAN SEMUA ERO SMB!</div>
-          <div class="ero-motto-text" id="eroMottoText">Jualan yang semangat ya! 💪🔥</div>
+        <div class="ov2-period">
+          <div class="ov2-period-label">📅 Periode</div>
+          <button class="filter-btn" onclick="setPeriodMode('lastweek',this)">Minggu Lalu</button>
+          <button class="filter-btn" onclick="setPeriodMode('week',this)">Minggu Ini</button>
+          <button class="filter-btn active" onclick="setPeriodMode('month',this)">Bulan Ini</button>
+          <button class="filter-btn" onclick="setPeriodMode('year',this)">Tahun Ini</button>
+          <button class="filter-btn" onclick="setPeriodMode('custom',this)">Custom</button>
         </div>
 
-        <div class="filters">
-
-          <button
-            class="filter-btn"
-            onclick="setPeriodMode('lastweek',this)"
-          >
-            Minggu Lalu
-          </button>
-
-          <button
-            class="filter-btn"
-            onclick="setPeriodMode('week',this)"
-          >
-            Minggu Ini
-          </button>
-
-          <button
-            class="filter-btn active"
-            onclick="setPeriodMode('month',this)"
-          >
-            Bulan Ini
-          </button>
-
-          <button
-            class="filter-btn"
-            onclick="setPeriodMode('year',this)"
-          >
-            Tahun Ini
-          </button>
-
-          <button
-            class="filter-btn"
-            onclick="setPeriodMode('custom',this)"
-          >
-            Custom
-          </button>
-
-        </div>
-
-        <div id="customPeriodBox" class="custom-period-box" style="display:none">
-          <div>
-            <label>Tanggal Mulai</label>
-            <input type="date" id="customStartDate">
-          </div>
-          <div>
-            <label>Tanggal Akhir</label>
-            <input type="date" id="customEndDate">
-          </div>
+        <div id="customPeriodBox" class="ov2-custom">
+          <div><label>Tanggal Mulai</label><input type="date" id="customStartDate"></div>
+          <div><label>Tanggal Akhir</label><input type="date" id="customEndDate"></div>
           <button class="btn primary" onclick="applyCustomPeriod()">Terapkan</button>
         </div>
 
-
-        <div class="card overview-main">
-
-          <div class="card-title">
-            ↗ &nbsp; SALES ALL
-
-            <span
-              id="overviewAch"
-              style="float:right;background:#ffe1e3;color:#ff3344;padding:6px 10px;border-radius:15px;font-size:12px"
-            >
-              0.0%
-            </span>
+        <!-- SALES ALL — fokus utama -->
+        <div class="card ov2-salesall">
+          <div>
+            <div class="ov2-kicker">Performance Overview</div>
+            <div class="ov2-sales-title">📊 SALES ALL</div>
+            <div class="ov2-target">Target <b id="overviewTarget">Rp 0</b></div>
           </div>
-
-
-          <div class="metrics">
-
-            <div>
-              <div class="metric-label">
-                Actual
-              </div>
-
-              <div
-                class="metric-value blue"
-                id="overviewActual"
-              >
-                Rp 0
-              </div>
-            </div>
-
-            <div>
-              <div class="metric-label">
-                Target
-              </div>
-
-              <div
-                class="metric-value"
-                id="overviewTarget"
-              >
-                Rp 0
-              </div>
-            </div>
-
-            <div>
-              <div class="metric-label">
-                Estimasi
-              </div>
-
-              <div
-                class="metric-value red"
-                id="overviewEst"
-              >
-                Rp 0
-              </div>
-
-              <div
-                id="overviewEstPercent"
-                style="font-size:12px;color:#ff3344"
-              >
-                0.0%
-              </div>
-            </div>
-
-            <div>
-              <div class="metric-label">
-                Kekurangan
-              </div>
-
-              <div
-                class="metric-value"
-                id="overviewShort"
-              >
-                Rp 0
-              </div>
-            </div>
-
+          <div class="ov2-ring" id="overviewAchRing" style="--p:0%;">
+            <div class="ov2-ring-content"><div class="ov2-ring-value" id="overviewAch">0%</div><div class="ov2-ring-label">Achievement</div></div>
           </div>
-
-
-          <div class="progress">
-
-            <div
-              id="overviewProgress"
-              class="progress-bar"
-              style="width:0%"
-            ></div>
-
+          <div class="ov2-ring" id="overviewEstRing" style="--p:0%;">
+            <div class="ov2-ring-content"><div class="ov2-ring-value" id="overviewEstPercent">0%</div><div class="ov2-ring-label">Estimasi</div></div>
           </div>
-
         </div>
 
-
-        <div class="category-grid">
-
-          <div class="card category-card">
-
-            <div class="category-name">
-              DEVICE
-            </div>
-
-            <div class="two-col">
-
-              <div>
-                <div class="metric-label">Actual</div>
-                <div class="metric-value" id="deviceActual">
-                  Rp 0
-                </div>
-              </div>
-
-              <div>
-                <div class="metric-label">Target</div>
-                <div class="metric-value" id="deviceTarget">
-                  Rp 0
-                </div>
-              </div>
-
-            </div>
-
-            <br>
-
-            <div class="two-col">
-
-              <div>
-                <div class="metric-label">Achievement</div>
-                <div class="metric-value red" id="deviceAch">
-                  0.0%
-                </div>
-              </div>
-
-              <div>
-                <div class="metric-label">Estimasi</div>
-                <div class="metric-value" id="deviceEst">
-                  Rp 0
-                </div>
-                <div class="est-percent" id="deviceEstPercent">0.0%</div>
-              </div>
-
-            </div>
-
-            <hr>
-
-            <div class="metric-label">
-              Kekurangan
-            </div>
-
-            <div
-              class="metric-value red"
-              id="deviceShort"
-            >
-              Rp 0
-            </div>
-
+        <!-- KATEGORI -->
+        <div class="ov2-section">
+          <div class="ov2-section-head">
+            <div><div class="ov2-section-title">📦 Pencapaian per Kategori</div><div class="ov2-section-sub">Target • Achievement • Estimasi</div></div>
           </div>
-
-
-          <div class="card category-card">
-
-            <div class="category-name">
-              ACCESSORIES
+          <div class="ov2-cat-grid">
+            <div class="card ov2-cat-card" data-overview-cat="Device">
+              <div class="ov2-cat-icon">📱</div><div class="ov2-cat-name">Device</div>
+              <div class="ov2-mini-ring" id="ov2DeviceAchRing" style="--p:0%;--ring:#087bea"><div class="ov2-mini-ring-content"><div class="ov2-mini-ring-value" id="deviceAch">0%</div><div class="ov2-mini-ring-label">ACH</div></div></div>
+              <div class="ov2-mini-ring" id="ov2DeviceEstRing" style="--p:0%;--ring:#63aaf5"><div class="ov2-mini-ring-content"><div class="ov2-mini-ring-value" id="deviceEstPercent">0%</div><div class="ov2-mini-ring-label">EST</div></div></div>
+              <div class="ov2-cat-target">Target <b id="deviceTarget">Rp 0</b></div>
             </div>
-
-            <div class="two-col">
-
-              <div>
-                <div class="metric-label">Actual</div>
-                <div class="metric-value" id="accActual">
-                  Rp 0
-                </div>
-              </div>
-
-              <div>
-                <div class="metric-label">Target</div>
-                <div class="metric-value" id="accTarget">
-                  Rp 0
-                </div>
-              </div>
-
+            <div class="card ov2-cat-card" data-overview-cat="Accessories">
+              <div class="ov2-cat-icon">🎧</div><div class="ov2-cat-name">Accessories</div>
+              <div class="ov2-mini-ring" id="ov2AccAchRing" style="--p:0%;--ring:#16a66a"><div class="ov2-mini-ring-content"><div class="ov2-mini-ring-value" id="accAch">0%</div><div class="ov2-mini-ring-label">ACH</div></div></div>
+              <div class="ov2-mini-ring" id="ov2AccEstRing" style="--p:0%;--ring:#16b878"><div class="ov2-mini-ring-content"><div class="ov2-mini-ring-value" id="accEstPercent">0%</div><div class="ov2-mini-ring-label">EST</div></div></div>
+              <div class="ov2-cat-target">Target <b id="accTarget">Rp 0</b></div>
             </div>
-
-            <br>
-
-            <div class="two-col">
-
-              <div>
-                <div class="metric-label">Achievement</div>
-                <div class="metric-value red" id="accAch">
-                  0.0%
-                </div>
-              </div>
-
-              <div>
-                <div class="metric-label">Estimasi</div>
-                <div class="metric-value" id="accEst">
-                  Rp 0
-                </div>
-                <div class="est-percent" id="accEstPercent">0.0%</div>
-              </div>
-
+            <div class="card ov2-cat-card" data-overview-cat="Repair Contract">
+              <div class="ov2-cat-icon">🛡️</div><div class="ov2-cat-name">SCP</div>
+              <div class="ov2-mini-ring" id="ov2RepairAchRing" style="--p:0%;--ring:#8a97aa"><div class="ov2-mini-ring-content"><div class="ov2-mini-ring-value" id="repairAch">0%</div><div class="ov2-mini-ring-label">ACH</div></div></div>
+              <div class="ov2-mini-ring" id="ov2RepairEstRing" style="--p:0%;--ring:#9ba6b6"><div class="ov2-mini-ring-content"><div class="ov2-mini-ring-value" id="repairEstPercent">0%</div><div class="ov2-mini-ring-label">EST</div></div></div>
+              <div class="ov2-cat-target">Target <b id="repairTarget">Rp 0</b></div>
             </div>
-
-            <hr>
-
-            <div class="metric-label">
-              Kekurangan
+            <div class="card ov2-cat-card" data-overview-cat="Operator">
+              <div class="ov2-cat-icon">📡</div><div class="ov2-cat-name">Operator</div>
+              <div class="ov2-mini-ring" id="ov2OperatorAchRing" style="--p:0%;--ring:#f05b5b"><div class="ov2-mini-ring-content"><div class="ov2-mini-ring-value" id="operatorAch">0%</div><div class="ov2-mini-ring-label">ACH</div></div></div>
+              <div class="ov2-mini-ring" id="ov2OperatorEstRing" style="--p:0%;--ring:#f06b6b"><div class="ov2-mini-ring-content"><div class="ov2-mini-ring-value" id="operatorEstPercent">0%</div><div class="ov2-mini-ring-label">EST</div></div></div>
+              <div class="ov2-cat-target">Target <b id="operatorTarget">Rp 0</b></div>
             </div>
-
-            <div
-              class="metric-value red"
-              id="accShort"
-            >
-              Rp 0
-            </div>
-
           </div>
-
-
-          <div class="card category-card">
-
-            <div class="category-name">
-              REPAIR CONTRACT
-            </div>
-
-            <div class="two-col">
-
-              <div>
-                <div class="metric-label">Actual</div>
-                <div class="metric-value" id="repairActual">
-                  Rp 0
-                </div>
-              </div>
-
-              <div>
-                <div class="metric-label">Target</div>
-                <div class="metric-value" id="repairTarget">
-                  Rp 0
-                </div>
-              </div>
-
-            </div>
-
-            <br>
-
-            <div class="two-col">
-
-              <div>
-                <div class="metric-label">Achievement</div>
-                <div class="metric-value red" id="repairAch">
-                  0.0%
-                </div>
-              </div>
-
-              <div>
-                <div class="metric-label">Estimasi</div>
-                <div class="metric-value" id="repairEst">
-                  Rp 0
-                </div>
-                <div class="est-percent" id="repairEstPercent">0.0%</div>
-              </div>
-
-            </div>
-
-            <hr>
-
-            <div class="metric-label">
-              Kekurangan
-            </div>
-
-            <div
-              class="metric-value red"
-              id="repairShort"
-            >
-              Rp 0
-            </div>
-
-          </div>
-
-
-          <div class="card category-card">
-
-            <div class="category-name">
-              OPERATOR
-            </div>
-
-            <div class="two-col">
-
-              <div>
-                <div class="metric-label">Actual</div>
-                <div class="metric-value" id="operatorActual">
-                  Rp 0
-                </div>
-              </div>
-
-              <div>
-                <div class="metric-label">Target</div>
-                <div class="metric-value" id="operatorTarget">
-                  Rp 0
-                </div>
-              </div>
-
-            </div>
-
-            <br>
-
-            <div class="two-col">
-
-              <div>
-                <div class="metric-label">Achievement</div>
-                <div class="metric-value red" id="operatorAch">
-                  0.0%
-                </div>
-              </div>
-
-              <div>
-                <div class="metric-label">Estimasi</div>
-                <div class="metric-value" id="operatorEst">
-                  Rp 0
-                </div>
-                <div class="est-percent" id="operatorEstPercent">0.0%</div>
-              </div>
-
-            </div>
-
-            <hr>
-
-            <div class="operator-box">
-              <div class="operator-head">
-                <span>Indosat</span>
-                <span id="indosatAch">0.0%</span>
-              </div>
-              <div class="operator-grid">
-                <div>
-                  <div class="operator-label">Target</div>
-                  <div class="operator-value" id="indosatTarget">Rp 0</div>
-                </div>
-                <div>
-                  <div class="operator-label">Actual</div>
-                  <div class="operator-value" id="indosatActual">Rp 0</div>
-                </div>
-                <div>
-                  <div class="operator-label">Estimasi</div>
-                  <div class="operator-value" id="indosatEst">Rp 0</div>
-                  <div class="operator-est-percent" id="indosatEstPercent">0.0%</div>
-                </div>
-                <div>
-                  <div class="operator-label">Kekurangan</div>
-                  <div class="operator-value operator-short" id="indosatShort">Rp 0</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="operator-box">
-              <div class="operator-head">
-                <span>XL</span>
-                <span id="xlAch">0.0%</span>
-              </div>
-              <div class="operator-grid">
-                <div>
-                  <div class="operator-label">Target</div>
-                  <div class="operator-value" id="xlTarget">Rp 0</div>
-                </div>
-                <div>
-                  <div class="operator-label">Actual</div>
-                  <div class="operator-value" id="xlActual">Rp 0</div>
-                </div>
-                <div>
-                  <div class="operator-label">Estimasi</div>
-                  <div class="operator-value" id="xlEst">Rp 0</div>
-                  <div class="operator-est-percent" id="xlEstPercent">0.0%</div>
-                </div>
-                <div>
-                  <div class="operator-label">Kekurangan</div>
-                  <div class="operator-value operator-short" id="xlShort">Rp 0</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="operator-box">
-              <div class="operator-head">
-                <span>Telkomsel</span>
-                <span id="telkomselAch">0.0%</span>
-              </div>
-              <div class="operator-grid">
-                <div>
-                  <div class="operator-label">Target</div>
-                  <div class="operator-value" id="telkomselTarget">Rp 0</div>
-                </div>
-                <div>
-                  <div class="operator-label">Actual</div>
-                  <div class="operator-value" id="telkomselActual">Rp 0</div>
-                </div>
-                <div>
-                  <div class="operator-label">Estimasi</div>
-                  <div class="operator-value" id="telkomselEst">Rp 0</div>
-                  <div class="operator-est-percent" id="telkomselEstPercent">0.0%</div>
-                </div>
-                <div>
-                  <div class="operator-label">Kekurangan</div>
-                  <div class="operator-value operator-short" id="telkomselShort">Rp 0</div>
-                </div>
-              </div>
-            </div>
-
-          </div>
-
         </div>
 
-        <!-- ================= PERFORMANCE HIGHLIGHT ================= -->
-        <div class="performance-highlight">
-          <div class="highlight-card">
-            <div class="highlight-title">🔥 TOP ERO</div>
-            <div class="highlight-subtitle">Ranking berdasarkan Achievement H-1</div>
-            <div class="top-ero-filter-wrap"><select id="topEroCategory" class="top-ero-filter" onchange="renderTopERO()"><option value="Sales All">Sales All</option><option value="Device">Device</option><option value="Accessories">Accessories</option><option value="Operator">Operator</option></select></div>
-            <div id="topSalesHighlight" class="highlight-list">
-              <div class="highlight-empty">Belum ada data transaksi H-1</div>
-            </div>
+        <!-- OPERATOR SUB CATEGORY -->
+        <div class="ov2-section">
+          <div class="ov2-section-head"><div><div class="ov2-section-title">📡 Operator — Sub Kategori</div><div class="ov2-section-sub">Achievement & estimasi %</div></div></div>
+          <div class="ov2-op-grid">
+            <div class="card ov2-op-card"><div class="ov2-op-top"><span class="ov2-op-name">Indosat</span><span class="ov2-op-target">Target <b id="indosatTarget">Rp 0</b></span></div><div class="ov2-op-bars"><div><div class="ov2-bar-label"><span>Achievement</span><b id="indosatAch">0%</b></div><div class="ov2-bar"><div id="indosatAchBar" class="ov2-bar-fill" style="width:0%"></div></div></div><div><div class="ov2-bar-label"><span>Estimasi</span><b id="indosatEstPercent">0%</b></div><div class="ov2-bar"><div id="indosatEstBar" class="ov2-bar-fill est" style="width:0%"></div></div></div></div></div>
+            <div class="card ov2-op-card"><div class="ov2-op-top"><span class="ov2-op-name">XL</span><span class="ov2-op-target">Target <b id="xlTarget">Rp 0</b></span></div><div class="ov2-op-bars"><div><div class="ov2-bar-label"><span>Achievement</span><b id="xlAch">0%</b></div><div class="ov2-bar"><div id="xlAchBar" class="ov2-bar-fill" style="width:0%"></div></div></div><div><div class="ov2-bar-label"><span>Estimasi</span><b id="xlEstPercent">0%</b></div><div class="ov2-bar"><div id="xlEstBar" class="ov2-bar-fill est" style="width:0%"></div></div></div></div></div>
+            <div class="card ov2-op-card"><div class="ov2-op-top"><span class="ov2-op-name">Telkomsel</span><span class="ov2-op-target">Target <b id="telkomselTarget">Rp 0</b></span></div><div class="ov2-op-bars"><div><div class="ov2-bar-label"><span>Achievement</span><b id="telkomselAch">0%</b></div><div class="ov2-bar"><div id="telkomselAchBar" class="ov2-bar-fill" style="width:0%"></div></div></div><div><div class="ov2-bar-label"><span>Estimasi</span><b id="telkomselEstPercent">0%</b></div><div class="ov2-bar"><div id="telkomselEstBar" class="ov2-bar-fill est" style="width:0%"></div></div></div></div></div>
           </div>
-          <div class="highlight-card">
-            <div class="highlight-title">🏆 BEST CATEGORY</div>
-            <div class="highlight-subtitle">Kategori dengan achievement tertinggi</div>
-            <div id="bestCategoryHighlight" class="highlight-list">
-              <div class="highlight-empty">Belum ada data transaksi H-1</div>
-            </div>
+        </div>
+
+        <!-- TOP 10 PRODUCT & BRAND -->
+        <div class="ov2-top-grid ov2-section">
+          <div class="card ov2-top-card">
+            <div class="ov2-section-head"><div style="display:flex;align-items:center;gap:8px;min-width:0"><select id="overviewProductMetric" class="ov2-control" onchange="renderOverviewTop10()"><option value="value">By Value</option><option value="qty">By Qty</option></select><div><div class="ov2-section-title">📦 Top 10 Produk</div><div class="ov2-section-sub">Ranking produk pada periode terpilih</div></div></div></div>
+            <div id="overviewTopProducts" class="ov2-ranking"></div>
           </div>
-          <div class="highlight-card">
-            <div class="highlight-title">⚡ QUICK ACTION</div>
-            <div class="highlight-subtitle">Fokus yang perlu dikejar hari ini</div>
-            <div id="quickActionHighlight" class="highlight-list">
-              <div class="highlight-empty">Menunggu data H-1</div>
-            </div>
+          <div class="card ov2-top-card">
+            <div class="ov2-section-head"><div style="display:flex;align-items:center;gap:8px;min-width:0"><select id="overviewBrandMetric" class="ov2-control" onchange="renderOverviewTop10()"><option value="value">By Value</option><option value="qty">By Qty</option></select><div><div class="ov2-section-title">🏷️ Top 10 Brand</div><div class="ov2-section-sub">Brand berdasarkan kolom BRAND di SALES_DATA</div></div></div></div>
+            <div id="overviewTopBrands" class="ov2-ranking"></div>
           </div>
         </div>
 
       </div>
-
 
 
       <!-- ================= STORE ================= -->
@@ -3034,8 +2668,8 @@ document.addEventListener(
   "DOMContentLoaded",
   function(){
 
-    // V17: every full refresh starts from Bulan Ini.
-    // Custom dates are intentionally not restored from browser state.
+    /* V19: hard-reset Overview period on every full refresh.
+       No saved/custom period is restored. Default is Bulan Ini. */
     periodMode = "month";
     customStartDate = "";
     customEndDate = "";
@@ -3043,12 +2677,18 @@ document.addEventListener(
     document.querySelectorAll(".filters .filter-btn").forEach(function(btn){
       btn.classList.remove("active");
     });
+
     const monthBtn = Array.from(document.querySelectorAll(".filters .filter-btn"))
       .find(function(btn){ return btn.textContent.trim() === "Bulan Ini"; });
     if(monthBtn) monthBtn.classList.add("active");
 
     const customBox = document.getElementById("customPeriodBox");
     if(customBox) customBox.style.display = "none";
+
+    const startEl = document.getElementById("customStartDate");
+    const endEl = document.getElementById("customEndDate");
+    if(startEl) startEl.value = "";
+    if(endEl) endEl.value = "";
 
     const saved =
       localStorage.getItem("ses_user");
@@ -3074,11 +2714,6 @@ document.addEventListener(
     if(inputDateEl){
       inputDateEl.value = new Date().toISOString().slice(0,10);
     }
-
-    const startEl = document.getElementById("customStartDate");
-    const endEl = document.getElementById("customEndDate");
-    if(startEl) startEl.value = "";
-    if(endEl) endEl.value = "";
 
   }
 );
@@ -3578,224 +3213,150 @@ function toggleSidebar(){
 
 
 /* =====================================================
-   OVERVIEW
+   OVERVIEW — MINIMAL V2
 ===================================================== */
 
 function renderOverview(){
+  if(!dashboardData) return;
+  const d=dashboardData;
+  setText("overviewMonth", formatMonth(d.period || getCurrentPeriod()));
 
-  if(!dashboardData)
-    return;
+  setText("overviewTarget", overviewMoney(d.targetAll));
+  setHtml("overviewAch", percent(d.achievement));
+  setHtml("overviewEstPercent", percent(d.estimationPercent));
+  setOverviewRing_("overviewAchRing", d.achievement);
+  setOverviewRing_("overviewEstRing", d.estimationPercent);
 
-  const d =
-    dashboardData;
+  renderOverviewCategoryV2_("Device","device","ov2DeviceAchRing","ov2DeviceEstRing");
+  renderOverviewCategoryV2_("Accessories","acc","ov2AccAchRing","ov2AccEstRing");
+  renderOverviewCategoryV2_("Repair Contract","repair","ov2RepairAchRing","ov2RepairEstRing");
+  renderOverviewCategoryV2_("Operator","operator","ov2OperatorAchRing","ov2OperatorEstRing");
 
-  const month =
-    d.period || getCurrentPeriod();
+  const op=d.operators||{};
+  [
+    ["Indosat","indosat"],
+    ["XL","xl"],
+    ["Telkomsel","telkomsel"]
+  ].forEach(function(pair){
+    const name=pair[0], prefix=pair[1], o=op[name]||{};
+    const ach=Number(o.achievement||0);
+    const estPct=o.estimationPercent!=null?Number(o.estimationPercent):0;
+    setText(prefix+"Target",overviewMoney(Number(o.target||0)));
+    setHtml(prefix+"Ach",percent(ach));
+    setHtml(prefix+"EstPercent",percent(estPct));
+    const ab=document.getElementById(prefix+"AchBar");
+    const eb=document.getElementById(prefix+"EstBar");
+    if(ab)ab.style.width=Math.min(Math.max(ach,0),100)+"%";
+    if(eb)eb.style.width=Math.min(Math.max(estPct,0),100)+"%";
+  });
 
-  setText(
-    "overviewMonth",
-    formatMonth(month)
-  );
-
-  setText(
-    "overviewActual",
-    overviewMoney(d.totalActual)
-  );
-
-  setText(
-    "overviewTarget",
-    overviewMoney(d.targetAll)
-  );
-
-  setText(
-    "overviewEst",
-    overviewMoney(d.estimation)
-  );
-
-  setHtml(
-    "overviewEstPercent",
-    percent(d.estimationPercent)
-  );
-
-  setText(
-    "overviewShort",
-    overviewMoney(d.shortfall)
-  );
-
-  setHtml(
-    "overviewAch",
-    percent(d.achievement)
-  );
-
-  document
-    .getElementById(
-      "overviewProgress"
-    )
-    .style.width =
-    Math.min(
-      Number(d.achievement || 0),
-      100
-    ) + "%";
-
-
-  renderCategory(
-    "Device",
-    "device"
-  );
-
-  renderCategory(
-    "Accessories",
-    "acc"
-  );
-
-  renderCategory(
-    "Repair Contract",
-    "repair"
-  );
-
-  renderCategory(
-    "Operator",
-    "operator"
-  );
-
-
-  const op =
-    d.operators || {};
-
-  const renderOperator = (key, prefix) => {
-    const o = op[key] || {};
-    const actual = Number(o.actual || 0);
-    const target = Number(o.target || 0);
-    const estimation = Number(o.estimation || 0);
-    const shortfall = Math.max(target - actual, 0);
-
-    setText(prefix + "Target", overviewMoney(target));
-    setText(prefix + "Actual", overviewMoney(actual));
-    setText(prefix + "Est", overviewMoney(estimation));
-    setHtml(prefix + "EstPercent", percent(
-      o.estimationPercent != null
-        ? Number(o.estimationPercent)
-        : (target > 0 ? estimation / target * 100 : 0)
-    ));
-    setText(prefix + "Short", overviewMoney(shortfall));
-
-    setHtml(prefix + "Ach", percent(
-      o.achievement != null
-        ? Number(o.achievement)
-        : (target > 0 ? actual / target * 100 : 0)
-    ));
-  };
-
-  renderOperator("Indosat", "indosat");
-  renderOperator("XL", "xl");
-  renderOperator("Telkomsel", "telkomsel");
-
-  renderPerformanceHighlight();
+  renderOverviewTop10();
 }
 
-
-function renderCategory(category,prefix){
-
-  const c =
-    dashboardData
-      .categories
-      ? dashboardData
-          .categories[category]
-      : null;
-
-  if(!c)
-    return;
-
-  setText(
-    prefix+"Actual",
-    overviewMoney(c.actual)
-  );
-
-  setText(
-    prefix+"Target",
-    overviewMoney(c.target)
-  );
-
-  setHtml(
-    prefix+"Ach",
-    percent(c.achievement)
-  );
-
-  setText(
-    prefix+"Est",
-    overviewMoney(c.estimation)
-  );
-
-  setHtml(
-    prefix+"EstPercent",
-    percent(c.estimationPercent)
-  );
-
-  setText(
-    prefix+"Short",
-    overviewMoney(c.shortfall)
-  );
-
+function setOverviewRing_(id,value){
+  const el=document.getElementById(id);
+  if(!el)return;
+  const p=Math.max(0,Math.min(Number(value||0),100));
+  el.style.setProperty("--p",p+"%");
 }
 
-
-
-function renderTopERO(){
-  renderPerformanceHighlight();
+function renderOverviewCategoryV2_(category,prefix,achRingId,estRingId){
+  const c=(dashboardData.categories||{})[category];
+  if(!c)return;
+  const ach=Number(c.achievement||0);
+  const estPct=Number(c.estimationPercent||0);
+  setText(prefix+"Target",overviewMoney(c.target));
+  setText(prefix+"Est",overviewMoney(c.estimation));
+  setHtml(prefix+"Ach",percent(ach));
+  setHtml(prefix+"EstPercent",percent(estPct));
+  setOverviewRing_(achRingId,ach);
+  setOverviewRing_(estRingId,estPct);
 }
+
+function overviewTopMetric_(selectId){
+  const el=document.getElementById(selectId);
+  return el ? el.value : "value";
+}
+
+function overviewEffectiveAmount_(x){
+  return Number(x && x.amount || 0);
+}
+
+function overviewNormalizeProduct_(x){
+  const p=String(x && x.product || "").trim();
+  return p || "Tanpa Nama Produk";
+}
+
+function overviewBrand_(x){
+  const brand=String(x && x.brand || "").trim();
+  return brand || "Belum Diisi";
+}
+
+function overviewBuildRanking_(rows,key,metric){
+  const map={};
+  (rows||[]).forEach(function(x){
+    const name=String(key(x)||"").trim();
+    if(!name)return;
+    if(!map[name])map[name]={name:name,value:0,qty:0};
+    map[name].value += overviewEffectiveAmount_(x);
+    map[name].qty += Number(x.qty||0);
+  });
+  return Object.keys(map).map(k=>map[k]).sort(function(a,b){
+    const av=metric==="qty"?a.qty:a.value;
+    const bv=metric==="qty"?b.qty:b.value;
+    if(bv!==av)return bv-av;
+    return b.value-a.value;
+  }).slice(0,10);
+}
+
+function renderOverviewRanking_(elId,rows,metric){
+  const el=document.getElementById(elId);
+  if(!el)return;
+  if(!rows.length){el.innerHTML='<div class="ov2-empty">Belum ada data pada periode ini.</div>';return;}
+  const max=Math.max.apply(null,rows.map(function(x){return metric==="qty"?x.qty:x.value;}))||1;
+  el.innerHTML=rows.map(function(x,i){
+    const v=metric==="qty"?x.qty:x.value;
+    const label=metric==="qty" ? (Math.round(v)+" qty") : overviewMoney(v);
+    const width=Math.min((v/max)*100,100);
+    return '<div class="ov2-rank-row">'+
+      '<div class="ov2-rank-num">#'+(i+1)+'</div>'+
+      '<div class="ov2-rank-name" title="'+escapeHtml(x.name)+'">'+escapeHtml(x.name)+'</div>'+
+      '<div class="ov2-rank-track"><div class="ov2-rank-fill" style="width:'+width+'%"></div></div>'+
+      '<div class="ov2-rank-value">'+label+'</div>'+
+      '</div>';
+  }).join("");
+}
+
+function renderOverviewTop10(){
+  if(!dashboardData)return;
+  const tx=dashboardData.transactions||[];
+  const productMetric=overviewTopMetric_("overviewProductMetric");
+  const brandMetric=overviewTopMetric_("overviewBrandMetric");
+  const products=overviewBuildRanking_(tx,function(x){return overviewNormalizeProduct_(x);},productMetric);
+  const brands=overviewBuildRanking_(tx,function(x){return overviewBrand_(x);},brandMetric);
+  renderOverviewRanking_("overviewTopProducts",products,productMetric);
+  renderOverviewRanking_("overviewTopBrands",brands,brandMetric);
+}
+
+function renderTopERO(){ renderPerformanceHighlight(); }
 
 function renderPerformanceHighlight(){
   if(!dashboardData)return;
-
-  const tx=dashboardData.transactions||[];
   const categoryEl=document.getElementById("topEroCategory");
   const category=categoryEl ? categoryEl.value : "Sales All";
-
   const stats=salesList.map(s=>{
     const actual=getStoreSalesCategoryActual_(s.id,category,"ALL");
     const target=getStoreSalesTarget_(s.id,category);
     return {name:s.name,actual,target,ach:target>0?actual/target*100:0};
-  }).sort((a,b)=>{
-    if(b.ach!==a.ach)return b.ach-a.ach;
-    return b.actual-a.actual;
-  });
-
+  }).sort((a,b)=>b.ach!==a.ach?b.ach-a.ach:b.actual-a.actual);
   const topEl=document.getElementById("topSalesHighlight");
   const top=stats.filter(x=>x.actual>0).slice(0,3);
-  if(topEl){
-    topEl.innerHTML=top.length?top.map((x,i)=>`
-      <div class="highlight-row">
-        <div class="highlight-rank">#${i+1}</div>
-        <div><div class="highlight-name">${escapeHtml(x.name)}</div><div class="highlight-meta">Actual ${overviewMoney(x.actual)}</div></div>
-        <div class="highlight-score">${percent(x.ach)}</div>
-      </div>`).join(""):'<div class="highlight-empty">Belum ada transaksi H-1 untuk diranking.</div>';
-  }
-
-  const cats=["Device","Accessories","Repair Contract","Operator"].map(name=>{
-    const c=(dashboardData.categories||{})[name]||{};
-    return {name,actual:Number(c.actual||0),target:Number(c.target||0),ach:Number(c.achievement||0)};
-  }).sort((a,b)=>b.ach-a.ach);
-
-  const bestEl=document.getElementById("bestCategoryHighlight");
-  const best=cats.find(x=>x.actual>0);
-  if(bestEl){
-    bestEl.innerHTML=best?`
-      <div class="highlight-row">
-        <div class="highlight-rank">★</div>
-        <div><div class="highlight-name">${escapeHtml(best.name)}</div><div class="highlight-meta">Actual ${overviewMoney(best.actual)} • Target ${overviewMoney(best.target)}</div></div>
-        <div class="highlight-score">${percent(best.ach)}</div>
-      </div>`:'<div class="highlight-empty">Belum ada transaksi H-1.</div>';
-  }
-
-  const quickEl=document.getElementById("quickActionHighlight");
-  const focus=cats.filter(x=>x.target>0).sort((a,b)=>a.ach-b.ach)[0];
-  if(quickEl){
-    quickEl.innerHTML=focus?`
-      <div class="highlight-action">
-        <div><div class="highlight-action-main">Kejar ${escapeHtml(focus.name)}</div><div class="highlight-meta">Time Gone ${Math.round(Number(dashboardData.timeGone||0))}%</div></div>
-        <div class="highlight-action-value">${overviewMoney(Math.max(focus.target-focus.actual,0))}</div>
-      </div>`:'<div class="highlight-empty">Target belum tersedia.</div>';
-  }
+  if(topEl)topEl.innerHTML=top.length?top.map((x,i)=>`<div class="highlight-row"><div class="highlight-rank">#${i+1}</div><div><div class="highlight-name">${escapeHtml(x.name)}</div><div class="highlight-meta">Actual ${overviewMoney(x.actual)}</div></div><div class="highlight-score">${percent(x.ach)}</div></div>`).join(""): '<div class="highlight-empty">Belum ada transaksi H-1 untuk diranking.</div>';
+  const cats=["Device","Accessories","Repair Contract","Operator"].map(name=>{const c=(dashboardData.categories||{})[name]||{};return {name,actual:Number(c.actual||0),target:Number(c.target||0),ach:Number(c.achievement||0)};}).sort((a,b)=>b.ach-a.ach);
+  const bestEl=document.getElementById("bestCategoryHighlight"),best=cats.find(x=>x.actual>0);
+  if(bestEl)bestEl.innerHTML=best?`<div class="highlight-row"><div class="highlight-rank">★</div><div><div class="highlight-name">${escapeHtml(best.name)}</div><div class="highlight-meta">Actual ${overviewMoney(best.actual)} • Target ${overviewMoney(best.target)}</div></div><div class="highlight-score">${percent(best.ach)}</div></div>`:'<div class="highlight-empty">Belum ada transaksi H-1.</div>';
+  const quickEl=document.getElementById("quickActionHighlight"),focus=cats.filter(x=>x.target>0).sort((a,b)=>a.ach-b.ach)[0];
+  if(quickEl)quickEl.innerHTML=focus?`<div class="highlight-action"><div><div class="highlight-action-main">Kejar ${escapeHtml(focus.name)}</div><div class="highlight-meta">Time Gone ${Math.round(Number(dashboardData.timeGone||0))}%</div></div><div class="highlight-action-value">${overviewMoney(Math.max(focus.target-focus.actual,0))}</div></div>`:'<div class="highlight-empty">Target belum tersedia.</div>';
 }
 
 /* =====================================================
