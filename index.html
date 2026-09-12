@@ -3070,7 +3070,10 @@ async function loadAll(){
       renderTargets();
     }
 
-    renderOverview();
+    // Saat refresh, selalu terapkan periode default (Bulan Ini)
+    // ke cache transaksi sebelum Overview dirender.
+    // Ini mencegah angka ALL/full data muncul sementara setelah reload.
+    applyOverviewPeriodLocal_();
     renderOutlook();
 
   }catch(e){
