@@ -708,6 +708,82 @@ tr:last-child td{
 .top-ero-filter{width:100%;height:30px;border:1px solid var(--border);border-radius:6px;background:#fff;padding:0 9px;font-size:11px;color:#172033;outline:none;}
 .top-ero-filter:focus{border-color:var(--blue);}
 
+/* ================= TOP ERO AR FULL ================= */
+.top-ero-ar-grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:10px;
+  margin:10px 0 12px;
+}
+.top-ero-ar-card{
+  background:#fff;
+  border:1px solid #e2eaf5;
+  border-radius:10px;
+  padding:12px 14px;
+  box-shadow:0 3px 12px rgba(20,65,130,.04);
+}
+.top-ero-ar-card.good{border-top:3px solid #16a66a;}
+.top-ero-ar-card.bad{border-top:3px solid #ff4d5a;}
+.top-ero-ar-head{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.top-ero-ar-title{font-size:13px;font-weight:800;color:#153b7e;}
+.top-ero-ar-target{font-size:9px;font-weight:800;padding:5px 7px;border-radius:7px;background:#f1f7ff;color:#087bea;white-space:nowrap;}
+.top-ero-ar-value{font-size:24px;font-weight:800;margin-top:8px;}
+.top-ero-ar-card.good .top-ero-ar-value{color:#16a66a;}
+.top-ero-ar-card.bad .top-ero-ar-value{color:#e53935;}
+.top-ero-ar-sub{font-size:9px;color:#718096;margin-top:3px;}
+.top-ero-ar-track{height:8px;background:#eaf0f5;border-radius:99px;overflow:hidden;margin-top:9px;position:relative;}
+.top-ero-ar-fill{height:100%;border-radius:99px;background:#087bea;}
+.top-ero-ar-card.good .top-ero-ar-fill{background:#16a66a;}
+.top-ero-ar-card.bad .top-ero-ar-fill{background:#ff4d5a;}
+.top-ero-position-card{margin:0 0 12px;padding:13px 14px;}
+.top-ero-position-chart{display:flex;align-items:flex-end;gap:10px;height:210px;margin-top:10px;padding:0 4px 2px;border-bottom:1px solid #dfe7ef;overflow-x:auto;}
+.top-ero-position-item{flex:1 0 54px;min-width:54px;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px;}
+.top-ero-position-value{font-size:10px;font-weight:800;color:#173b7e;}
+.top-ero-position-bar-wrap{width:30px;height:150px;background:#edf2f7;border-radius:7px 7px 0 0;display:flex;align-items:flex-end;overflow:hidden;position:relative;}
+.top-ero-position-bar{width:100%;background:#087bea;border-radius:7px 7px 0 0;min-height:3px;}
+.top-ero-position-name{font-size:9px;font-weight:700;color:#40526a;max-width:68px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center;}
+.top-ero-position-axis{display:flex;justify-content:space-between;font-size:9px;color:#8b98a9;margin-top:4px;}
+.top-ero-ar-tables{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:12px;}
+.top-ero-ar-table-card{background:#fff;border:1px solid #e2eaf5;border-radius:10px;overflow:hidden;}
+.top-ero-ar-table-head{padding:11px 12px;border-bottom:1px solid #e6edf5;background:#f8fbff;display:flex;justify-content:space-between;align-items:center;gap:8px;}
+.top-ero-ar-table-title{font-size:13px;font-weight:800;color:#153b7e;}
+.top-ero-ar-table-target{font-size:9px;font-weight:800;color:#087bea;white-space:nowrap;}
+.top-ero-ar-table-wrap{overflow:auto;}
+.top-ero-ar-table{width:100%;min-width:0;border-collapse:collapse;}
+.top-ero-ar-table th,.top-ero-ar-table td{padding:6px 6px;border-bottom:1px solid #edf1f5;font-size:9px;white-space:nowrap;}
+.top-ero-ar-table th{background:#fff;color:#68778a;font-weight:800;text-align:right;}
+.top-ero-ar-table td{text-align:right;}
+.top-ero-ar-table th:first-child,.top-ero-ar-table td:first-child,
+.top-ero-ar-table th:nth-child(2),.top-ero-ar-table td:nth-child(2){text-align:left;}
+.top-ero-ar-table tbody tr:last-child td{border-bottom:0;}
+.top-ero-ar-value-good{color:#16a66a;font-weight:800;}
+.top-ero-ar-value-bad{color:#e53935;font-weight:800;}
+.top-ero-ar-status{font-size:9px;font-weight:800;}
+.top-ero-ar-status.good{color:#16a66a;}
+.top-ero-ar-status.bad{color:#e53935;}
+@media(max-width:900px){
+  .top-ero-ar-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .top-ero-ar-tables{grid-template-columns:1fr;}
+}
+@media(max-width:600px){
+  .top-ero-ar-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:7px 0 8px;}
+  .top-ero-ar-card{padding:8px 9px;}
+  .top-ero-ar-title{font-size:11px;}
+  .top-ero-ar-target{font-size:8px;padding:4px 5px;}
+  .top-ero-ar-value{font-size:18px;margin-top:6px;}
+  .top-ero-ar-sub{font-size:8px;}
+  .top-ero-position-card{padding:9px;margin-bottom:8px;}
+  .top-ero-position-chart{height:175px;gap:7px;}
+  .top-ero-position-bar-wrap{height:125px;width:23px;}
+  .top-ero-position-item{min-width:44px;flex-basis:44px;}
+  .top-ero-position-value{font-size:8px;}
+  .top-ero-position-name{font-size:8px;max-width:48px;}
+  .top-ero-ar-tables{gap:7px;margin-bottom:8px;}
+  .top-ero-ar-table-head{padding:8px 9px;}
+  .top-ero-ar-table-title{font-size:11px;}
+  .top-ero-ar-table th,.top-ero-ar-table td{padding:5px 4px;font-size:8px;}
+}
+
 /* ================= TOP SALES ================= */
 
 .top-grid{
@@ -2354,8 +2430,105 @@ html,body{
           </select>
         </div>
 
+        <!-- AR ALL -->
+        <div class="top-ero-ar-grid">
+          <div class="top-ero-ar-card" id="topArAccCard">
+            <div class="top-ero-ar-head">
+              <div class="top-ero-ar-title">🎧 AR ACC</div>
+              <div class="top-ero-ar-target">Target ≥ 200%</div>
+            </div>
+            <div class="top-ero-ar-value" id="topArAccValue">0%</div>
+            <div class="top-ero-ar-sub" id="topArAccSub">0 Qty / 0 Device</div>
+            <div class="top-ero-ar-track"><div class="top-ero-ar-fill" id="topArAccFill" style="width:0%"></div></div>
+          </div>
+
+          <div class="top-ero-ar-card" id="topArScpCard">
+            <div class="top-ero-ar-head">
+              <div class="top-ero-ar-title">🛡️ AR SCP</div>
+              <div class="top-ero-ar-target">Target ≥ 40%</div>
+            </div>
+            <div class="top-ero-ar-value" id="topArScpValue">0%</div>
+            <div class="top-ero-ar-sub" id="topArScpSub">0 Qty / 0 Device</div>
+            <div class="top-ero-ar-track"><div class="top-ero-ar-fill" id="topArScpFill" style="width:0%"></div></div>
+          </div>
+
+          <div class="top-ero-ar-card" id="topArOperatorCard">
+            <div class="top-ero-ar-head">
+              <div class="top-ero-ar-title">📡 AR Operator</div>
+              <div class="top-ero-ar-target">Target &gt; 50%</div>
+            </div>
+            <div class="top-ero-ar-value" id="topArOperatorValue">0%</div>
+            <div class="top-ero-ar-sub" id="topArOperatorSub">0 Qty / 0 Device</div>
+            <div class="top-ero-ar-track"><div class="top-ero-ar-fill" id="topArOperatorFill" style="width:0%"></div></div>
+          </div>
+
+          <div class="top-ero-ar-card">
+            <div class="top-ero-ar-head">
+              <div class="top-ero-ar-title">📱 QTY Device</div>
+            </div>
+            <div class="top-ero-ar-value" style="color:#087bea" id="topArDeviceQty">0</div>
+            <div class="top-ero-ar-sub">Total device pada periode terpilih</div>
+          </div>
+        </div>
+
+        <!-- TOP 3 PODIUM -->
         <div class="top-grid" id="topPageCards"></div>
 
+        <!-- POSISI SELURUH ERO -->
+        <div class="card top-ero-position-card">
+          <div class="ov2-section-head" style="margin-bottom:0">
+            <div>
+              <div class="ov2-section-title">📊 Posisi Seluruh ERO</div>
+              <div class="ov2-section-sub">Perbandingan Achievement % berdasarkan kategori terpilih</div>
+            </div>
+          </div>
+          <div id="topEroPositionChart" class="top-ero-position-chart"></div>
+          <div class="top-ero-position-axis"><span>0%</span><span>100% target</span><span>150%+</span></div>
+        </div>
+
+        <!-- AR PER ERO -->
+        <div class="top-ero-ar-tables">
+          <div class="top-ero-ar-table-card">
+            <div class="top-ero-ar-table-head">
+              <div class="top-ero-ar-table-title">🎧 AR ACC per ERO</div>
+              <div class="top-ero-ar-table-target">≥ 200%</div>
+            </div>
+            <div class="top-ero-ar-table-wrap">
+              <table class="top-ero-ar-table">
+                <thead><tr><th>#</th><th>ERO</th><th>DEVICE</th><th>ACC</th><th>AR</th><th>STATUS</th></tr></thead>
+                <tbody id="topArAccTable"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="top-ero-ar-table-card">
+            <div class="top-ero-ar-table-head">
+              <div class="top-ero-ar-table-title">🛡️ AR SCP per ERO</div>
+              <div class="top-ero-ar-table-target">≥ 40%</div>
+            </div>
+            <div class="top-ero-ar-table-wrap">
+              <table class="top-ero-ar-table">
+                <thead><tr><th>#</th><th>ERO</th><th>DEVICE</th><th>SCP</th><th>AR</th><th>STATUS</th></tr></thead>
+                <tbody id="topArScpTable"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="top-ero-ar-table-card">
+            <div class="top-ero-ar-table-head">
+              <div class="top-ero-ar-table-title">📡 AR Operator per ERO</div>
+              <div class="top-ero-ar-table-target">&gt; 50%</div>
+            </div>
+            <div class="top-ero-ar-table-wrap">
+              <table class="top-ero-ar-table">
+                <thead><tr><th>#</th><th>ERO</th><th>DEVICE</th><th>OP</th><th>AR</th><th>STATUS</th></tr></thead>
+                <tbody id="topArOperatorTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- RINCIAN SALES TETAP DIPERTAHANKAN -->
         <div class="table-card">
           <div class="table-wrap">
             <table>
@@ -4584,6 +4757,114 @@ function renderSummary(){
   }
 }
 
+function topEROQtyCategory_(tx, category){
+  const cat=String(category||"").trim().toLowerCase();
+  return (tx||[]).filter(function(x){
+    const raw=String(x.category||"").trim().toLowerCase();
+    if(cat==="device") return raw==="device";
+    if(cat==="accessories") return raw==="accessories" || raw==="acc";
+    if(cat==="repair contract") return raw==="repair contract" || raw==="repaircontract" || raw==="rc" || raw==="scp";
+    if(cat==="operator") return raw==="operator" && ["indosat","xl","telkomsel"].indexOf(String(x.subcategory||"").trim().toLowerCase())>=0;
+    return true;
+  }).reduce(function(sum,x){ return sum+Number(x.qty||0); },0);
+}
+
+function topEROArRows_(kind){
+  const tx=dashboardData && dashboardData.transactions ? dashboardData.transactions : [];
+  const active=(salesList||[]).filter(function(s){
+    return String(s.status||"AKTIF").toUpperCase()!=="NONAKTIF";
+  });
+  const rows=active.map(function(s){
+    const mine=tx.filter(function(x){return String(x.salesId)===String(s.id);});
+    const device=topEROQtyCategory_(mine,"Device");
+    let other=0;
+    if(kind==="acc") other=topEROQtyCategory_(mine,"Accessories");
+    if(kind==="scp") other=topEROQtyCategory_(mine,"Repair Contract");
+    if(kind==="operator") other=topEROQtyCategory_(mine,"Operator");
+    const ar=device>0 ? other/device*100 : 0;
+    return {s:s,device:device,other:other,ar:ar};
+  });
+  return rows.sort(function(a,b){return b.ar-a.ar || b.other-a.other || b.device-a.device;});
+}
+
+function renderTopEROArAll_(){
+  const tx=dashboardData && dashboardData.transactions ? dashboardData.transactions : [];
+  const device=topEROQtyCategory_(tx,"Device");
+  const acc=topEROQtyCategory_(tx,"Accessories");
+  const scp=topEROQtyCategory_(tx,"Repair Contract");
+  const op=topEROQtyCategory_(tx,"Operator");
+  const arAcc=device>0 ? acc/device*100 : 0;
+  const arScp=device>0 ? scp/device*100 : 0;
+  const arOp=device>0 ? op/device*100 : 0;
+
+  const cards=[
+    {valueId:"topArAccValue",subId:"topArAccSub",fillId:"topArAccFill",cardId:"topArAccCard",value:arAcc,other:acc,threshold:200,good:arAcc>=200},
+    {valueId:"topArScpValue",subId:"topArScpSub",fillId:"topArScpFill",cardId:"topArScpCard",value:arScp,other:scp,threshold:40,good:arScp>=40},
+    {valueId:"topArOperatorValue",subId:"topArOperatorSub",fillId:"topArOperatorFill",cardId:"topArOperatorCard",value:arOp,other:op,threshold:50,good:arOp>50}
+  ];
+  cards.forEach(function(c){
+    setText(c.valueId,Math.round(c.value)+"%");
+    setText(c.subId,Math.round(c.other)+" Qty / "+Math.round(device)+" Device");
+    const fill=document.getElementById(c.fillId);
+    if(fill) fill.style.width=Math.min(Math.max(c.value,0),Math.max(c.threshold*1.35,100))/Math.max(c.threshold*1.35,100)*100+"%";
+    const card=document.getElementById(c.cardId);
+    if(card) card.classList.toggle("good",c.good),card.classList.toggle("bad",!c.good);
+  });
+  setText("topArDeviceQty",Math.round(device));
+
+  function renderArTable(id,rows,kind){
+    const el=document.getElementById(id);
+    if(!el)return;
+    const threshold=kind==="acc"?200:(kind==="scp"?40:50);
+    el.innerHTML=rows.map(function(r,i){
+      const good=kind==="operator" ? r.ar>threshold : r.ar>=threshold;
+      const val=Math.round(r.ar);
+      return '<tr>'+
+        '<td>#'+(i+1)+'</td>'+
+        '<td><b>'+escapeHtml(r.s.name||"-")+'</b></td>'+
+        '<td>'+Math.round(r.device)+'</td>'+
+        '<td>'+Math.round(r.other)+'</td>'+
+        '<td class="'+(good?'top-ero-ar-value-good':'top-ero-ar-value-bad')+'">'+val+'%</td>'+
+        '<td class="top-ero-ar-status '+(good?'good':'bad')+'">'+(good?'✓':'✕')+'</td>'+
+      '</tr>';
+    }).join("") || '<tr><td colspan="6">Belum ada data.</td></tr>';
+  }
+  renderArTable("topArAccTable",topEROArRows_("acc"),"acc");
+  renderArTable("topArScpTable",topEROArRows_("scp"),"scp");
+  renderArTable("topArOperatorTable",topEROArRows_("operator"),"operator");
+}
+
+function renderTopEROPosition_(){
+  const el=document.getElementById("topEroPositionChart");
+  if(!el)return;
+  const categoryEl=document.getElementById("topPageCategory");
+  const category=categoryEl ? categoryEl.value : "Sales All";
+  const days=Number(dashboardData.daysPassed || dashboardData.days || 0);
+  const dim=Number(dashboardData.daysInMonth || 0);
+  const rows=(salesList||[]).filter(function(s){
+    return String(s.status||"AKTIF").toUpperCase()!=="NONAKTIF";
+  }).map(function(s){
+    const actual=getStoreSalesCategoryActual_(s.id,category,"ALL");
+    const target=getStoreSalesTarget_(s.id,category);
+    const ach=target>0 ? actual/target*100 : 0;
+    const est=days>0 ? actual/days*dim : actual;
+    const estPct=target>0 ? est/target*100 : 0;
+    return {name:s.name||"-",ach:ach,estPct:estPct};
+  }).filter(function(r){return r.ach!==0 || r.estPct!==0;}).sort(function(a,b){
+    return b.estPct-a.estPct || b.ach-a.ach;
+  });
+
+  const maxScale=Math.max(150,Math.ceil(Math.max.apply(null,rows.map(function(r){return r.estPct;} ).concat([150]))/50)*50);
+  el.innerHTML=rows.map(function(r){
+    const h=Math.min(Math.max(r.estPct,0),maxScale)/maxScale*100;
+    return '<div class="top-ero-position-item">'+
+      '<div class="top-ero-position-value">'+Math.round(r.estPct)+'%</div>'+
+      '<div class="top-ero-position-bar-wrap"><div class="top-ero-position-bar" style="height:'+h+'%"></div></div>'+
+      '<div class="top-ero-position-name" title="'+escapeHtml(r.name)+'">'+escapeHtml(r.name)+'</div>'+
+    '</div>';
+  }).join("") || '<div class="ov2-empty">Belum ada data untuk ditampilkan.</div>';
+}
+
 function renderTopEROPage(){
   if(!dashboardData || !salesList || !salesList.length) return;
 
@@ -4626,6 +4907,9 @@ function renderTopEROPage(){
         <td>${eroPercent(r.estPct)}</td>
       </tr>`).join("") || '<tr><td colspan="7">Belum ada data.</td></tr>';
   }
+
+  renderTopEROArAll_();
+  renderTopEROPosition_();
   setText("topEroMonth", formatMonth(dashboardData.period || getCurrentPeriod()));
 }
 
