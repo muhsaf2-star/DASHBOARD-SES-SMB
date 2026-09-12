@@ -1693,6 +1693,26 @@ html,body{
   #page-overview .ov2-section-title{font-size:13px}.ov2-section-sub{font-size:8px}.ov2-control{height:26px;font-size:9px}.ov2-rank-row{grid-template-columns:18px 1fr 60px 40px}.ov2-rank-name,.ov2-rank-value{font-size:8px}
 }
 
+/* ERO ANALYTICS CHARTS — OVERVIEW ONLY */
+.ov2-ero-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ov2-ero-chart-card{padding:14px;min-width:0}
+.ov2-ero-chart{margin-top:8px;min-height:210px}
+.ov2-ero-row{display:grid;grid-template-columns:minmax(80px,145px) 1fr 58px;gap:8px;align-items:center;margin:9px 0}
+.ov2-ero-name{font-size:11px;font-weight:700;color:#24364d;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ov2-ero-track{height:15px;background:#edf3f9;border-radius:999px;overflow:hidden;position:relative}
+.ov2-ero-fill{height:100%;border-radius:999px;background:#087bea;min-width:0;transition:width .2s ease}
+.ov2-ero-fill.brand{background:#3d73ad}
+.ov2-ero-value{text-align:right;font-size:11px;font-weight:800;color:#17324f;white-space:nowrap}
+.ov2-ero-empty{padding:35px 10px;text-align:center;font-size:11px;color:#8795a8}
+.ov2-ero-axis{display:flex;justify-content:space-between;margin:2px 58px 0 153px;font-size:9px;color:#9aa8b8}
+@media(max-width:900px){
+  .ov2-ero-grid{grid-template-columns:1fr}
+  .ov2-ero-chart-card{padding:11px}
+  .ov2-ero-row{grid-template-columns:minmax(74px,105px) 1fr 54px;gap:6px;margin:8px 0}
+  .ov2-ero-name,.ov2-ero-value{font-size:10px}
+  .ov2-ero-axis{margin-left:111px;margin-right:54px}
+}
+
 </style>
 </head>
 
@@ -1963,6 +1983,39 @@ html,body{
             <div class="card ov2-op-card"><div class="ov2-op-top"><span class="ov2-op-name">Indosat</span><span class="ov2-op-target">Target <b id="indosatTarget">Rp 0</b></span></div><div class="ov2-op-bars"><div><div class="ov2-bar-label"><span>Achievement</span><b id="indosatAch">0%</b></div><div class="ov2-bar"><div id="indosatAchBar" class="ov2-bar-fill" style="width:0%"></div></div></div><div><div class="ov2-bar-label"><span>Estimasi</span><b id="indosatEstPercent">0%</b></div><div class="ov2-bar"><div id="indosatEstBar" class="ov2-bar-fill est" style="width:0%"></div></div></div></div></div>
             <div class="card ov2-op-card"><div class="ov2-op-top"><span class="ov2-op-name">XL</span><span class="ov2-op-target">Target <b id="xlTarget">Rp 0</b></span></div><div class="ov2-op-bars"><div><div class="ov2-bar-label"><span>Achievement</span><b id="xlAch">0%</b></div><div class="ov2-bar"><div id="xlAchBar" class="ov2-bar-fill" style="width:0%"></div></div></div><div><div class="ov2-bar-label"><span>Estimasi</span><b id="xlEstPercent">0%</b></div><div class="ov2-bar"><div id="xlEstBar" class="ov2-bar-fill est" style="width:0%"></div></div></div></div></div>
             <div class="card ov2-op-card"><div class="ov2-op-top"><span class="ov2-op-name">Telkomsel</span><span class="ov2-op-target">Target <b id="telkomselTarget">Rp 0</b></span></div><div class="ov2-op-bars"><div><div class="ov2-bar-label"><span>Achievement</span><b id="telkomselAch">0%</b></div><div class="ov2-bar"><div id="telkomselAchBar" class="ov2-bar-fill" style="width:0%"></div></div></div><div><div class="ov2-bar-label"><span>Estimasi</span><b id="telkomselEstPercent">0%</b></div><div class="ov2-bar"><div id="telkomselEstBar" class="ov2-bar-fill est" style="width:0%"></div></div></div></div></div>
+          </div>
+        </div>
+
+        <!-- ERO ANALYTICS -->
+        <div class="ov2-ero-grid ov2-section">
+          <div class="card ov2-ero-chart-card">
+            <div class="ov2-section-head">
+              <div>
+                <div class="ov2-section-title">🎯 Sales by ERO — Estimasi %</div>
+                <div class="ov2-section-sub">Ranking estimasi pencapaian target ERO pada periode terpilih</div>
+              </div>
+              <select id="overviewEroEstCategory" class="ov2-control" onchange="renderOverviewEROCharts()">
+                <option value="Sales All">All Kategori</option>
+                <option value="Device">Device</option>
+                <option value="Accessories">Accessories</option>
+                <option value="Repair Contract">SCP</option>
+                <option value="Operator">Operator</option>
+              </select>
+            </div>
+            <div id="overviewEroEstChart" class="ov2-ero-chart"></div>
+          </div>
+
+          <div class="card ov2-ero-chart-card">
+            <div class="ov2-section-head">
+              <div>
+                <div class="ov2-section-title">🏷️ Sales by ERO — Brand</div>
+                <div class="ov2-section-sub">Ranking sales ERO berdasarkan brand</div>
+              </div>
+              <select id="overviewEroBrandFilter" class="ov2-control" onchange="renderOverviewEROCharts()">
+                <option value="ALL">All Brand</option>
+              </select>
+            </div>
+            <div id="overviewEroBrandChart" class="ov2-ero-chart"></div>
           </div>
         </div>
 
@@ -3372,6 +3425,7 @@ function renderOverview(){
   });
 
   renderOverviewTop10();
+  renderOverviewEROCharts();
 }
 
 function setOverviewRing_(id,value){
@@ -3441,6 +3495,94 @@ function renderOverviewRanking_(elId,rows,metric){
       '<div class="ov2-rank-value">'+label+'</div>'+
       '</div>';
   }).join("");
+}
+
+function overviewCategoryMatch_(x, category){
+  if(category === "Sales All") return true;
+  const raw=String(x && x.category || "").trim().toLowerCase();
+  const wanted=String(category || "").trim().toLowerCase();
+  if(wanted === "accessories") return raw === "accessories" || raw === "acc";
+  if(wanted === "repair contract") return raw === "repair contract" || raw === "repaircontract" || raw === "rc";
+  return raw === wanted;
+}
+
+function overviewEstimationByERO_(category){
+  const tx=dashboardData && dashboardData.transactions ? dashboardData.transactions : [];
+  const daysPassed=Math.max(0,Number(dashboardData.daysPassed||0));
+  const projectionDays=Math.max(0,Number(dashboardData.daysInMonth||daysPassed||0));
+  const isProjection=dashboardData.periodMode !== "lastweek" && dashboardData.periodMode !== "custom";
+  const map={};
+  (salesList||[]).filter(function(s){return String(s.status||"AKTIF").toUpperCase()!=="NONAKTIF";}).forEach(function(s){
+    const rows=tx.filter(function(x){return String(x.salesId)===String(s.id) && overviewCategoryMatch_(x,category);});
+    const actual=rows.reduce(function(sum,x){return sum+overviewEffectiveAmount_(x);},0);
+    const target=getStoreSalesTarget_(s.id,category);
+    const est=isProjection && daysPassed>0 ? actual/daysPassed*projectionDays : actual;
+    const estPct=target>0 ? est/target*100 : 0;
+    map[String(s.id)]={name:s.name,actual:actual,target:target,estimation:est,estimationPercent:estPct};
+  });
+  return Object.keys(map).map(function(k){return map[k];}).sort(function(a,b){
+    if(b.estimationPercent!==a.estimationPercent)return b.estimationPercent-a.estimationPercent;
+    return b.estimation-a.estimation;
+  });
+}
+
+function overviewBrandOptions_(){
+  const sel=document.getElementById("overviewEroBrandFilter");
+  if(!sel)return;
+  const current=sel.value || "ALL";
+  const brands={};
+  (allTransactionsCache||[]).forEach(function(x){
+    const b=overviewBrand_(x);
+    if(b)brands[b]=true;
+  });
+  const list=Object.keys(brands).sort(function(a,b){return a.localeCompare(b,"id");});
+  sel.innerHTML='<option value="ALL">All Brand</option>'+list.map(function(b){
+    return '<option value="'+escapeAttr(b)+'">'+escapeHtml(b)+'</option>';
+  }).join("");
+  if(list.indexOf(current)>=0 || current==="ALL") sel.value=current;
+}
+
+function overviewBrandSalesByERO_(brand){
+  const tx=dashboardData && dashboardData.transactions ? dashboardData.transactions : [];
+  const map={};
+  (salesList||[]).filter(function(s){return String(s.status||"AKTIF").toUpperCase()!=="NONAKTIF";}).forEach(function(s){map[String(s.id)]={name:s.name,value:0};});
+  tx.forEach(function(x){
+    const b=overviewBrand_(x);
+    if(brand!=="ALL" && b!==brand)return;
+    const sid=String(x.salesId);
+    if(!map[sid])return;
+    map[sid].value += overviewEffectiveAmount_(x);
+  });
+  return Object.keys(map).map(function(k){return map[k];}).sort(function(a,b){
+    if(b.value!==a.value)return b.value-a.value;
+    return a.name.localeCompare(b.name,"id");
+  });
+}
+
+function renderOverviewBarChart_(elId,rows,valueKey,formatter,fillClass){
+  const el=document.getElementById(elId);
+  if(!el)return;
+  if(!rows.length){el.innerHTML='<div class="ov2-ero-empty">Belum ada data.</div>';return;}
+  const max=Math.max.apply(null,rows.map(function(x){return Number(x[valueKey]||0);}));
+  const scale=max>0?max:1;
+  el.innerHTML=rows.map(function(x){
+    const v=Number(x[valueKey]||0);
+    const width=v>0?Math.min(v/scale*100,100):0;
+    return '<div class="ov2-ero-row"><div class="ov2-ero-name" title="'+escapeHtml(x.name)+'">'+escapeHtml(x.name)+'</div><div class="ov2-ero-track"><div class="ov2-ero-fill '+(fillClass||'')+'" style="width:'+width+'%"></div></div><div class="ov2-ero-value">'+formatter(v)+'</div></div>';
+  }).join("");
+}
+
+function renderOverviewEROCharts(){
+  if(!dashboardData)return;
+  overviewBrandOptions_();
+  const catEl=document.getElementById("overviewEroEstCategory");
+  const brandEl=document.getElementById("overviewEroBrandFilter");
+  const category=catEl ? catEl.value : "Sales All";
+  const brand=brandEl ? brandEl.value : "ALL";
+  const estRows=overviewEstimationByERO_(category);
+  renderOverviewBarChart_("overviewEroEstChart",estRows,"estimationPercent",function(v){return Math.round(v)+"%";},"");
+  const brandRows=overviewBrandSalesByERO_(brand);
+  renderOverviewBarChart_("overviewEroBrandChart",brandRows,"value",function(v){return overviewMoney(v);},"brand");
 }
 
 function renderOverviewTop10(){
