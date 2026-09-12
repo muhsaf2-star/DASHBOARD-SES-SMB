@@ -2924,80 +2924,59 @@ async function loadAll(){
 
   try{
 
-    const dashboard =
-      await api({
+    // Ambil data awal secara paralel. Transaksi disimpan di cache agar
+    // pergantian filter Overview berikutnya tidak perlu request ulang.
+    const results = await Promise.all([
+      api({
         action:"dashboard",
         period:getCurrentPeriod(),
         periodMode: periodMode,
         startDate: customStartDate,
         endDate: customEndDate
-      });
+      }),
+      api({ action:"sales" }),
+      api({ action:"targets", period:getCurrentPeriod() }),
+      api({ action:"transactions" })
+    ]);
 
-    if(
-      dashboard &&
-      dashboard.success
-    ){
+    const dashboard = results[0];
+    const sales = results[1];
+    const targetResult = results[2];
+    const transactionsResult = results[3];
 
-      dashboardData =
-        dashboard.data;
-
-      renderOverview();
-      renderOutlook();
-
+    if(dashboard && dashboard.success){
+      dashboardData = dashboard.data;
     }
 
-    const sales =
-      await api({
-        action:"sales"
-      });
+    if(transactionsResult && transactionsResult.success){
+      allTransactionsCache = transactionsResult.data || [];
+      // Gunakan cache lengkap untuk perhitungan Overview.
+      if(dashboardData) dashboardData.transactions = allTransactionsCache;
+    }
 
-    if(
-      sales &&
-      sales.success
-    ){
-
-      salesList =
-        sales.data || [];
-
+    if(sales && sales.success){
+      salesList = sales.data || [];
       renderManageSales();
-
       renderInputSales();
-
       renderSalesPerformance();
       renderStore();
       renderOutlook();
       if(currentPage === "top") renderTopEROPage();
       if(currentPage === "summary") renderSummary();
-
     }
 
-    const targetResult =
-      await api({
-        action:"targets",
-        period:getCurrentPeriod()
-      });
-
-    if(
-      targetResult &&
-      targetResult.success
-    ){
-
-      targets =
-        targetResult.data || [];
-
+    if(targetResult && targetResult.success){
+      targets = targetResult.data || [];
+      if(dashboardData) syncOverviewTargetsFromGlobal_();
       renderTargets();
-
     }
+
+    renderOverview();
+    renderOutlook();
 
   }catch(e){
-
-    showToast(
-      "Gagal mengambil data: " +
-      e.message
-    );
-
+    showToast("Gagal mengambil data: " + e.message);
   }
-
 }
 
 
@@ -3020,6 +2999,7 @@ function getCurrentPeriod(){
 
 
 let overviewFilterBusy = false;
+let allTransactionsCache = [];
 
 function setOverviewFilterBusy_(busy){
   overviewFilterBusy = !!busy;
@@ -3037,41 +3017,132 @@ function setPeriodMode(mode,button){
   document.querySelectorAll(".ov2-period .filter-btn").forEach(function(x){
     x.classList.remove("active");
   });
-
   if(button) button.classList.add("active");
 
   const box=document.getElementById("customPeriodBox");
   if(box) box.style.display = mode==="custom" ? "flex" : "none";
 
-  if(mode === "custom"){
-    return;
+  if(mode === "custom") return;
+
+  applyOverviewPeriodLocal_();
+}
+
+function overviewPeriodRangeLocal_(mode){
+  const today=new Date();
+  today.setHours(0,0,0,0);
+  const yesterday=new Date(today);
+  yesterday.setDate(yesterday.getDate()-1);
+
+  function mondayOf(d){
+    const x=new Date(d);
+    const day=x.getDay();
+    const diff=day===0 ? -6 : 1-day;
+    x.setDate(x.getDate()+diff);
+    x.setHours(0,0,0,0);
+    return x;
+  }
+  function fmt(d){
+    return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+  }
+  function days(a,b){
+    return Math.max(0,Math.floor((b-a)/86400000)+1);
   }
 
-  reloadDashboardPeriod_();
+  let start,end,projectionDays,isProjection=false;
+  if(mode==="lastweek"){
+    start=mondayOf(today); start.setDate(start.getDate()-7);
+    end=new Date(start); end.setDate(end.getDate()+6);
+    projectionDays=7;
+  }else if(mode==="week"){
+    start=mondayOf(today); end=new Date(yesterday);
+    projectionDays=7; isProjection=true;
+  }else if(mode==="year"){
+    start=new Date(today.getFullYear(),0,1); end=new Date(yesterday);
+    projectionDays=new Date(today.getFullYear(),11,31).getDate()+
+      (new Date(today.getFullYear(),11,31).getTime()-new Date(today.getFullYear(),0,1).getTime())/86400000;
+    projectionDays=Math.round(projectionDays)+1;
+    isProjection=true;
+  }else if(mode==="custom"){
+    const s=document.getElementById("customStartDate")?.value || customStartDate;
+    const e=document.getElementById("customEndDate")?.value || customEndDate;
+    if(!s || !e || s>e) return null;
+    start=new Date(s+"T00:00:00"); end=new Date(e+"T00:00:00");
+    projectionDays=days(start,end);
+  }else{
+    start=new Date(today.getFullYear(),today.getMonth(),1);
+    end=new Date(yesterday);
+    projectionDays=new Date(today.getFullYear(),today.getMonth()+1,0).getDate();
+    isProjection=true;
+  }
+  if(end<start) end=new Date(start);
+  return {startDate:fmt(start),endDate:fmt(end),daysPassed:days(start,end),projectionDays:projectionDays,isProjection:isProjection};
+}
+
+function syncOverviewTargetsFromGlobal_(){
+  const targetAll=(targets||[]).reduce(function(s,t){return s+Number(t.targetAll||0);},0);
+  const c={Device:0,Accessories:0,"Repair Contract":0,Operator:0};
+  const o={Indosat:0,XL:0,Telkomsel:0};
+  (targets||[]).forEach(function(t){
+    c.Device+=Number(t.device||0); c.Accessories+=Number(t.accessories||0);
+    c["Repair Contract"]+=Number(t.repairContract||0); c.Operator+=Number(t.operator||0);
+    o.Indosat+=Number(t.indosat||0); o.XL+=Number(t.xl||0); o.Telkomsel+=Number(t.telkomsel||0);
+  });
+  if(!dashboardData) dashboardData={};
+  dashboardData.targetAll=targetAll;
+  dashboardData.categories={
+    Device:{target:c.Device}, Accessories:{target:c.Accessories},
+    "Repair Contract":{target:c["Repair Contract"]}, Operator:{target:c.Operator}
+  };
+  dashboardData.operators={
+    Indosat:{target:o.Indosat}, XL:{target:o.XL}, Telkomsel:{target:o.Telkomsel}
+  };
+}
+
+function clearOverviewForLoading_(){
+  const ids=["overviewTarget","overviewAch","overviewEstPercent"];
+  ids.forEach(function(id){ if(document.getElementById(id)) setText(id,"—"); });
+  [
+    ["device","Device"],["acc","Accessories"],["repair","Repair Contract"],["operator","Operator"]
+  ].forEach(function(x){
+    [x[0]+"Target",x[0]+"Est"].forEach(function(id){if(document.getElementById(id))setText(id,"—");});
+    [x[0]+"Ach",x[0]+"EstPercent"].forEach(function(id){if(document.getElementById(id))setHtml(id,"—");});
+  });
+  ["indosat","xl","telkomsel"].forEach(function(p){
+    [p+"Target"].forEach(function(id){if(document.getElementById(id))setText(id,"—");});
+    [p+"Ach","${p}EstPercent"].forEach(function(id){if(document.getElementById(id))setHtml(id,"—");});
+  });
+}
+
+function applyOverviewPeriodLocal_(){
+  setOverviewFilterBusy_(true);
+  clearOverviewForLoading_();
+  const r=overviewPeriodRangeLocal_(periodMode);
+  if(!r){ setOverviewFilterBusy_(false); showToast("Tanggal Custom tidak valid."); return; }
+
+  const filtered=(allTransactionsCache||[]).filter(function(x){
+    const d=String(x.date||"").slice(0,10);
+    return d>=r.startDate && d<=r.endDate;
+  });
+
+  // Semua kalkulasi periode dilakukan lokal dari cache transaksi.
+  // Tidak ada request API saat tombol Minggu/Bulan/Tahun ditekan.
+  syncOverviewTargetsFromGlobal_();
+  dashboardData.periodMode=periodMode;
+  dashboardData.startDate=r.startDate;
+  dashboardData.endDate=r.endDate;
+  dashboardData.daysPassed=r.daysPassed;
+  dashboardData.daysInMonth=r.projectionDays;
+  dashboardData.cutoffDate=r.endDate;
+  dashboardData.timeGone=r.projectionDays>0 ? r.daysPassed/r.projectionDays*100 : 0;
+  dashboardData.transactions=filtered;
+  dashboardData.isProjectionRange=r.isProjection;
+  renderOverview();
+  setOverviewFilterBusy_(false);
 }
 
 async function reloadDashboardPeriod_(){
-  setOverviewFilterBusy_(true);
-  try{
-    const result = await api({
-      action:"overview",
-      period:getCurrentPeriod(),
-      periodMode:periodMode,
-      startDate:customStartDate,
-      endDate:customEndDate
-    });
-
-    if(result && result.success){
-      dashboardData = result.data || null;
-      renderOverview();
-    }else{
-      showToast((result && result.message) || "Gagal memuat filter");
-    }
-  }catch(e){
-    showToast("Gagal memuat filter: " + e.message);
-  }finally{
-    setTimeout(function(){ setOverviewFilterBusy_(false); }, 50);
-  }
+  // Dipertahankan untuk kompatibilitas kode lama. Filter Overview sekarang lokal.
+  applyOverviewPeriodLocal_();
 }
 
 function applyCustomPeriod(){
@@ -3090,8 +3161,7 @@ function applyCustomPeriod(){
   customStartDate=start;
   customEndDate=end;
   periodMode="custom";
-
-  reloadDashboardPeriod_();
+  applyOverviewPeriodLocal_();
 }
 
 
