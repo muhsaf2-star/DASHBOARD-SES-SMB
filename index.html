@@ -707,6 +707,8 @@ tr:last-child td{
 .top-ero-filter-wrap{margin:8px 0 10px;}
 .top-ero-filter{width:100%;height:30px;border:1px solid var(--border);border-radius:6px;background:#fff;padding:0 9px;font-size:11px;color:#172033;outline:none;}
 .top-ero-filter:focus{border-color:var(--blue);}
+.top-ero-period-filters{display:grid;grid-template-columns:120px minmax(150px,1fr) minmax(160px,1fr);gap:8px;}
+@media(max-width:600px){.top-ero-period-filters{grid-template-columns:88px minmax(0,1fr) minmax(0,1.15fr);gap:6px;}.top-ero-period-filters .top-ero-filter{font-size:10px;padding-left:7px;padding-right:7px;}}
 
 /* ================= TOP ERO AR FULL ================= */
 .top-ero-ar-grid{
@@ -784,45 +786,103 @@ tr:last-child td{
   .top-ero-ar-table th,.top-ero-ar-table td{padding:5px 4px;font-size:8px;}
 }
 
-/* ================= TOP SALES ================= */
+/* ================= TOP ERO — PODIUM ================= */
 
 .top-grid{
   display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:14px;
+  grid-template-columns:1fr 1.18fr 1fr;
+  gap:12px;
+  align-items:end;
   margin-bottom:16px;
 }
 
 .top-card{
-  padding:24px;
+  padding:16px 12px 0;
   text-align:center;
-  border-radius:10px;
+  border-radius:12px 12px 0 0;
   background:white;
   border:1px solid var(--border);
+  min-width:0;
+  position:relative;
+  overflow:hidden;
 }
 
 .top-card.rank1{
+  grid-column:2;
+  grid-row:1;
   background:#fffbea;
   border-color:#f0d567;
+  min-height:230px;
 }
 
 .top-card.rank2{
+  grid-column:1;
+  grid-row:1;
   background:#f8fafc;
+  min-height:190px;
 }
 
 .top-card.rank3{
+  grid-column:3;
+  grid-row:1;
   background:#fff8f0;
   border-color:#f1c69a;
+  min-height:175px;
+}
+
+.top-card .podium-base{
+  margin:12px -12px 0;
+  height:58px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:27px;
+  font-weight:900;
+  color:#fff;
+  text-shadow:0 1px 2px rgba(0,0,0,.2);
+  border-radius:8px 8px 0 0;
+  box-shadow:inset 0 2px 4px rgba(255,255,255,.45),0 -3px 8px rgba(0,0,0,.08);
+}
+
+.top-card.rank1 .podium-base{
+  height:78px;
+  background:linear-gradient(#f9d65a,#d99b16);
+}
+
+.top-card.rank2 .podium-base{
+  background:linear-gradient(#e9f0f7,#aebdcb);
+}
+
+.top-card.rank3 .podium-base{
+  background:linear-gradient(#f3b486,#d87942);
 }
 
 .medal{
-  font-size:28px;
+  font-size:30px;
+  line-height:1;
 }
+
+.top-card.rank1 .medal{font-size:36px;}
 
 .top-name{
   font-size:16px;
   font-weight:700;
-  margin-top:10px;
+  margin-top:8px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.top-amount{
+  font-size:25px;
+  font-weight:700;
+  color:var(--blue);
+  margin-top:8px;
+}
+
+.top-card .badge{
+  display:inline-block;
+  margin-top:6px;
 }
 
 .top-amount{
@@ -1581,9 +1641,27 @@ html,body{
     padding:5px 4px !important;
     white-space:nowrap;
   }
-  #topPageCards .top-card{padding:12px 8px !important;}
-  #topPageCards .top-amount{font-size:21px !important;}
-  #topPageCards .top-name{font-size:14px !important;}
+  /* TOP ERO PODIUM: mobile tetap 3 kartu berjajar */
+  #topPageCards{
+    grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+    gap:5px !important;
+    align-items:end !important;
+  }
+  #topPageCards .top-card{
+    padding:7px 4px 0 !important;
+    min-width:0 !important;
+    border-radius:8px 8px 0 0 !important;
+  }
+  #topPageCards .top-card.rank1{min-height:145px !important;grid-column:2 !important;grid-row:1 !important;}
+  #topPageCards .top-card.rank2{min-height:122px !important;grid-column:1 !important;grid-row:1 !important;}
+  #topPageCards .top-card.rank3{min-height:112px !important;grid-column:3 !important;grid-row:1 !important;}
+  #topPageCards .medal{font-size:20px !important;}
+  #topPageCards .top-card.rank1 .medal{font-size:25px !important;}
+  #topPageCards .top-name{font-size:9px !important;margin-top:4px !important;}
+  #topPageCards .top-amount{font-size:15px !important;margin-top:3px !important;}
+  #topPageCards .badge{font-size:8px !important;padding:3px 5px !important;margin-top:3px !important;}
+  #topPageCards .podium-base{height:30px !important;margin:7px -4px 0 !important;font-size:16px !important;border-radius:5px 5px 0 0 !important;}
+  #topPageCards .top-card.rank1 .podium-base{height:43px !important;}
 }
 
 
@@ -2421,7 +2499,12 @@ html,body{
           <div class="month-badge">📅 <span id="topEroMonth"></span></div>
         </div>
 
-        <div class="filters" style="margin-bottom:10px">
+        <div class="filters top-ero-period-filters" style="margin-bottom:10px">
+          <select class="select top-ero-filter" id="topPagePeriodMode" onchange="changeTopEROPeriodMode_()">
+            <option value="month">Bulan</option>
+            <option value="week">Week</option>
+          </select>
+          <select class="select top-ero-filter" id="topPagePeriodValue" onchange="changeTopEROPeriodValue_()"></select>
           <select class="select top-ero-filter" id="topPageCategory" onchange="renderTopEROPage()">
             <option value="Sales All">Sales All</option>
             <option value="Device">Device</option>
@@ -3456,6 +3539,13 @@ function applyCustomPeriod(){
 ===================================================== */
 
 function showPage(page){
+
+  // TOP ERO saat pertama kali dibuka selalu mulai dari Bulan Ini.
+  // Setelah user memilih periode, pilihan tersebut tetap dipertahankan.
+  if(page === "top" && !topEROPeriodReady_){
+    const modeEl=document.getElementById("topPagePeriodMode");
+    if(modeEl) modeEl.value="month";
+  }
 
   currentPage =
     page;
@@ -4757,25 +4847,198 @@ function renderSummary(){
   }
 }
 
-function topEROQtyCategory_(tx, category){
-  const cat=String(category||"").trim().toLowerCase();
-  return (tx||[]).filter(function(x){
-    const raw=String(x.category||"").trim().toLowerCase();
-    if(cat==="device") return raw==="device";
-    if(cat==="accessories") return raw==="accessories" || raw==="acc";
-    if(cat==="repair contract") return raw==="repair contract" || raw==="repaircontract" || raw==="rc" || raw==="scp";
-    if(cat==="operator") return raw==="operator" && ["indosat","xl","telkomsel"].indexOf(String(x.subcategory||"").trim().toLowerCase())>=0;
-    return true;
-  }).reduce(function(sum,x){ return sum+Number(x.qty||0); },0);
+function topERODateOnly_(v){
+  const raw=String(v||"").slice(0,10);
+  if(!raw)return null;
+  const d=new Date(raw+"T00:00:00");
+  return isNaN(d.getTime())?null:d;
 }
 
-function topEROArRows_(kind){
-  const tx=dashboardData && dashboardData.transactions ? dashboardData.transactions : [];
-  const active=(salesList||[]).filter(function(s){
-    return String(s.status||"AKTIF").toUpperCase()!=="NONAKTIF";
+function topEROMonthKey_(d){
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");
+}
+
+function topEROMonthLabel_(key){
+  const d=new Date(String(key)+"-01T00:00:00");
+  if(isNaN(d.getTime()))return key;
+  return d.toLocaleDateString("id-ID",{month:"long",year:"numeric"});
+}
+
+function topEROIsoWeekNo_(d){
+  const x=new Date(d); x.setHours(0,0,0,0);
+  const day=x.getDay()||7;
+  x.setDate(x.getDate()+4-day);
+  const yearStart=new Date(x.getFullYear(),0,1);
+  return Math.ceil((((x-yearStart)/86400000)+1)/7);
+}
+
+function topEROWeekInfo_(date){
+  const d=new Date(date); d.setHours(0,0,0,0);
+  const day=d.getDay()||7;
+  const start=new Date(d); start.setDate(d.getDate()-day+1);
+  const end=new Date(start); end.setDate(start.getDate()+6);
+  return {start:start,end:end,week:topEROIsoWeekNo_(start),year:start.getFullYear()};
+}
+
+function topEROWeekKey_(start){
+  return String(start.getFullYear())+"-W"+String(topEROIsoWeekNo_(start)).padStart(2,"0");
+}
+
+function topEROWeekLabel_(start){
+  return "W"+String(topEROIsoWeekNo_(start)).padStart(2,"0")+" • "+start.toLocaleDateString("id-ID",{day:"2-digit",month:"short",year:"numeric"});
+}
+
+let topEROSelectedRange_ = null;
+let topEROTargets_ = [];
+let topEROTargetPeriods_ = {};
+let topEROPeriodReady_ = false;
+
+function topEROYesterday_(){
+  const d=new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()-1); return d;
+}
+
+function topEROBuildPeriodOptions_(){
+  const modeEl=document.getElementById("topPagePeriodMode");
+  const valueEl=document.getElementById("topPagePeriodValue");
+  if(!modeEl||!valueEl)return;
+  const mode=modeEl.value||"month";
+  const tx=allTransactionsCache||[];
+  const months={};
+  const weeks={};
+  tx.forEach(function(x){
+    const d=topERODateOnly_(x.date||x.tanggal||x.trxDate||x.transactionDate);
+    if(!d)return;
+    months[topEROMonthKey_(d)]=true;
+    const w=topEROWeekInfo_(d);
+    weeks[topEROWeekKey_(w.start)]={start:w.start,end:w.end,week:w.week};
   });
-  const rows=active.map(function(s){
-    const mine=tx.filter(function(x){return String(x.salesId)===String(s.id);});
+  const now=new Date(); now.setHours(0,0,0,0);
+  months[topEROMonthKey_(now)]=true;
+  let current=valueEl.value;
+  if(mode==="month"){
+    const keys=Object.keys(months).sort().reverse();
+    valueEl.innerHTML=keys.map(function(k){return '<option value="'+k+'">'+escapeHtml(topEROMonthLabel_(k))+'</option>';}).join("");
+    const currentMonth=topEROMonthKey_(now);
+    valueEl.value=keys.indexOf(current)>=0?current:(keys.indexOf(currentMonth)>=0?currentMonth:(keys[0]||""));
+  }else{
+    const keys=Object.keys(weeks).sort().reverse();
+    valueEl.innerHTML=keys.map(function(k){
+      const w=weeks[k];
+      return '<option value="'+k+'">W'+String(w.week).padStart(2,"0")+' • '+escapeHtml(w.start.toLocaleDateString("id-ID",{day:"2-digit",month:"short"}))+' - '+escapeHtml(w.end.toLocaleDateString("id-ID",{day:"2-digit",month:"short",year:"numeric"}))+'</option>';
+    }).join("");
+    if(current && keys.indexOf(current)>=0)valueEl.value=current;
+    else if(keys.length)valueEl.value=keys[0];
+  }
+  topEROPeriodReady_=true;
+}
+
+function topEROGetSelectedRange_(){
+  const mode=document.getElementById("topPagePeriodMode")?.value||"month";
+  const value=document.getElementById("topPagePeriodValue")?.value||"";
+  const yesterday=topEROYesterday_();
+  if(mode==="month"){
+    const d=new Date(value+"-01T00:00:00");
+    if(isNaN(d.getTime()))return null;
+    const start=new Date(d.getFullYear(),d.getMonth(),1); start.setHours(0,0,0,0);
+    const end=new Date(d.getFullYear(),d.getMonth()+1,0); end.setHours(0,0,0,0);
+    if(end>yesterday)end.setTime(yesterday.getTime());
+    return {mode:mode,value:value,start:start,end:end,label:topEROMonthLabel_(value),targetMonths:[value]};
+  }
+  const m=value.match(/^(\d{4})-W(\d{2})$/);
+  if(!m)return null;
+  const jan4=new Date(Number(m[1]),0,4); jan4.setHours(0,0,0,0);
+  const day=jan4.getDay()||7;
+  const firstMonday=new Date(jan4); firstMonday.setDate(jan4.getDate()-day+1);
+  const start=new Date(firstMonday); start.setDate(firstMonday.getDate()+(Number(m[2])-1)*7); start.setHours(0,0,0,0);
+  const end=new Date(start); end.setDate(start.getDate()+6); end.setHours(0,0,0,0);
+  if(end>yesterday)end.setTime(yesterday.getTime());
+  const months={};
+  for(let d=new Date(start); d<=end; d.setDate(d.getDate()+1)) months[topEROMonthKey_(d)]=true;
+  return {mode:mode,value:value,start:start,end:end,label:"W"+m[2],targetMonths:Object.keys(months)};
+}
+
+function topEROCategoryMatch_(x,category){
+  const raw=String(x.category||"").trim().toLowerCase();
+  const wanted=String(category||"").trim().toLowerCase();
+  if(wanted==="sales all")return true;
+  if(wanted==="device")return raw==="device";
+  if(wanted==="accessories")return raw==="accessories"||raw==="acc";
+  if(wanted==="repair contract")return raw==="repair contract"||raw==="repaircontract"||raw==="rc"||raw==="scp";
+  if(wanted==="operator")return raw==="operator";
+  return raw===wanted;
+}
+
+function topEROActual_(tx,salesId,category){
+  return (tx||[]).filter(function(x){return String(x.salesId)===String(salesId)&&topEROCategoryMatch_(x,category);}).reduce(function(sum,x){return sum+Number(x.amount||0);},0);
+}
+
+function topEROGetTargetFromRows_(rows,salesId,category){
+  const t=(rows||[]).find(function(x){return String(x.salesId)===String(salesId);})||{};
+  if(category==="Sales All")return Number(t.targetAll||0);
+  if(category==="Device")return Number(t.device||0);
+  if(category==="Accessories")return Number(t.accessories||0);
+  if(category==="Repair Contract")return Number(t.repairContract||0);
+  if(category==="Operator")return Number(t.operator||0);
+  return 0;
+}
+
+function topEROStoreTarget_(salesId,category,range){
+  if(!range)return 0;
+  let total=0;
+  (range.targetMonths||[]).forEach(function(monthKey){
+    const rows=topEROTargetPeriods_[monthKey]||[];
+    const monthlyTarget=topEROGetTargetFromRows_(rows,salesId,category);
+    if(!monthlyTarget)return;
+    const md=new Date(monthKey+"-01T00:00:00");
+    const monthStart=new Date(md.getFullYear(),md.getMonth(),1); monthStart.setHours(0,0,0,0);
+    const monthEnd=new Date(md.getFullYear(),md.getMonth()+1,0); monthEnd.setHours(0,0,0,0);
+    const overlapStart=new Date(Math.max(range.start.getTime(),monthStart.getTime()));
+    const overlapEnd=new Date(Math.min(range.end.getTime(),monthEnd.getTime()));
+    if(overlapEnd<overlapStart)return;
+    const overlapDays=Math.floor((overlapEnd-overlapStart)/86400000)+1;
+    const monthDays=monthEnd.getDate();
+    total += monthlyTarget*(overlapDays/monthDays);
+  });
+  return total;
+}
+
+async function topEROLoadTargets_(range){
+  if(!range)return;
+  const periods=range.targetMonths||[];
+  const unique=periods.filter(function(x,i,a){return a.indexOf(x)===i;});
+  const results=await Promise.all(unique.map(function(period){
+    if(topEROTargetPeriods_[period])return Promise.resolve({success:true,data:topEROTargetPeriods_[period],period:period});
+    return api({action:"targets",period:period}).then(function(res){return {success:!!(res&&res.success),data:(res&&res.data)||[],period:period};}).catch(function(){return {success:false,data:[],period:period};});
+  }));
+  results.forEach(function(r){topEROTargetPeriods_[r.period]=r.data||[];});
+  topEROTargets_=topEROTargetPeriods_[periods[0]]||[];
+}
+
+async function changeTopEROPeriodMode_(){
+  topEROBuildPeriodOptions_();
+  await changeTopEROPeriodValue_();
+}
+
+async function changeTopEROPeriodValue_(){
+  const range=topEROGetSelectedRange_();
+  if(!range)return;
+  topEROTargetPeriods_={};
+  if(range.mode==="month" && dashboardData && dashboardData.period===range.value && dashboardData.targets){
+    topEROTargetPeriods_[range.value]=dashboardData.targets||[];
+  }
+  await topEROLoadTargets_(range);
+  topEROSelectedRange_=range;
+  renderTopEROPage();
+}
+
+function topEROQtyCategory_(tx, category){
+  return (tx||[]).filter(function(x){return topEROCategoryMatch_(x,category);}).reduce(function(sum,x){ return sum+Number(x.qty||0); },0);
+}
+
+function topEROArRows_(kind,tx){
+  const active=(salesList||[]).filter(function(s){return String(s.status||"AKTIF").toUpperCase()!=="NONAKTIF";});
+  return active.map(function(s){
+    const mine=(tx||[]).filter(function(x){return String(x.salesId)===String(s.id);});
     const device=topEROQtyCategory_(mine,"Device");
     let other=0;
     if(kind==="acc") other=topEROQtyCategory_(mine,"Accessories");
@@ -4783,12 +5046,11 @@ function topEROArRows_(kind){
     if(kind==="operator") other=topEROQtyCategory_(mine,"Operator");
     const ar=device>0 ? other/device*100 : 0;
     return {s:s,device:device,other:other,ar:ar};
-  });
-  return rows.sort(function(a,b){return b.ar-a.ar || b.other-a.other || b.device-a.device;});
+  }).sort(function(a,b){return b.ar-a.ar || b.other-a.other || b.device-a.device;});
 }
 
-function renderTopEROArAll_(){
-  const tx=dashboardData && dashboardData.transactions ? dashboardData.transactions : [];
+function renderTopEROArAll_(tx){
+  tx=tx||[];
   const device=topEROQtyCategory_(tx,"Device");
   const acc=topEROQtyCategory_(tx,"Accessories");
   const scp=topEROQtyCategory_(tx,"Repair Contract");
@@ -4796,7 +5058,6 @@ function renderTopEROArAll_(){
   const arAcc=device>0 ? acc/device*100 : 0;
   const arScp=device>0 ? scp/device*100 : 0;
   const arOp=device>0 ? op/device*100 : 0;
-
   const cards=[
     {valueId:"topArAccValue",subId:"topArAccSub",fillId:"topArAccFill",cardId:"topArAccCard",value:arAcc,other:acc,threshold:200,good:arAcc>=200},
     {valueId:"topArScpValue",subId:"topArScpSub",fillId:"topArScpFill",cardId:"topArScpCard",value:arScp,other:scp,threshold:40,good:arScp>=40},
@@ -4808,75 +5069,69 @@ function renderTopEROArAll_(){
     const fill=document.getElementById(c.fillId);
     if(fill) fill.style.width=Math.min(Math.max(c.value,0),Math.max(c.threshold*1.35,100))/Math.max(c.threshold*1.35,100)*100+"%";
     const card=document.getElementById(c.cardId);
-    if(card) card.classList.toggle("good",c.good),card.classList.toggle("bad",!c.good);
+    if(card){card.classList.toggle("good",c.good);card.classList.toggle("bad",!c.good);}
   });
   setText("topArDeviceQty",Math.round(device));
 
   function renderArTable(id,rows,kind){
-    const el=document.getElementById(id);
-    if(!el)return;
+    const el=document.getElementById(id); if(!el)return;
     const threshold=kind==="acc"?200:(kind==="scp"?40:50);
     el.innerHTML=rows.map(function(r,i){
       const good=kind==="operator" ? r.ar>threshold : r.ar>=threshold;
       const val=Math.round(r.ar);
-      return '<tr>'+
-        '<td>#'+(i+1)+'</td>'+
-        '<td><b>'+escapeHtml(r.s.name||"-")+'</b></td>'+
-        '<td>'+Math.round(r.device)+'</td>'+
-        '<td>'+Math.round(r.other)+'</td>'+
-        '<td class="'+(good?'top-ero-ar-value-good':'top-ero-ar-value-bad')+'">'+val+'%</td>'+
-        '<td class="top-ero-ar-status '+(good?'good':'bad')+'">'+(good?'✓':'✕')+'</td>'+
-      '</tr>';
+      return '<tr><td>#'+(i+1)+'</td><td><b>'+escapeHtml(r.s.name||"-")+'</b></td><td>'+Math.round(r.device)+'</td><td>'+Math.round(r.other)+'</td><td class="'+(good?'top-ero-ar-value-good':'top-ero-ar-value-bad')+'">'+val+'%</td><td class="top-ero-ar-status '+(good?'good':'bad')+'">'+(good?'✓':'✕')+'</td></tr>';
     }).join("") || '<tr><td colspan="6">Belum ada data.</td></tr>';
   }
-  renderArTable("topArAccTable",topEROArRows_("acc"),"acc");
-  renderArTable("topArScpTable",topEROArRows_("scp"),"scp");
-  renderArTable("topArOperatorTable",topEROArRows_("operator"),"operator");
+  renderArTable("topArAccTable",topEROArRows_("acc",tx),"acc");
+  renderArTable("topArScpTable",topEROArRows_("scp",tx),"scp");
+  renderArTable("topArOperatorTable",topEROArRows_("operator",tx),"operator");
 }
 
-function renderTopEROPosition_(){
-  const el=document.getElementById("topEroPositionChart");
-  if(!el)return;
+function renderTopEROPosition_(tx,range){
+  const el=document.getElementById("topEroPositionChart"); if(!el)return;
   const categoryEl=document.getElementById("topPageCategory");
   const category=categoryEl ? categoryEl.value : "Sales All";
-  const days=Number(dashboardData.daysPassed || dashboardData.days || 0);
-  const dim=Number(dashboardData.daysInMonth || 0);
-  const rows=(salesList||[]).filter(function(s){
-    return String(s.status||"AKTIF").toUpperCase()!=="NONAKTIF";
-  }).map(function(s){
-    const actual=getStoreSalesCategoryActual_(s.id,category,"ALL");
-    const target=getStoreSalesTarget_(s.id,category);
+  const rows=(salesList||[]).filter(function(s){return String(s.status||"AKTIF").toUpperCase()!=="NONAKTIF";}).map(function(s){
+    const actual=topEROActual_(tx,s.id,category);
+    const target=topEROStoreTarget_(s.id,category,range);
     const ach=target>0 ? actual/target*100 : 0;
-    const est=days>0 ? actual/days*dim : actual;
-    const estPct=target>0 ? est/target*100 : 0;
-    return {name:s.name||"-",ach:ach,estPct:estPct};
-  }).filter(function(r){return r.ach!==0 || r.estPct!==0;}).sort(function(a,b){
-    return b.estPct-a.estPct || b.ach-a.ach;
-  });
-
-  const maxScale=Math.max(150,Math.ceil(Math.max.apply(null,rows.map(function(r){return r.estPct;} ).concat([150]))/50)*50);
+    return {name:s.name||"-",ach:ach,estPct:ach};
+  }).filter(function(r){return r.ach!==0 || r.estPct!==0;}).sort(function(a,b){return b.estPct-a.estPct || b.ach-a.ach;});
+  const maxScale=Math.max(150,Math.ceil(Math.max.apply(null,rows.map(function(r){return r.estPct;}).concat([150]))/50)*50);
   el.innerHTML=rows.map(function(r){
     const h=Math.min(Math.max(r.estPct,0),maxScale)/maxScale*100;
-    return '<div class="top-ero-position-item">'+
-      '<div class="top-ero-position-value">'+Math.round(r.estPct)+'%</div>'+
-      '<div class="top-ero-position-bar-wrap"><div class="top-ero-position-bar" style="height:'+h+'%"></div></div>'+
-      '<div class="top-ero-position-name" title="'+escapeHtml(r.name)+'">'+escapeHtml(r.name)+'</div>'+
-    '</div>';
+    return '<div class="top-ero-position-item"><div class="top-ero-position-value">'+Math.round(r.estPct)+'%</div><div class="top-ero-position-bar-wrap"><div class="top-ero-position-bar" style="height:'+h+'%"></div></div><div class="top-ero-position-name" title="'+escapeHtml(r.name)+'">'+escapeHtml(r.name)+'</div></div>';
   }).join("") || '<div class="ov2-empty">Belum ada data untuk ditampilkan.</div>';
 }
 
-function renderTopEROPage(){
+async function renderTopEROPage(){
   if(!dashboardData || !salesList || !salesList.length) return;
+  if(!topEROPeriodReady_){
+    const modeEl=document.getElementById("topPagePeriodMode");
+    if(modeEl) modeEl.value="month";
+    topEROBuildPeriodOptions_();
+  }
+  let range=topEROSelectedRange_||topEROGetSelectedRange_();
+  if(!range)return;
+  if(!topEROTargetPeriods_[range.targetMonths[0]]){
+    await topEROLoadTargets_(range);
+  }
+  topEROSelectedRange_=range;
 
   const categoryEl=document.getElementById("topPageCategory");
   const category=categoryEl ? categoryEl.value : "Sales All";
-  const days=Number(dashboardData.daysPassed || dashboardData.days || 0);
-  const dim=Number(dashboardData.daysInMonth || new Date(new Date().getFullYear(),new Date().getMonth()+1,0).getDate());
-
+  const allTx=allTransactionsCache||[];
+  const tx=allTx.filter(function(x){
+    const d=topERODateOnly_(x.date||x.tanggal||x.trxDate||x.transactionDate);
+    return d && d>=range.start && d<=range.end;
+  });
+  const days=Math.max(1,Math.floor((range.end-range.start)/86400000)+1);
+  const isCurrentMonth=range.mode==="month" && range.value===topEROMonthKey_(new Date());
+  const dim=new Date(range.start.getFullYear(),range.start.getMonth()+1,0).getDate();
   const rows=salesList.map(s=>{
-    const actual=getStoreSalesCategoryActual_(s.id,category,"ALL");
-    const target=getStoreSalesTarget_(s.id,category);
-    const est=days>0 ? actual/days*dim : 0;
+    const actual=topEROActual_(tx,s.id,category);
+    const target=topEROStoreTarget_(s.id,category,range);
+    const est=(range.mode==="month" && isCurrentMonth && days>0) ? actual/days*dim : actual;
     const ach=target>0 ? actual/target*100 : 0;
     const estPct=target>0 ? est/target*100 : 0;
     return {s,actual,target,est,ach,estPct};
@@ -4884,33 +5139,12 @@ function renderTopEROPage(){
 
   const medals=["🥇","🥈","🥉"];
   const cards=document.getElementById("topPageCards");
-  if(cards){
-    cards.innerHTML=rows.slice(0,3).map((r,i)=>`
-      <div class="top-card rank${i+1}">
-        <div class="medal">${medals[i]}</div>
-        <div class="top-name">${escapeHtml(r.s.name||"-")}</div>
-        <div class="top-amount">${eroMoney(r.actual)}</div>
-        <div class="badge">Ach ${eroPercent(r.ach)}</div>
-      </div>`).join("") || '<div class="highlight-empty">Belum ada data untuk diranking.</div>';
-  }
-
+  if(cards){cards.innerHTML=rows.slice(0,3).map((r,i)=>`<div class="top-card rank${i+1}"><div class="medal">${medals[i]}</div><div class="top-name">${escapeHtml(r.s.name||"-")}</div><div class="top-amount">${eroMoney(r.actual)}</div><div class="badge">Ach ${eroPercent(r.ach)}</div><div class="podium-base">${i+1}</div></div>`).join("") || '<div class="highlight-empty">Belum ada data untuk diranking.</div>';}
   const tbody=document.getElementById("topPageTable");
-  if(tbody){
-    tbody.innerHTML=rows.map((r,i)=>`
-      <tr>
-        <td>#${i+1}</td>
-        <td><b>${escapeHtml(r.s.name||"-")}</b></td>
-        <td class="money">${eroMoney(r.target)}</td>
-        <td class="money">${eroMoney(r.actual)}</td>
-        <td>${eroPercent(r.ach)}</td>
-        <td class="money">${eroMoney(r.est)}</td>
-        <td>${eroPercent(r.estPct)}</td>
-      </tr>`).join("") || '<tr><td colspan="7">Belum ada data.</td></tr>';
-  }
-
-  renderTopEROArAll_();
-  renderTopEROPosition_();
-  setText("topEroMonth", formatMonth(dashboardData.period || getCurrentPeriod()));
+  if(tbody){tbody.innerHTML=rows.map((r,i)=>`<tr><td>#${i+1}</td><td><b>${escapeHtml(r.s.name||"-")}</b></td><td class="money">${eroMoney(r.target)}</td><td class="money">${eroMoney(r.actual)}</td><td>${eroPercent(r.ach)}</td><td class="money">${eroMoney(r.est)}</td><td>${eroPercent(r.estPct)}</td></tr>`).join("") || '<tr><td colspan="7">Belum ada data.</td></tr>';}
+  renderTopEROArAll_(tx);
+  renderTopEROPosition_(tx,range);
+  setText("topEroMonth", range.label);
 }
 
 /* =====================================================
