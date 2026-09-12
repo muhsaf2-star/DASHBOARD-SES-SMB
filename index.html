@@ -358,7 +358,7 @@ button{
   }
 }
 .gap-up{font-weight:700;}
-.gap-down{font-weight:700;}
+.gap-down{font-weight:700;color:#d93025;}
 @media(max-width:700px){
   .store-kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;}
   .store-kpi{padding:8px 9px;}
@@ -3862,6 +3862,47 @@ function outlookWeeks_(){
   return weeks.slice(-3);
 }
 
+function outlookMoney_(value){
+  const n=Number(value||0);
+  if(!Number.isFinite(n)) return "Rp 0";
+  const abs=Math.abs(n);
+  const sign=n<0?"-":"";
+  const fmt=v=>Math.round(v).toLocaleString("id-ID");
+  if(abs>=1000000000) return "Rp "+sign+fmt(abs/1000000000)+" M";
+  if(abs>=1000000) return "Rp "+sign+fmt(abs/1000000)+" jt";
+  if(abs>=1000) return "Rp "+sign+fmt(abs/1000)+" rb";
+  return "Rp "+sign+Math.round(abs).toLocaleString("id-ID");
+}
+
+function outlookPercent_(value){
+  const n=Number(value||0);
+  if(!Number.isFinite(n)) return "—";
+  return Math.round(n)+"%";
+}
+
+function outlookWeekLabel_(w){
+  const raw=String(w && (w.start || w.date || "") || "").slice(0,10);
+  if(!raw) return w && w.label ? w.label : "";
+  const d=new Date(raw+"T00:00:00");
+  if(isNaN(d.getTime())) return w && w.label ? w.label : "";
+
+  // Penomoran W mengikuti minggu yang dipakai dashboard:
+  // minggu dimulai Senin dan W1 dimulai dari minggu pertama tahun.
+  const yearStart=new Date(d.getFullYear(),0,1);
+  const day=(yearStart.getDay()+6)%7;
+  const firstMonday=new Date(yearStart);
+  firstMonday.setDate(yearStart.getDate()+(day===0?0:7-day));
+  firstMonday.setHours(0,0,0,0);
+
+  let weekNo;
+  if(d < firstMonday){
+    weekNo=1;
+  }else{
+    weekNo=Math.floor((d-firstMonday)/604800000)+2;
+  }
+  return "W"+String(weekNo).padStart(2,"0");
+}
+
 function renderOutlook(){
   if(!dashboardData) return;
 
@@ -3869,7 +3910,7 @@ function renderOutlook(){
   const catNames=["Sales All","Device","Accessories","Repair Contract","Operator"];
 
   weeks.forEach(function(w,i){
-    const label=w.label || ((w.start||"")+" - "+(w.end||""));
+    const label=outlookWeekLabel_(w);
     setText("outW"+(i+1),label);
     setText("outSW"+(i+1),label);
     setText("outSerW"+(i+1),label);
@@ -3897,11 +3938,11 @@ function renderOutlook(){
     catEl.innerHTML=catRows.map(function(r){
       return `<tr>
         <td><b>${escapeHtml(r.name)}</b></td>
-        <td class="money">${money(r.vals[0])}</td>
-        <td class="money">${money(r.vals[1])}</td>
-        <td class="money">${money(r.vals[2])}</td>
-        <td>${r.wow===null?"—":percent(r.wow)}</td>
-        <td class="${r.gap>=0?'gap-up':'gap-down'}">${money(r.gap)}</td>
+        <td class="money">${outlookMoney_(r.vals[0])}</td>
+        <td class="money">${outlookMoney_(r.vals[1])}</td>
+        <td class="money">${outlookMoney_(r.vals[2])}</td>
+        <td>${r.wow===null?"—":outlookPercent_(r.wow)}</td>
+        <td class="${r.gap>=0?'gap-up':'gap-down'}">${outlookMoney_(r.gap)}</td>
       </tr>`;
     }).join("");
   }
@@ -3926,7 +3967,7 @@ function renderOutlook(){
       const contribution=latestDeviceTotal!==0?(r.vals[2]/latestDeviceTotal*100):0;
       return `<tr>
         <td><b>${escapeHtml(r.name)}</b></td>
-        <td class="money">${money(r.vals[2])}</td>
+        <td class="money">${outlookMoney_(r.vals[2])}</td>
         <td>${percent(contribution)}</td>
       </tr>`;
     }).join("");
@@ -3937,11 +3978,11 @@ function renderOutlook(){
     seriesEl.innerHTML=seriesRows.map(function(r){
       return `<tr>
         <td><b>${escapeHtml(r.name)}</b></td>
-        <td class="money">${money(r.vals[0])}</td>
-        <td class="money">${money(r.vals[1])}</td>
-        <td class="money">${money(r.vals[2])}</td>
-        <td>${r.wow===null?"—":percent(r.wow)}</td>
-        <td class="${r.gap>=0?'gap-up':'gap-down'}">${money(r.gap)}</td>
+        <td class="money">${outlookMoney_(r.vals[0])}</td>
+        <td class="money">${outlookMoney_(r.vals[1])}</td>
+        <td class="money">${outlookMoney_(r.vals[2])}</td>
+        <td>${r.wow===null?"—":outlookPercent_(r.wow)}</td>
+        <td class="${r.gap>=0?'gap-up':'gap-down'}">${outlookMoney_(r.gap)}</td>
       </tr>`;
     }).join("");
   }
@@ -3966,11 +4007,11 @@ function renderOutlook(){
     salesEl.innerHTML=salesRows.map(function(r){
       return `<tr>
         <td><b>${escapeHtml(r.name)}</b></td>
-        <td class="money">${money(r.vals[0])}</td>
-        <td class="money">${money(r.vals[1])}</td>
-        <td class="money">${money(r.vals[2])}</td>
-        <td>${r.wow===null?"—":percent(r.wow)}</td>
-        <td class="${r.gap>=0?'gap-up':'gap-down'}">${money(r.gap)}</td>
+        <td class="money">${outlookMoney_(r.vals[0])}</td>
+        <td class="money">${outlookMoney_(r.vals[1])}</td>
+        <td class="money">${outlookMoney_(r.vals[2])}</td>
+        <td>${r.wow===null?"—":outlookPercent_(r.wow)}</td>
+        <td class="${r.gap>=0?'gap-up':'gap-down'}">${outlookMoney_(r.gap)}</td>
       </tr>`;
     }).join("");
   }
