@@ -1713,53 +1713,44 @@ html,body{
   .ov2-ero-axis{margin-left:111px;margin-right:54px}
 }
 
+</style>
 
+<style>
 /* =========================================================
-   MOBILE RANKING CARDS — 1 KOLOM
-   Sales by ERO / Top Produk / Top Brand
+   FINAL MOBILE FIX — OVERVIEW RANKING
+   HP: setiap ranking menjadi 1 card / 1 kolom full width.
    ========================================================= */
-@media(max-width:700px){
+@media (max-width:700px){
   #page-overview .ov2-top-grid,
   #page-overview .ov2-ero-grid{
+    display:grid !important;
     grid-template-columns:1fr !important;
     width:100% !important;
+    gap:8px !important;
   }
 
   #page-overview .ov2-top-card,
   #page-overview .ov2-ero-chart-card{
+    display:block !important;
     width:100% !important;
     min-width:0 !important;
+    max-width:100% !important;
   }
 
-  #page-overview .ov2-ranking,
-  #page-overview .ov2-ero-chart{
+  #page-overview .ov2-ranking{
     width:100% !important;
-  }
-
-  #page-overview .ov2-rank-row{
-    grid-template-columns:20px minmax(0,1fr) 72px 48px !important;
-    width:100% !important;
-  }
-
-  #page-overview .ov2-rank-name,
-  #page-overview .ov2-rank-value{
     min-width:0 !important;
   }
 }
 
-@media(max-width:480px){
+@media (max-width:480px){
   #page-overview .ov2-top-card,
   #page-overview .ov2-ero-chart-card{
-    padding:11px 10px !important;
-  }
-
-  #page-overview .ov2-rank-row{
-    grid-template-columns:18px minmax(0,1fr) 62px 42px !important;
-    gap:5px !important;
+    padding:10px !important;
   }
 }
-
 </style>
+
 </head>
 
 <body>
@@ -3049,8 +3040,9 @@ async function loadAll(){
 
     if(transactionsResult && transactionsResult.success){
       allTransactionsCache = transactionsResult.data || [];
-      // Gunakan cache lengkap untuk perhitungan Overview.
-      if(dashboardData) dashboardData.transactions = allTransactionsCache;
+      // Cache tetap menyimpan semua transaksi untuk pergantian filter.
+      // dashboardData.transactions TIDAK ditimpa di sini; Overview
+      // akan menerapkan periode default "Bulan Ini" setelah semua data siap.
     }
 
     if(sales && sales.success){
@@ -3070,7 +3062,13 @@ async function loadAll(){
       renderTargets();
     }
 
-    renderOverview();
+    // Terapkan periode Overview default (Bulan Ini) ke cache transaksi.
+    // Ini mencegah Top Produk/Brand menampilkan ALL DATE saat refresh.
+    if(dashboardData && allTransactionsCache.length){
+      applyOverviewPeriodLocal_();
+    }else{
+      renderOverview();
+    }
     renderOutlook();
 
   }catch(e){
