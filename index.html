@@ -1962,7 +1962,7 @@ html,body{
             <div id="overviewTopProducts" class="ov2-ranking"></div>
           </div>
           <div class="card ov2-top-card">
-            <div class="ov2-section-head"><div style="display:flex;align-items:center;gap:8px;min-width:0"><select id="overviewBrandMetric" class="ov2-control" onchange="renderOverviewTop10()"><option value="value">By Value</option><option value="qty">By Qty</option></select><div><div class="ov2-section-title">🏷️ Top 10 Brand</div><div class="ov2-section-sub">Brand berdasarkan nama produk</div></div></div></div>
+            <div class="ov2-section-head"><div style="display:flex;align-items:center;gap:8px;min-width:0"><select id="overviewBrandMetric" class="ov2-control" onchange="renderOverviewTop10()"><option value="value">By Value</option><option value="qty">By Qty</option></select><div><div class="ov2-section-title">🏷️ Top 10 Brand</div><div class="ov2-section-sub">Brand berdasarkan kolom BRAND di SALES_DATA</div></div></div></div>
             <div id="overviewTopBrands" class="ov2-ranking"></div>
           </div>
         </div>
@@ -3241,16 +3241,9 @@ function overviewNormalizeProduct_(x){
   return p || "Tanpa Nama Produk";
 }
 
-function overviewBrandFromText_(text){
-  const s=String(text||"").toLowerCase();
-  const rules=[
-    ["samsung", "Samsung"],["galaxy", "Samsung"],["iphone", "Apple"],["ipad", "Apple"],["macbook", "Apple"],["airpods", "Apple"],
-    ["xiaomi", "Xiaomi"],["redmi", "Xiaomi"],["poco", "POCO"],["huawei", "Huawei"],["honor", "Honor"],["oppo", "OPPO"],["vivo", "vivo"],["realme", "realme"],
-    ["anker", "Anker"],["spigen", "Spigen"],["ugreen", "UGREEN"],["baseus", "Baseus"],["jbl", "JBL"],["sony", "Sony"],["tcl", "TCL"],["logitech", "Logitech"]
-  ];
-  for(const r of rules) if(s.includes(r[0])) return r[1];
-  const words=String(text||"").trim().split(/\s+/).filter(Boolean);
-  return words.length ? words[0] : "Lainnya";
+function overviewBrand_(x){
+  const brand=String(x && x.brand || "").trim();
+  return brand || "Belum Diisi";
 }
 
 function overviewBuildRanking_(rows,key,metric){
@@ -3294,7 +3287,7 @@ function renderOverviewTop10(){
   const productMetric=overviewTopMetric_("overviewProductMetric");
   const brandMetric=overviewTopMetric_("overviewBrandMetric");
   const products=overviewBuildRanking_(tx,function(x){return overviewNormalizeProduct_(x);},productMetric);
-  const brands=overviewBuildRanking_(tx,function(x){return overviewBrandFromText_(String(x.product||"")||String(x.subcategory||""));},brandMetric);
+  const brands=overviewBuildRanking_(tx,function(x){return overviewBrand_(x);},brandMetric);
   renderOverviewRanking_("overviewTopProducts",products,productMetric);
   renderOverviewRanking_("overviewTopBrands",brands,brandMetric);
 }
