@@ -1642,6 +1642,9 @@ html,body{
 ===================================================== */
 #page-overview.overview-v2{max-width:100%;}
 #page-overview .ov2-period{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+#page-overview .ov2-value-basis{display:flex;align-items:center;gap:6px;margin-left:auto}
+#page-overview .ov2-value-basis-label{font-size:10px;font-weight:700;color:#62708a}
+#page-overview .ov2-value-basis select{height:30px;padding:0 9px;border:1px solid #cfdced;background:#fff;border-radius:8px;color:#173b7c;font-size:10px;font-weight:800;outline:none}
 #page-overview .ov2-period-label{font-size:12px;font-weight:700;color:#123b86;display:flex;align-items:center;gap:6px;margin-right:2px}
 #page-overview .ov2-period .filter-btn{font-size:11px;padding:7px 11px;border-radius:9px}
 #page-overview .ov2-custom{display:none;align-items:end;gap:8px;padding:10px 12px;background:#f7faff;border:1px solid #dbe8fb;border-radius:12px;margin-bottom:12px}
@@ -1682,7 +1685,7 @@ html,body{
   #page-overview .ov2-sales-title{font-size:18px}.ov2-target{font-size:11px!important}.ov2-ring{width:78px!important;height:78px!important}.ov2-ring::after{inset:7px!important}.ov2-ring-value{font-size:16px}.ov2-ring-label{font-size:8px}
   #page-overview .ov2-cat-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.ov2-cat-card{padding:10px 7px 9px!important}.ov2-mini-ring{width:62px!important;height:62px!important}.ov2-mini-ring::after{inset:6px!important}.ov2-mini-ring-value{font-size:14px}
   #page-overview .ov2-op-grid{grid-template-columns:1fr;gap:7px}.ov2-op-card{padding:10px!important}.ov2-top-grid{grid-template-columns:1fr;gap:8px}.ov2-rank-row{grid-template-columns:20px 1fr 70px 45px;gap:5px}.ov2-rank-name,.ov2-rank-value{font-size:9px}.ov2-rank-track{height:8px}
-  #page-overview .ov2-period{gap:5px}.ov2-period .filter-btn{padding:6px 8px!important;font-size:10px!important}
+  #page-overview .ov2-period{gap:5px}.ov2-period .filter-btn{padding:6px 8px!important;font-size:10px!important}.ov2-value-basis{margin-left:0;width:100%;justify-content:flex-start}.ov2-value-basis select{height:28px}
 }
 @media(max-width:480px){
   #page-overview .ov2-salesall{grid-template-columns:1.25fr .75fr .75fr}.ov2-sales-title{font-size:16px!important}.ov2-kicker{font-size:9px}.ov2-target{font-size:10px!important}.ov2-ring{width:68px!important;height:68px!important}.ov2-ring-value{font-size:14px}
@@ -1690,32 +1693,72 @@ html,body{
   #page-overview .ov2-section-title{font-size:13px}.ov2-section-sub{font-size:8px}.ov2-control{height:26px;font-size:9px}.ov2-rank-row{grid-template-columns:18px 1fr 60px 40px}.ov2-rank-name,.ov2-rank-value{font-size:8px}
 }
 
-
-/* V19 SAFE MOBILE FIX — only Top 10 cards, desktop unchanged */
-@media (max-width: 900px){
-  #page-overview .ov2-top-grid{
-    display:grid !important;
-    grid-template-columns:minmax(0,1fr) !important;
-    width:100% !important;
-    gap:10px !important;
-  }
-  #page-overview .ov2-top-grid > .ov2-top-card{
-    display:block !important;
-    width:100% !important;
-    min-width:0 !important;
-  }
+/* ERO ANALYTICS CHARTS — OVERVIEW ONLY */
+.ov2-ero-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ov2-ero-chart-card{padding:14px;min-width:0}
+.ov2-ero-chart{margin-top:8px;min-height:210px}
+.ov2-ero-row{display:grid;grid-template-columns:minmax(80px,145px) 1fr 58px;gap:8px;align-items:center;margin:9px 0}
+.ov2-ero-name{font-size:11px;font-weight:700;color:#24364d;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ov2-ero-track{height:15px;background:#edf3f9;border-radius:999px;overflow:hidden;position:relative}
+.ov2-ero-fill{height:100%;border-radius:999px;background:#087bea;min-width:0;transition:width .2s ease}
+.ov2-ero-fill.brand{background:#3d73ad}
+.ov2-ero-value{text-align:right;font-size:11px;font-weight:800;color:#17324f;white-space:nowrap}
+.ov2-ero-empty{padding:35px 10px;text-align:center;font-size:11px;color:#8795a8}
+.ov2-ero-axis{display:flex;justify-content:space-between;margin:2px 58px 0 153px;font-size:9px;color:#9aa8b8}
+@media(max-width:900px){
+  .ov2-ero-grid{grid-template-columns:1fr}
+  .ov2-ero-chart-card{padding:11px}
+  .ov2-ero-row{grid-template-columns:minmax(74px,105px) 1fr 54px;gap:6px;margin:8px 0}
+  .ov2-ero-name,.ov2-ero-value{font-size:10px}
+  .ov2-ero-axis{margin-left:111px;margin-right:54px}
 }
 
-@media (max-width: 600px){
-  #page-overview .ov2-top-grid{
+
+/* =========================================================
+   MOBILE RANKING CARDS — 1 KOLOM
+   Sales by ERO / Top Produk / Top Brand
+   ========================================================= */
+@media(max-width:700px){
+  #page-overview .ov2-top-grid,
+  #page-overview .ov2-ero-grid{
     grid-template-columns:1fr !important;
-    gap:10px !important;
+    width:100% !important;
   }
-  #page-overview .ov2-top-grid > .ov2-top-card{
+
+  #page-overview .ov2-top-card,
+  #page-overview .ov2-ero-chart-card{
     width:100% !important;
     min-width:0 !important;
   }
+
+  #page-overview .ov2-ranking,
+  #page-overview .ov2-ero-chart{
+    width:100% !important;
+  }
+
+  #page-overview .ov2-rank-row{
+    grid-template-columns:20px minmax(0,1fr) 72px 48px !important;
+    width:100% !important;
+  }
+
+  #page-overview .ov2-rank-name,
+  #page-overview .ov2-rank-value{
+    min-width:0 !important;
+  }
 }
+
+@media(max-width:480px){
+  #page-overview .ov2-top-card,
+  #page-overview .ov2-ero-chart-card{
+    padding:11px 10px !important;
+  }
+
+  #page-overview .ov2-rank-row{
+    grid-template-columns:18px minmax(0,1fr) 62px 42px !important;
+    gap:5px !important;
+  }
+}
+
 </style>
 </head>
 
@@ -1917,6 +1960,14 @@ html,body{
           <button class="filter-btn" onclick="setPeriodMode('custom',this)">Custom</button>
         </div>
 
+        <div class="ov2-value-basis">
+          <span class="ov2-value-basis-label">VALUE</span>
+          <select id="overviewValueBasis" onchange="setOverviewValueBasis(this.value)">
+            <option value="noTax">No Tax</option>
+            <option value="withTax">With Tax</option>
+          </select>
+        </div>
+
         <div id="customPeriodBox" class="ov2-custom">
           <div><label>Tanggal Mulai</label><input type="date" id="customStartDate"></div>
           <div><label>Tanggal Akhir</label><input type="date" id="customEndDate"></div>
@@ -1978,6 +2029,39 @@ html,body{
             <div class="card ov2-op-card"><div class="ov2-op-top"><span class="ov2-op-name">Indosat</span><span class="ov2-op-target">Target <b id="indosatTarget">Rp 0</b></span></div><div class="ov2-op-bars"><div><div class="ov2-bar-label"><span>Achievement</span><b id="indosatAch">0%</b></div><div class="ov2-bar"><div id="indosatAchBar" class="ov2-bar-fill" style="width:0%"></div></div></div><div><div class="ov2-bar-label"><span>Estimasi</span><b id="indosatEstPercent">0%</b></div><div class="ov2-bar"><div id="indosatEstBar" class="ov2-bar-fill est" style="width:0%"></div></div></div></div></div>
             <div class="card ov2-op-card"><div class="ov2-op-top"><span class="ov2-op-name">XL</span><span class="ov2-op-target">Target <b id="xlTarget">Rp 0</b></span></div><div class="ov2-op-bars"><div><div class="ov2-bar-label"><span>Achievement</span><b id="xlAch">0%</b></div><div class="ov2-bar"><div id="xlAchBar" class="ov2-bar-fill" style="width:0%"></div></div></div><div><div class="ov2-bar-label"><span>Estimasi</span><b id="xlEstPercent">0%</b></div><div class="ov2-bar"><div id="xlEstBar" class="ov2-bar-fill est" style="width:0%"></div></div></div></div></div>
             <div class="card ov2-op-card"><div class="ov2-op-top"><span class="ov2-op-name">Telkomsel</span><span class="ov2-op-target">Target <b id="telkomselTarget">Rp 0</b></span></div><div class="ov2-op-bars"><div><div class="ov2-bar-label"><span>Achievement</span><b id="telkomselAch">0%</b></div><div class="ov2-bar"><div id="telkomselAchBar" class="ov2-bar-fill" style="width:0%"></div></div></div><div><div class="ov2-bar-label"><span>Estimasi</span><b id="telkomselEstPercent">0%</b></div><div class="ov2-bar"><div id="telkomselEstBar" class="ov2-bar-fill est" style="width:0%"></div></div></div></div></div>
+          </div>
+        </div>
+
+        <!-- ERO ANALYTICS -->
+        <div class="ov2-ero-grid ov2-section">
+          <div class="card ov2-ero-chart-card">
+            <div class="ov2-section-head">
+              <div>
+                <div class="ov2-section-title">🎯 Sales by ERO — Estimasi %</div>
+                <div class="ov2-section-sub">Ranking estimasi pencapaian target ERO pada periode terpilih</div>
+              </div>
+              <select id="overviewEroEstCategory" class="ov2-control" onchange="renderOverviewEROCharts()">
+                <option value="Sales All">All Kategori</option>
+                <option value="Device">Device</option>
+                <option value="Accessories">Accessories</option>
+                <option value="Repair Contract">SCP</option>
+                <option value="Operator">Operator</option>
+              </select>
+            </div>
+            <div id="overviewEroEstChart" class="ov2-ero-chart"></div>
+          </div>
+
+          <div class="card ov2-ero-chart-card">
+            <div class="ov2-section-head">
+              <div>
+                <div class="ov2-section-title">🏷️ Sales by ERO — Brand</div>
+                <div class="ov2-section-sub">Ranking sales ERO berdasarkan brand</div>
+              </div>
+              <select id="overviewEroBrandFilter" class="ov2-control" onchange="renderOverviewEROCharts()">
+                <option value="ALL">All Brand</option>
+              </select>
+            </div>
+            <div id="overviewEroBrandChart" class="ov2-ero-chart"></div>
           </div>
         </div>
 
@@ -2648,6 +2732,7 @@ const API_KEY =
 let currentUser = null;
 
 let dashboardData = null;
+let overviewValueBasis = "noTax";
 
 let salesList = [];
 
@@ -2667,28 +2752,6 @@ let customEndDate = "";
 document.addEventListener(
   "DOMContentLoaded",
   function(){
-
-    /* V19: hard-reset Overview period on every full refresh.
-       No saved/custom period is restored. Default is Bulan Ini. */
-    periodMode = "month";
-    customStartDate = "";
-    customEndDate = "";
-
-    document.querySelectorAll(".filters .filter-btn").forEach(function(btn){
-      btn.classList.remove("active");
-    });
-
-    const monthBtn = Array.from(document.querySelectorAll(".filters .filter-btn"))
-      .find(function(btn){ return btn.textContent.trim() === "Bulan Ini"; });
-    if(monthBtn) monthBtn.classList.add("active");
-
-    const customBox = document.getElementById("customPeriodBox");
-    if(customBox) customBox.style.display = "none";
-
-    const startEl = document.getElementById("customStartDate");
-    const endEl = document.getElementById("customEndDate");
-    if(startEl) startEl.value = "";
-    if(endEl) endEl.value = "";
 
     const saved =
       localStorage.getItem("ses_user");
@@ -2710,10 +2773,12 @@ document.addEventListener(
 
     }
 
-    const inputDateEl = document.getElementById("inputDate");
-    if(inputDateEl){
-      inputDateEl.value = new Date().toISOString().slice(0,10);
-    }
+    document
+      .getElementById("inputDate")
+      .value =
+      new Date()
+        .toISOString()
+        .slice(0,10);
 
   }
 );
@@ -2958,80 +3023,59 @@ async function loadAll(){
 
   try{
 
-    const dashboard =
-      await api({
+    // Ambil data awal secara paralel. Transaksi disimpan di cache agar
+    // pergantian filter Overview berikutnya tidak perlu request ulang.
+    const results = await Promise.all([
+      api({
         action:"dashboard",
         period:getCurrentPeriod(),
         periodMode: periodMode,
         startDate: customStartDate,
         endDate: customEndDate
-      });
+      }),
+      api({ action:"sales" }),
+      api({ action:"targets", period:getCurrentPeriod() }),
+      api({ action:"transactions" })
+    ]);
 
-    if(
-      dashboard &&
-      dashboard.success
-    ){
+    const dashboard = results[0];
+    const sales = results[1];
+    const targetResult = results[2];
+    const transactionsResult = results[3];
 
-      dashboardData =
-        dashboard.data;
-
-      renderOverview();
-      renderOutlook();
-
+    if(dashboard && dashboard.success){
+      dashboardData = dashboard.data;
     }
 
-    const sales =
-      await api({
-        action:"sales"
-      });
+    if(transactionsResult && transactionsResult.success){
+      allTransactionsCache = transactionsResult.data || [];
+      // Gunakan cache lengkap untuk perhitungan Overview.
+      if(dashboardData) dashboardData.transactions = allTransactionsCache;
+    }
 
-    if(
-      sales &&
-      sales.success
-    ){
-
-      salesList =
-        sales.data || [];
-
+    if(sales && sales.success){
+      salesList = sales.data || [];
       renderManageSales();
-
       renderInputSales();
-
       renderSalesPerformance();
       renderStore();
       renderOutlook();
       if(currentPage === "top") renderTopEROPage();
       if(currentPage === "summary") renderSummary();
-
     }
 
-    const targetResult =
-      await api({
-        action:"targets",
-        period:getCurrentPeriod()
-      });
-
-    if(
-      targetResult &&
-      targetResult.success
-    ){
-
-      targets =
-        targetResult.data || [];
-
+    if(targetResult && targetResult.success){
+      targets = targetResult.data || [];
+      if(dashboardData) syncOverviewTargetsFromGlobal_();
       renderTargets();
-
     }
+
+    renderOverview();
+    renderOutlook();
 
   }catch(e){
-
-    showToast(
-      "Gagal mengambil data: " +
-      e.message
-    );
-
+    showToast("Gagal mengambil data: " + e.message);
   }
-
 }
 
 
@@ -3053,50 +3097,151 @@ function getCurrentPeriod(){
 }
 
 
-function setPeriodMode(mode,button){
+let overviewFilterBusy = false;
+let allTransactionsCache = [];
 
+function setOverviewFilterBusy_(busy){
+  overviewFilterBusy = !!busy;
+  document.querySelectorAll(".ov2-period .filter-btn").forEach(function(btn){
+    btn.disabled = overviewFilterBusy;
+    btn.style.opacity = overviewFilterBusy ? ".65" : "";
+    btn.style.pointerEvents = overviewFilterBusy ? "none" : "";
+  });
+}
+
+function setPeriodMode(mode,button){
+  if(overviewFilterBusy) return;
   periodMode = mode;
 
-  document.querySelectorAll(".filters .filter-btn").forEach(function(x){
+  document.querySelectorAll(".ov2-period .filter-btn").forEach(function(x){
     x.classList.remove("active");
   });
-
   if(button) button.classList.add("active");
 
   const box=document.getElementById("customPeriodBox");
   if(box) box.style.display = mode==="custom" ? "flex" : "none";
 
-  if(mode === "custom"){
-    return;
+  if(mode === "custom") return;
+
+  applyOverviewPeriodLocal_();
+}
+
+function overviewPeriodRangeLocal_(mode){
+  const today=new Date();
+  today.setHours(0,0,0,0);
+  const yesterday=new Date(today);
+  yesterday.setDate(yesterday.getDate()-1);
+
+  function mondayOf(d){
+    const x=new Date(d);
+    const day=x.getDay();
+    const diff=day===0 ? -6 : 1-day;
+    x.setDate(x.getDate()+diff);
+    x.setHours(0,0,0,0);
+    return x;
+  }
+  function fmt(d){
+    return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+  }
+  function days(a,b){
+    return Math.max(0,Math.floor((b-a)/86400000)+1);
   }
 
-  reloadDashboardPeriod_();
+  let start,end,projectionDays,isProjection=false;
+  if(mode==="lastweek"){
+    start=mondayOf(today); start.setDate(start.getDate()-7);
+    end=new Date(start); end.setDate(end.getDate()+6);
+    projectionDays=7;
+  }else if(mode==="week"){
+    start=mondayOf(today); end=new Date(yesterday);
+    projectionDays=7; isProjection=true;
+  }else if(mode==="year"){
+    start=new Date(today.getFullYear(),0,1); end=new Date(yesterday);
+    projectionDays=new Date(today.getFullYear(),11,31).getDate()+
+      (new Date(today.getFullYear(),11,31).getTime()-new Date(today.getFullYear(),0,1).getTime())/86400000;
+    projectionDays=Math.round(projectionDays)+1;
+    isProjection=true;
+  }else if(mode==="custom"){
+    const s=document.getElementById("customStartDate")?.value || customStartDate;
+    const e=document.getElementById("customEndDate")?.value || customEndDate;
+    if(!s || !e || s>e) return null;
+    start=new Date(s+"T00:00:00"); end=new Date(e+"T00:00:00");
+    projectionDays=days(start,end);
+  }else{
+    start=new Date(today.getFullYear(),today.getMonth(),1);
+    end=new Date(yesterday);
+    projectionDays=new Date(today.getFullYear(),today.getMonth()+1,0).getDate();
+    isProjection=true;
+  }
+  if(end<start) end=new Date(start);
+  return {startDate:fmt(start),endDate:fmt(end),daysPassed:days(start,end),projectionDays:projectionDays,isProjection:isProjection};
+}
+
+function syncOverviewTargetsFromGlobal_(){
+  const targetAll=(targets||[]).reduce(function(s,t){return s+Number(t.targetAll||0);},0);
+  const c={Device:0,Accessories:0,"Repair Contract":0,Operator:0};
+  const o={Indosat:0,XL:0,Telkomsel:0};
+  (targets||[]).forEach(function(t){
+    c.Device+=Number(t.device||0); c.Accessories+=Number(t.accessories||0);
+    c["Repair Contract"]+=Number(t.repairContract||0); c.Operator+=Number(t.operator||0);
+    o.Indosat+=Number(t.indosat||0); o.XL+=Number(t.xl||0); o.Telkomsel+=Number(t.telkomsel||0);
+  });
+  if(!dashboardData) dashboardData={};
+  dashboardData.targetAll=targetAll;
+  dashboardData.categories={
+    Device:{target:c.Device}, Accessories:{target:c.Accessories},
+    "Repair Contract":{target:c["Repair Contract"]}, Operator:{target:c.Operator}
+  };
+  dashboardData.operators={
+    Indosat:{target:o.Indosat}, XL:{target:o.XL}, Telkomsel:{target:o.Telkomsel}
+  };
+}
+
+function clearOverviewForLoading_(){
+  const ids=["overviewTarget","overviewAch","overviewEstPercent"];
+  ids.forEach(function(id){ if(document.getElementById(id)) setText(id,"—"); });
+  [
+    ["device","Device"],["acc","Accessories"],["repair","Repair Contract"],["operator","Operator"]
+  ].forEach(function(x){
+    [x[0]+"Target",x[0]+"Est"].forEach(function(id){if(document.getElementById(id))setText(id,"—");});
+    [x[0]+"Ach",x[0]+"EstPercent"].forEach(function(id){if(document.getElementById(id))setHtml(id,"—");});
+  });
+  ["indosat","xl","telkomsel"].forEach(function(p){
+    [p+"Target"].forEach(function(id){if(document.getElementById(id))setText(id,"—");});
+    [p+"Ach","${p}EstPercent"].forEach(function(id){if(document.getElementById(id))setHtml(id,"—");});
+  });
+}
+
+function applyOverviewPeriodLocal_(){
+  setOverviewFilterBusy_(true);
+  clearOverviewForLoading_();
+  const r=overviewPeriodRangeLocal_(periodMode);
+  if(!r){ setOverviewFilterBusy_(false); showToast("Tanggal Custom tidak valid."); return; }
+
+  const filtered=(allTransactionsCache||[]).filter(function(x){
+    const d=String(x.date||"").slice(0,10);
+    return d>=r.startDate && d<=r.endDate;
+  });
+
+  // Semua kalkulasi periode dilakukan lokal dari cache transaksi.
+  // Tidak ada request API saat tombol Minggu/Bulan/Tahun ditekan.
+  syncOverviewTargetsFromGlobal_();
+  dashboardData.periodMode=periodMode;
+  dashboardData.startDate=r.startDate;
+  dashboardData.endDate=r.endDate;
+  dashboardData.daysPassed=r.daysPassed;
+  dashboardData.daysInMonth=r.projectionDays;
+  dashboardData.cutoffDate=r.endDate;
+  dashboardData.timeGone=r.projectionDays>0 ? r.daysPassed/r.projectionDays*100 : 0;
+  dashboardData.transactions=filtered;
+  dashboardData.isProjectionRange=r.isProjection;
+  renderOverview();
+  setOverviewFilterBusy_(false);
 }
 
 async function reloadDashboardPeriod_(){
-  try{
-    const result = await api({
-      action:"dashboard",
-      period:getCurrentPeriod(),
-      periodMode:periodMode,
-      startDate:customStartDate,
-      endDate:customEndDate
-    });
-
-    if(result && result.success){
-      dashboardData = result.data || null;
-      renderOverview();
-      renderStore();
-      renderSalesPerformance();
-      renderOutlook();
-      if(typeof renderSummary === "function") renderSummary();
-      if(typeof renderTargets === "function") renderTargets();
-    }else{
-      showToast((result && result.message) || "Gagal memuat filter");
-    }
-  }catch(e){
-    showToast("Gagal memuat filter: " + e.message);
-  }
+  // Dipertahankan untuk kompatibilitas kode lama. Filter Overview sekarang lokal.
+  applyOverviewPeriodLocal_();
 }
 
 function applyCustomPeriod(){
@@ -3115,8 +3260,7 @@ function applyCustomPeriod(){
   customStartDate=start;
   customEndDate=end;
   periodMode="custom";
-
-  reloadDashboardPeriod_();
+  applyOverviewPeriodLocal_();
 }
 
 
@@ -3216,31 +3360,107 @@ function toggleSidebar(){
    OVERVIEW — MINIMAL V2
 ===================================================== */
 
+function setOverviewValueBasis(value){
+  overviewValueBasis = value === "withTax" ? "withTax" : "noTax";
+  renderOverview();
+}
+
+function getOverviewValueLabel_(){
+  return overviewValueBasis === "withTax" ? "With Tax" : "No Tax";
+}
+
+function overviewRawValue_(x){
+  if(!x) return 0;
+  const v = overviewValueBasis === "withTax" ? x.valueWithTax : x.valueNoTax;
+  return Number(v || 0);
+}
+
+function overviewEffectiveAmount_(x){
+  const amount=overviewRawValue_(x);
+  if(!isFinite(amount) || amount===0) return 0;
+  const cat=String(x && x.category || "").trim().toLowerCase();
+  const sub=String(x && x.subcategory || "").trim().toLowerCase();
+  const product=String(x && x.product || "").trim().toLowerCase();
+  const value=(sub+" "+product);
+  if(cat === "device") {
+    const valid = sub.indexOf("series a")>=0 || sub.indexOf("a series")>=0 || /(^|\s)a\d/.test(value) || value.indexOf("galaxy a")>=0 ||
+      sub.indexOf("series s")>=0 || sub.indexOf("s series")>=0 || /(^|\s)s\d/.test(value) || value.indexOf("galaxy s")>=0 ||
+      sub.indexOf("series z")>=0 || sub.indexOf("z series")>=0 || /(^|\s)z\w/.test(value) || value.indexOf("fold")>=0 || value.indexOf("flip")>=0 || value.indexOf("galaxy z")>=0 ||
+      sub.indexOf("series tab")>=0 || sub.indexOf("tab series")>=0 || sub.indexOf("tab")>=0 || value.indexOf("galaxy tab")>=0;
+    return valid ? amount : 0;
+  }
+  if(cat === "operator") {
+    return ["indosat","xl","telkomsel"].indexOf(sub)>=0 ? amount : 0;
+  }
+  return amount;
+}
+
+function overviewCalc_(rows,target,daysPassed,projectionDays,isProjection){
+  const actual=(rows||[]).reduce((s,x)=>s+overviewEffectiveAmount_(x),0);
+  const t=Number(target||0);
+  const est=isProjection && daysPassed>0 ? actual/daysPassed*projectionDays : actual;
+  return {
+    actual:actual,
+    target:t,
+    achievement:t>0?actual/t*100:0,
+    estimation:est,
+    estimationPercent:t>0?est/t*100:0
+  };
+}
+
+function getOverviewStats_(){
+  const d=dashboardData||{};
+  const tx=d.transactions||[];
+  const daysPassed=Number(d.daysPassed||0);
+  const projectionDays=Number(d.daysInMonth||daysPassed||0);
+  const isProjection=d.periodMode !== "lastweek" && d.periodMode !== "custom";
+  const stats={};
+  stats.all=overviewCalc_(tx,d.targetAll,daysPassed,projectionDays,isProjection);
+  stats.categories={};
+  ["Device","Accessories","Repair Contract","Operator"].forEach(function(category){
+    const rows=tx.filter(function(x){return String(x.category||"").trim().toLowerCase()===category.toLowerCase() || (category==="Accessories" && String(x.category||"").trim().toLowerCase()==="acc") || (category==="Repair Contract" && ["repair contract","repaircontract","rc"].indexOf(String(x.category||"").trim().toLowerCase())>=0);});
+    const c=(d.categories||{})[category]||{};
+    stats.categories[category]=overviewCalc_(rows,c.target,daysPassed,projectionDays,isProjection);
+  });
+  stats.operators={};
+  ["Indosat","XL","Telkomsel"].forEach(function(operator){
+    const rows=tx.filter(function(x){return String(x.subcategory||"").trim().toLowerCase()===operator.toLowerCase();});
+    const o=(d.operators||{})[operator]||{};
+    stats.operators[operator]=overviewCalc_(rows,o.target,daysPassed,projectionDays,isProjection);
+  });
+  return stats;
+}
+
 function renderOverview(){
   if(!dashboardData) return;
   const d=dashboardData;
+  const stats=getOverviewStats_();
   setText("overviewMonth", formatMonth(d.period || getCurrentPeriod()));
+  const basisEl=document.getElementById("overviewValueBasis");
+  if(basisEl) basisEl.value=overviewValueBasis;
+  const basis=getOverviewValueLabel_();
+  const targetText=overviewMoney(stats.all.target);
+  setText("overviewTarget",targetText);
+  setHtml("overviewAch",percent(stats.all.achievement));
+  setHtml("overviewEstPercent",percent(stats.all.estimationPercent));
+  setOverviewRing_("overviewAchRing",stats.all.achievement);
+  setOverviewRing_("overviewEstRing",stats.all.estimationPercent);
+  const title=document.querySelector("#page-overview .ov2-sales-title");
+  if(title) title.innerHTML="📊 SALES ALL <span style=\"font-size:9px;font-weight:700;color:#4770a8;background:#eef6ff;border:1px solid #d8e9fb;border-radius:999px;padding:3px 7px\">"+basis+"</span>";
 
-  setText("overviewTarget", overviewMoney(d.targetAll));
-  setHtml("overviewAch", percent(d.achievement));
-  setHtml("overviewEstPercent", percent(d.estimationPercent));
-  setOverviewRing_("overviewAchRing", d.achievement);
-  setOverviewRing_("overviewEstRing", d.estimationPercent);
+  renderOverviewCategoryV2_("Device","device","ov2DeviceAchRing","ov2DeviceEstRing",stats.categories.Device);
+  renderOverviewCategoryV2_("Accessories","acc","ov2AccAchRing","ov2AccEstRing",stats.categories.Accessories);
+  renderOverviewCategoryV2_("Repair Contract","repair","ov2RepairAchRing","ov2RepairEstRing",stats.categories["Repair Contract"]);
+  renderOverviewCategoryV2_("Operator","operator","ov2OperatorAchRing","ov2OperatorEstRing",stats.categories.Operator);
 
-  renderOverviewCategoryV2_("Device","device","ov2DeviceAchRing","ov2DeviceEstRing");
-  renderOverviewCategoryV2_("Accessories","acc","ov2AccAchRing","ov2AccEstRing");
-  renderOverviewCategoryV2_("Repair Contract","repair","ov2RepairAchRing","ov2RepairEstRing");
-  renderOverviewCategoryV2_("Operator","operator","ov2OperatorAchRing","ov2OperatorEstRing");
-
-  const op=d.operators||{};
   [
     ["Indosat","indosat"],
     ["XL","xl"],
     ["Telkomsel","telkomsel"]
   ].forEach(function(pair){
-    const name=pair[0], prefix=pair[1], o=op[name]||{};
+    const name=pair[0], prefix=pair[1], o=stats.operators[name]||{};
     const ach=Number(o.achievement||0);
-    const estPct=o.estimationPercent!=null?Number(o.estimationPercent):0;
+    const estPct=Number(o.estimationPercent||0);
     setText(prefix+"Target",overviewMoney(Number(o.target||0)));
     setHtml(prefix+"Ach",percent(ach));
     setHtml(prefix+"EstPercent",percent(estPct));
@@ -3251,6 +3471,7 @@ function renderOverview(){
   });
 
   renderOverviewTop10();
+  renderOverviewEROCharts();
 }
 
 function setOverviewRing_(id,value){
@@ -3260,8 +3481,7 @@ function setOverviewRing_(id,value){
   el.style.setProperty("--p",p+"%");
 }
 
-function renderOverviewCategoryV2_(category,prefix,achRingId,estRingId){
-  const c=(dashboardData.categories||{})[category];
+function renderOverviewCategoryV2_(category,prefix,achRingId,estRingId,c){
   if(!c)return;
   const ach=Number(c.achievement||0);
   const estPct=Number(c.estimationPercent||0);
@@ -3276,10 +3496,6 @@ function renderOverviewCategoryV2_(category,prefix,achRingId,estRingId){
 function overviewTopMetric_(selectId){
   const el=document.getElementById(selectId);
   return el ? el.value : "value";
-}
-
-function overviewEffectiveAmount_(x){
-  return Number(x && x.amount || 0);
 }
 
 function overviewNormalizeProduct_(x){
@@ -3325,6 +3541,94 @@ function renderOverviewRanking_(elId,rows,metric){
       '<div class="ov2-rank-value">'+label+'</div>'+
       '</div>';
   }).join("");
+}
+
+function overviewCategoryMatch_(x, category){
+  if(category === "Sales All") return true;
+  const raw=String(x && x.category || "").trim().toLowerCase();
+  const wanted=String(category || "").trim().toLowerCase();
+  if(wanted === "accessories") return raw === "accessories" || raw === "acc";
+  if(wanted === "repair contract") return raw === "repair contract" || raw === "repaircontract" || raw === "rc";
+  return raw === wanted;
+}
+
+function overviewEstimationByERO_(category){
+  const tx=dashboardData && dashboardData.transactions ? dashboardData.transactions : [];
+  const daysPassed=Math.max(0,Number(dashboardData.daysPassed||0));
+  const projectionDays=Math.max(0,Number(dashboardData.daysInMonth||daysPassed||0));
+  const isProjection=dashboardData.periodMode !== "lastweek" && dashboardData.periodMode !== "custom";
+  const map={};
+  (salesList||[]).filter(function(s){return String(s.status||"AKTIF").toUpperCase()!=="NONAKTIF";}).forEach(function(s){
+    const rows=tx.filter(function(x){return String(x.salesId)===String(s.id) && overviewCategoryMatch_(x,category);});
+    const actual=rows.reduce(function(sum,x){return sum+overviewEffectiveAmount_(x);},0);
+    const target=getStoreSalesTarget_(s.id,category);
+    const est=isProjection && daysPassed>0 ? actual/daysPassed*projectionDays : actual;
+    const estPct=target>0 ? est/target*100 : 0;
+    map[String(s.id)]={name:s.name,actual:actual,target:target,estimation:est,estimationPercent:estPct};
+  });
+  return Object.keys(map).map(function(k){return map[k];}).sort(function(a,b){
+    if(b.estimationPercent!==a.estimationPercent)return b.estimationPercent-a.estimationPercent;
+    return b.estimation-a.estimation;
+  });
+}
+
+function overviewBrandOptions_(){
+  const sel=document.getElementById("overviewEroBrandFilter");
+  if(!sel)return;
+  const current=sel.value || "ALL";
+  const brands={};
+  (allTransactionsCache||[]).forEach(function(x){
+    const b=overviewBrand_(x);
+    if(b)brands[b]=true;
+  });
+  const list=Object.keys(brands).sort(function(a,b){return a.localeCompare(b,"id");});
+  sel.innerHTML='<option value="ALL">All Brand</option>'+list.map(function(b){
+    return '<option value="'+escapeAttr(b)+'">'+escapeHtml(b)+'</option>';
+  }).join("");
+  if(list.indexOf(current)>=0 || current==="ALL") sel.value=current;
+}
+
+function overviewBrandSalesByERO_(brand){
+  const tx=dashboardData && dashboardData.transactions ? dashboardData.transactions : [];
+  const map={};
+  (salesList||[]).filter(function(s){return String(s.status||"AKTIF").toUpperCase()!=="NONAKTIF";}).forEach(function(s){map[String(s.id)]={name:s.name,value:0};});
+  tx.forEach(function(x){
+    const b=overviewBrand_(x);
+    if(brand!=="ALL" && b!==brand)return;
+    const sid=String(x.salesId);
+    if(!map[sid])return;
+    map[sid].value += overviewEffectiveAmount_(x);
+  });
+  return Object.keys(map).map(function(k){return map[k];}).sort(function(a,b){
+    if(b.value!==a.value)return b.value-a.value;
+    return a.name.localeCompare(b.name,"id");
+  });
+}
+
+function renderOverviewBarChart_(elId,rows,valueKey,formatter,fillClass){
+  const el=document.getElementById(elId);
+  if(!el)return;
+  if(!rows.length){el.innerHTML='<div class="ov2-ero-empty">Belum ada data.</div>';return;}
+  const max=Math.max.apply(null,rows.map(function(x){return Number(x[valueKey]||0);}));
+  const scale=max>0?max:1;
+  el.innerHTML=rows.map(function(x){
+    const v=Number(x[valueKey]||0);
+    const width=v>0?Math.min(v/scale*100,100):0;
+    return '<div class="ov2-ero-row"><div class="ov2-ero-name" title="'+escapeHtml(x.name)+'">'+escapeHtml(x.name)+'</div><div class="ov2-ero-track"><div class="ov2-ero-fill '+(fillClass||'')+'" style="width:'+width+'%"></div></div><div class="ov2-ero-value">'+formatter(v)+'</div></div>';
+  }).join("");
+}
+
+function renderOverviewEROCharts(){
+  if(!dashboardData)return;
+  overviewBrandOptions_();
+  const catEl=document.getElementById("overviewEroEstCategory");
+  const brandEl=document.getElementById("overviewEroBrandFilter");
+  const category=catEl ? catEl.value : "Sales All";
+  const brand=brandEl ? brandEl.value : "ALL";
+  const estRows=overviewEstimationByERO_(category);
+  renderOverviewBarChart_("overviewEroEstChart",estRows,"estimationPercent",function(v){return Math.round(v)+"%";},"");
+  const brandRows=overviewBrandSalesByERO_(brand);
+  renderOverviewBarChart_("overviewEroBrandChart",brandRows,"value",function(v){return overviewMoney(v);},"brand");
 }
 
 function renderOverviewTop10(){
