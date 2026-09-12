@@ -260,87 +260,6 @@ button{
 .store-filter-row .select{
   min-width:150px;
 }
-
-/* ERO PERFORMANCE CHART */
-.store-ero-chart-card{
-  background:#fff;
-  border:1px solid #e7ebf2;
-  border-radius:10px;
-  padding:12px;
-  margin:12px 0;
-}
-.store-ero-chart-head{
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap:10px;
-  margin-bottom:10px;
-}
-.store-ero-chart-title{
-  font-weight:800;
-  font-size:14px;
-  color:#17356f;
-}
-.store-ero-chart-sub{
-  font-size:10px;
-  color:#7a8495;
-  margin-top:2px;
-}
-.store-ero-bars{
-  display:grid;
-  gap:7px;
-}
-.store-ero-bar-row{
-  display:grid;
-  grid-template-columns:125px minmax(0,1fr) 58px;
-  align-items:center;
-  gap:8px;
-}
-.store-ero-bar-name{
-  font-size:11px;
-  font-weight:700;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-.store-ero-track{
-  height:13px;
-  background:#edf2f8;
-  border-radius:999px;
-  overflow:hidden;
-}
-.store-ero-fill{
-  height:100%;
-  border-radius:999px;
-}
-.store-ero-fill.good{background:#18b56b;}
-.store-ero-fill.warn{background:#f5a623;}
-.store-ero-fill.low{background:#f23b4d;}
-.store-ero-pct{
-  font-size:11px;
-  font-weight:800;
-  text-align:right;
-}
-.store-ero-empty{
-  padding:16px 8px;
-  text-align:center;
-  color:#7a8495;
-  font-size:11px;
-}
-@media(max-width:700px){
-  .store-ero-chart-card{padding:10px;margin:10px 0;}
-  .store-ero-bar-row{grid-template-columns:82px minmax(0,1fr) 48px;gap:5px;}
-  .store-ero-bar-name{font-size:9px;}
-  .store-ero-track{height:10px;}
-  .store-ero-pct{font-size:9px;}
-}
-
-/* ERO CHART EMPHASIS */
-#storeEroChart .store-ero-chart-card{border:1px solid #d7e5f5;box-shadow:0 4px 14px rgba(20,70,130,.05);}
-#storeEroChart .store-ero-fill.good{background:#18b56b;}
-#storeEroChart .store-ero-fill.warn{background:#f5a623;}
-#storeEroChart .store-ero-fill.low{background:#f23b4d;}
-
 .store-kpis{
   display:grid;
   grid-template-columns:repeat(4,minmax(0,1fr));
@@ -1598,58 +1517,6 @@ html,body{
   #summaryLowestTable th:nth-child(n+3), #summaryLowestTable td:nth-child(n+3){width:auto !important;}
 }
 
-
-/* SUMMARY PRIORITY — desktop: keep each priority on one clean row */
-#page-summary .summary-priority-card{
-  min-width:0;
-}
-#page-summary .summary-priority-list{
-  display:grid;
-  gap:5px;
-  margin-top:6px;
-}
-#page-summary .summary-priority-row{
-  display:grid;
-  grid-template-columns:28px minmax(0,1fr) minmax(72px,auto) minmax(125px,auto);
-  align-items:center;
-  column-gap:8px;
-  min-width:0;
-  line-height:1.15;
-}
-#page-summary .summary-priority-rank{
-  font-size:11px;
-  font-weight:900;
-  color:#17356f;
-}
-#page-summary .summary-priority-name{
-  min-width:0;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-  font-size:12px;
-  font-weight:800;
-  color:#172b4d;
-}
-#page-summary .summary-priority-cat{
-  font-size:10px;
-  color:#657286;
-  white-space:nowrap;
-  text-align:left;
-}
-#page-summary .summary-priority-daily{
-  font-size:11px;
-  font-weight:900;
-  color:#17356f;
-  white-space:nowrap;
-  text-align:right;
-}
-#page-summary .summary-priority-daily small{
-  font-size:9px;
-  font-weight:700;
-  margin-left:2px;
-  color:#657286;
-}
-
 /* SUMMARY MOBILE: header & KPI dibuat lebih rapat */
 @media (max-width:600px){
   #page-summary .summary-grid{
@@ -1769,313 +1636,58 @@ html,body{
   .store-breakdown th:first-child, .store-breakdown td:first-child{width:28% !important;}
 }
 
-/* ================= EXECUTIVE OVERVIEW ================= */
-.exec-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}.exec-kicker{font-size:11px;font-weight:800;letter-spacing:1.2px;color:#087bea}.exec-date{background:#fff;border:1px solid #dbe7f5;border-radius:12px;padding:9px 13px;font-size:12px;font-weight:700;color:#12346b}.exec-motto{margin-bottom:12px}.exec-filter{padding:12px 14px;margin-bottom:12px}.filter-section-title{font-size:13px;font-weight:800;color:#102b63;margin-bottom:8px}.exec-periods{margin:0;display:flex;gap:6px;flex-wrap:wrap}.exec-filter-grid{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px;margin-top:10px;align-items:end}.exec-filter-grid label{display:block;font-size:10px;color:#64748b;font-weight:700;margin:0 0 4px}.filter-reset{height:36px;background:#f5f9ff;color:#087bea;border:1px solid #b9d6f7}.exec-kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:12px}.exec-kpi{background:#fff;border:1px solid #dce8f5;border-radius:13px;padding:13px;position:relative;min-height:158px;box-shadow:0 2px 10px rgba(20,70,130,.05)}.exec-kpi .kpi-icon{font-size:20px;color:#087bea;font-weight:900}.kpi-label{font-size:11px;font-weight:800;color:#17356f;margin-top:4px}.kpi-value{font-size:23px;font-weight:900;color:#092d72;margin-top:4px}.kpi-target{font-size:10px;color:#64748b}.kpi-target b{color:#163875}.kpi-progress{height:7px;background:#e8eef6;border-radius:8px;margin:10px 0 4px;overflow:hidden}.kpi-progress span{display:block;height:100%;width:0;background:#087bea;border-radius:8px}.kpi-percent{text-align:right;font-size:11px;font-weight:900;color:#087bea}.kpi-foot{display:flex;gap:7px;align-items:center;justify-content:space-between;font-size:10px;margin-top:7px;color:#64748b}.kpi-foot b{color:#17356f}.kpi-foot em{font-style:normal;color:#087bea;font-weight:900}.kpi-foot.danger b{color:#f12d3c}.exec-grid{display:grid;gap:10px;margin-bottom:10px}.grid-main{grid-template-columns:1.45fr 1fr .9fr}.grid-mid{grid-template-columns:1.35fr 1fr .9fr}.grid-bottom{grid-template-columns:1.35fr 1fr}.grid-bottom2{grid-template-columns:1.25fr .95fr}.exec-chart-card{background:#fff;border:1px solid #dce8f5;border-radius:13px;padding:12px;min-width:0;box-shadow:0 2px 10px rgba(20,70,130,.04)}.exec-card-head{display:flex;align-items:center;gap:9px;margin-bottom:8px;color:#087bea}.exec-card-head>span:first-child{font-size:20px}.exec-card-head>div{min-width:0;flex:1}.exec-card-head b{display:block;color:#112e68;font-size:14px}.exec-card-head small{display:block;color:#8290a8;font-size:9px;margin-top:2px}.exec-card-head a{font-size:10px;color:#087bea;text-decoration:none;white-space:nowrap}.exec-card-head .top-ero-filter{margin-left:auto;}.legend{font-size:9px;color:#65748b;white-space:nowrap}.dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin:0 3px 0 8px;background:#087bea}.dot.est{background:#6aaeff}.svg-chart{height:220px;min-height:190px}.svg-chart svg{width:100%;height:100%;display:block}.ero-bars{height:210px;display:flex;align-items:flex-end;gap:8px;padding:12px 4px 20px;border-bottom:1px solid #d9e4f1;overflow:hidden}.ero-bar-item{height:100%;flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;min-width:0}.ero-bar-track{height:145px;width:min(30px,70%);background:#edf2f8;border-radius:6px 6px 2px 2px;display:flex;align-items:flex-end;position:relative}.ero-bar-fill{width:100%;border-radius:6px 6px 2px 2px;background:#087bea;min-height:2px}.ero-bar-fill.good{background:#16b96b}.ero-bar-fill.warn{background:#f39b20}.ero-bar-fill.bad{background:#f13b4c}.ero-bar-value{font-size:10px;font-weight:900;color:#12346b;margin-bottom:4px}.ero-bar-name{font-size:8px;color:#435676;text-align:center;line-height:1.15;margin-top:5px;max-width:55px;word-break:break-word}.top-ero-filter{font-size:10px;padding:5px 8px}.mini-podium{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;height:205px;align-items:stretch}.mini-podium .pod{border:1px solid #dce8f5;border-radius:10px;padding:9px 5px;text-align:center;display:flex;flex-direction:column;justify-content:center}.mini-podium .pod:first-child{border-color:#f0c928;background:#fffdf2}.pod-medal{font-size:24px}.pod-rank{font-size:9px;color:#74839b}.pod-name{font-size:10px;font-weight:800;color:#12346b;margin:5px 0;word-break:break-word}.pod-est{font-size:21px;font-weight:900;color:#087bea}.pod-est.good{color:#16a765}.pod-est.bad{color:#f13b4c}.gauge-wrap{height:205px;display:flex;align-items:center;justify-content:center;position:relative}.gauge{width:145px;height:145px;border-radius:50%;background:conic-gradient(#087bea var(--p),#e7edf5 0);display:flex;align-items:center;justify-content:center}.gauge:after{content:"";width:105px;height:105px;border-radius:50%;background:#fff}.gauge-center{position:absolute;text-align:center;color:#12346b}.gauge-center strong{display:block;font-size:27px}.gauge-center small{font-size:10px;color:#64748b}.series-legend{font-size:9px}.category-performance-row{display:grid;grid-template-columns:92px 1fr 38px;gap:6px;align-items:center;padding:7px 0;border-bottom:1px solid #edf1f6;font-size:10px}.category-performance-row:last-child{border-bottom:0}.cat-name{font-weight:800;color:#17356f}.cat-track{height:8px;background:#edf1f6;border-radius:8px;overflow:hidden}.cat-fill{height:100%;background:#087bea;border-radius:8px}.cat-est{font-weight:900;color:#087bea;text-align:right}.lowest-table{width:100%;border-collapse:collapse;font-size:9px}.lowest-table th{background:#f5f9ff;color:#60708b;text-align:left;font-weight:800}.lowest-table th,.lowest-table td{padding:6px 5px;border-bottom:1px solid #edf1f6}.lowest-table td:nth-child(4){font-weight:900;color:#f13b4c}.lowest-table td:nth-child(5){color:#f13b4c;font-weight:800}.donut-chart{height:220px;display:flex;align-items:center;justify-content:center}.donut{width:145px;height:145px;border-radius:50%;background:conic-gradient(#087bea 0 85%,#63aef5 85% 93%,#9eafc5 93% 93%,#e8edf4 93% 100%);position:relative}.donut:after{content:"";position:absolute;inset:35px;border-radius:50%;background:#fff}.donut-center{position:absolute;z-index:2;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;font-weight:900;color:#12346b}.donut-center small{font-size:9px;font-weight:500}.donut-list{margin-left:18px;font-size:10px}.donut-row{display:flex;gap:6px;margin:8px 0;align-items:center}.donut-swatch{width:9px;height:9px;border-radius:2px;background:#087bea}.insight-stack{display:grid;gap:10px}.insight-card,.action-card{padding:12px;border-radius:13px}.insight-card{background:#eaf5ff;border:1px solid #d2e9ff}.action-card{background:#e9fbf3;border:1px solid #ccefe0}.insight-list,.action-list{font-size:10px;line-height:1.6;color:#294a75;margin:5px 0 0 28px;padding:0}.action-list{color:#23634d}.action-list li::marker{color:#14ad72}.legacy-overview-data{display:none}.exec-chart-card.wide{min-width:0}
-@media(max-width:900px){.exec-head{align-items:center}.exec-date{font-size:9px;padding:7px}.exec-kicker{font-size:8px}.page-title{font-size:20px}.exec-motto{padding:9px}.exec-filter{padding:9px}.exec-filter-grid{grid-template-columns:1fr 1fr;gap:6px}.exec-filter-grid .filter-reset{grid-column:1/-1}.exec-periods{overflow-x:auto;flex-wrap:nowrap;padding-bottom:2px}.exec-periods .filter-btn{white-space:nowrap;font-size:9px;padding:7px 9px}.exec-kpi-grid{grid-template-columns:repeat(2,1fr);gap:6px}.exec-kpi{min-height:140px;padding:9px}.exec-kpi.kpi-main{grid-column:1/-1}.kpi-value{font-size:20px}.kpi-label{font-size:10px}.kpi-target,.kpi-foot{font-size:9px}.grid-main,.grid-mid,.grid-bottom,.grid-bottom2{grid-template-columns:1fr}.exec-chart-card{padding:9px}.exec-card-head{gap:6px}.exec-card-head b{font-size:12px}.exec-card-head small{font-size:8px}.exec-card-head .top-ero-filter{width:100px;min-width:100px;max-width:100px;flex-basis:100px;font-size:9px}.svg-chart{height:190px}.ero-bars{height:190px;gap:4px}.ero-bar-track{height:125px;width:24px}.ero-bar-name{font-size:7px;max-width:42px}.ero-bar-value{font-size:9px}.mini-podium{height:175px}.pod-name{font-size:9px}.pod-est{font-size:19px}.gauge-wrap{height:180px}.lowest-table{font-size:8px}.lowest-table th,.lowest-table td{padding:5px 3px}.donut-chart{height:180px}.donut{width:125px;height:125px}.donut:after{inset:30px}.exec-filter-grid .select{width:100%}}
-
+/* =====================================================
+   OVERVIEW V2 — MINIMAL / CLEAN / RESPONSIVE
+   Scoped ONLY to #page-overview
+===================================================== */
+#page-overview.overview-v2{max-width:100%;}
+#page-overview .ov2-period{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+#page-overview .ov2-period-label{font-size:12px;font-weight:700;color:#123b86;display:flex;align-items:center;gap:6px;margin-right:2px}
+#page-overview .ov2-period .filter-btn{font-size:11px;padding:7px 11px;border-radius:9px}
+#page-overview .ov2-custom{display:none;align-items:end;gap:8px;padding:10px 12px;background:#f7faff;border:1px solid #dbe8fb;border-radius:12px;margin-bottom:12px}
+#page-overview .ov2-custom label{font-size:10px;color:#62708a;display:block;margin-bottom:3px}
+#page-overview .ov2-custom input{height:32px;border:1px solid #cfdced;border-radius:8px;padding:0 8px;background:#fff;color:#172033}
+#page-overview .ov2-custom .btn{height:32px;font-size:11px;padding:0 14px}
+#page-overview .ov2-salesall{display:grid;grid-template-columns:1.25fr .75fr .75fr;align-items:center;gap:16px;padding:18px 22px;margin-bottom:12px;border:1px solid #e1ebf7;box-shadow:0 4px 18px rgba(20,65,130,.06)}
+#page-overview .ov2-kicker{font-size:11px;font-weight:700;letter-spacing:.08em;color:#4770a8;text-transform:uppercase;margin-bottom:5px}
+#page-overview .ov2-sales-title{font-size:23px;font-weight:800;color:#0b2f76;display:flex;align-items:center;gap:8px}
+#page-overview .ov2-target{font-size:14px;color:#52617a;margin-top:7px}.ov2-target b{color:#0b2f76}
+#page-overview .ov2-ring{width:108px;height:108px;border-radius:50%;margin:auto;display:grid;place-items:center;position:relative;background:conic-gradient(#087bea var(--p),#e9eef5 0)}
+#page-overview .ov2-ring::after{content:"";position:absolute;inset:9px;background:#fff;border-radius:50%}
+#page-overview .ov2-ring-content{position:relative;z-index:1;text-align:center}.ov2-ring-value{font-size:22px;font-weight:800;color:#092f7a;line-height:1}.ov2-ring-label{font-size:10px;color:#69768c;margin-top:5px}
+#page-overview .ov2-section{margin-bottom:12px}
+#page-overview .ov2-section-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+#page-overview .ov2-section-title{font-size:15px;font-weight:800;color:#102f70;display:flex;align-items:center;gap:7px}
+#page-overview .ov2-section-sub{font-size:10px;color:#748198}
+#page-overview .ov2-cat-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+#page-overview .ov2-cat-card{padding:14px 10px 11px;text-align:center;border:1px solid #e2eaf5;box-shadow:0 3px 12px rgba(20,65,130,.045);min-width:0}
+#page-overview .ov2-cat-name{font-size:12px;font-weight:800;color:#183b80;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#page-overview .ov2-cat-icon{font-size:17px;margin-bottom:3px}
+#page-overview .ov2-mini-ring{width:76px;height:76px;margin:9px auto 7px;border-radius:50%;display:grid;place-items:center;position:relative;background:conic-gradient(var(--ring,#087bea) var(--p),#edf1f6 0)}
+#page-overview .ov2-mini-ring::after{content:"";position:absolute;inset:7px;background:#fff;border-radius:50%}.ov2-mini-ring-content{position:relative;z-index:1}.ov2-mini-ring-value{font-size:16px;font-weight:800;color:#0a347d}.ov2-mini-ring-label{font-size:8px;color:#6c7890;margin-top:2px}
+#page-overview .ov2-cat-meta{display:grid;grid-template-columns:1fr 1fr;gap:5px;border-top:1px solid #edf1f6;padding-top:7px}
+#page-overview .ov2-meta-label{font-size:8px;color:#7a879b}.ov2-meta-value{font-size:11px;font-weight:800;color:#163c84;margin-top:2px}
+#page-overview .ov2-cat-target{font-size:10px;color:#64738b;margin-top:7px}.ov2-cat-target b{color:#153d84}
+#page-overview .ov2-op-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+#page-overview .ov2-op-card{padding:12px 14px;border:1px solid #e2eaf5;box-shadow:0 3px 12px rgba(20,65,130,.04)}
+#page-overview .ov2-op-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}.ov2-op-name{font-weight:800;color:#153b7e;font-size:12px}.ov2-op-target{font-size:9px;color:#718097}.ov2-op-target b{color:#163d84}
+#page-overview .ov2-op-bars{display:grid;grid-template-columns:1fr 1fr;gap:10px}.ov2-bar-label{display:flex;justify-content:space-between;font-size:9px;color:#65748c;margin-bottom:4px}.ov2-bar-label b{color:#173f86}.ov2-bar{height:9px;background:#edf1f6;border-radius:999px;overflow:hidden}.ov2-bar-fill{height:100%;border-radius:999px;background:#087bea}.ov2-bar-fill.est{background:#63aaf5}
+#page-overview .ov2-top-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+#page-overview .ov2-top-card{padding:13px 14px;border:1px solid #e2eaf5;box-shadow:0 3px 12px rgba(20,65,130,.04)}
+#page-overview .ov2-section-head>div{min-width:0}
+#page-overview .ov2-control{height:28px;padding:0 9px;border:1px solid #d5e0ef;background:#fff;border-radius:8px;color:#173b7c;font-size:10px;font-weight:700;outline:none}
+#page-overview .ov2-ranking{display:flex;flex-direction:column;gap:7px}.ov2-rank-row{display:grid;grid-template-columns:22px 1fr 90px 65px;align-items:center;gap:7px}.ov2-rank-num{font-size:10px;font-weight:800;color:#71809a}.ov2-rank-name{font-size:10px;color:#203c70;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ov2-rank-track{height:9px;background:#edf2f7;border-radius:99px;overflow:hidden}.ov2-rank-fill{height:100%;background:#087bea;border-radius:99px}.ov2-rank-value{font-size:10px;font-weight:800;text-align:right;color:#153d84}.ov2-empty{font-size:10px;color:#8995a8;padding:10px 0}
 @media(max-width:900px){
-  .exec-filter-grid{grid-template-columns:1fr 1fr!important;}
-  .exec-filter-grid>div{min-width:0;}
-  .exec-filter-grid .select{min-width:0;width:100%;font-size:10px;padding:7px 8px;}
-  .exec-filter-grid label{font-size:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .exec-filter-grid .filter-reset{grid-column:1/-1;}
+  #page-overview .ov2-salesall{grid-template-columns:1fr 1fr 1fr;padding:14px 12px;gap:8px}
+  #page-overview .ov2-sales-title{font-size:18px}.ov2-target{font-size:11px!important}.ov2-ring{width:78px!important;height:78px!important}.ov2-ring::after{inset:7px!important}.ov2-ring-value{font-size:16px}.ov2-ring-label{font-size:8px}
+  #page-overview .ov2-cat-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.ov2-cat-card{padding:10px 7px 9px!important}.ov2-mini-ring{width:62px!important;height:62px!important}.ov2-mini-ring::after{inset:6px!important}.ov2-mini-ring-value{font-size:14px}
+  #page-overview .ov2-op-grid{grid-template-columns:1fr;gap:7px}.ov2-op-card{padding:10px!important}.ov2-top-grid{grid-template-columns:1fr;gap:8px}.ov2-rank-row{grid-template-columns:20px 1fr 70px 45px;gap:5px}.ov2-rank-name,.ov2-rank-value{font-size:9px}.ov2-rank-track{height:8px}
+  #page-overview .ov2-period{gap:5px}.ov2-period .filter-btn{padding:6px 8px!important;font-size:10px!important}
 }
-@media(min-width:901px){
-  .exec-filter-grid{grid-template-columns:1fr 1fr 1fr auto;}
-  .exec-filter-grid>div{min-width:0;}
-  .exec-filter-grid .select{width:100%;min-width:0;}
-}
-</style>
-
-
-<style>
-/* OVERVIEW — compact category filter on desktop */
-@media(min-width:901px){
-  .exec-chart-card .exec-card-head{
-    align-items:center;
-  }
-  .exec-chart-card .exec-card-head > div{
-    min-width:0;
-    flex:1 1 auto;
-  }
-  .exec-chart-card .top-ero-filter{
-    width:150px;
-    min-width:150px;
-    flex:0 0 150px;
-    height:30px;
-    padding:0 9px;
-    font-size:11px;
-  }
-}
-@media(max-width:900px){
-  .exec-chart-card .top-ero-filter{
-    width:100%;
-    min-width:0;
-  }
-}
-</style>
-
-<style>
-.exec-period-compact{display:flex;align-items:center;gap:12px;padding:9px 12px}.exec-period-compact .filter-section-title{margin:0;white-space:nowrap}.exec-period-compact .exec-periods{flex:1}.device-value-only .operator-sub-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px};/* OPERATOR BRAND BORDERS */
-.operator-sub-card.operator-indosat{border:2px solid #f4c400!important;}
-.operator-sub-card.operator-xl{border:2px solid #20252b!important;}
-.operator-sub-card.operator-telkomsel{border:2px solid #e51f2a!important;}
-.operator-sub-card.operator-indosat .operator-sub-head{color:#f4c400;}
-.operator-sub-card.operator-xl .operator-sub-head{color:#20252b;}
-.operator-sub-card.operator-telkomsel .operator-sub-head{color:#e51f2a;}
-.operator-sub-card.operator-indosat .operator-sub-head b,
-.operator-sub-card.operator-xl .operator-sub-head b,
-.operator-sub-card.operator-telkomsel .operator-sub-head b{color:#112e68;}
-.operator-sub-card{padding:12px;background:#fff;border:1px solid #dce8f5;border-radius:13px;box-shadow:0 2px 10px rgba(20,70,130,.04)}.operator-sub-head{display:flex;gap:8px;align-items:center;color:#087bea}.operator-sub-head>span{font-size:20px}.operator-sub-head b{display:block;color:#112e68;font-size:13px}.operator-sub-head small{font-size:9px;color:#8290a8}.operator-sub-value{font-size:21px;font-weight:900;color:#092d72;margin-top:8px}.operator-sub-target{font-size:10px;color:#64748b}.operator-sub-target b{color:#17356f}.operator-sub-row{display:flex;align-items:center;gap:7px;justify-content:space-between;font-size:10px;color:#64748b;margin-top:7px}.operator-sub-row b{color:#17356f}.operator-sub-row em{font-style:normal;color:#087bea;font-weight:900}.operator-sub-row.gap b{color:#f13b4c}.operator-chart{height:220px;display:flex;align-items:flex-end;justify-content:space-around;gap:18px;padding:12px 12px 20px;border-bottom:1px solid #d9e4f1}.operator-chart-item{height:100%;flex:1;max-width:90px;display:flex;flex-direction:column;justify-content:flex-end;align-items:center}.operator-chart-track{height:145px;width:42px;background:#edf2f8;border-radius:7px 7px 2px 2px;display:flex;align-items:flex-end;overflow:hidden}.operator-chart-fill{width:100%;min-height:2px;border-radius:7px 7px 2px 2px}.operator-chart-value{font-size:11px;font-weight:900;color:#12346b;margin-bottom:5px}.operator-chart-name{font-size:10px;font-weight:800;color:#435676;margin-top:6px}.exec-filter-grid{display:none!important}
-@media(max-width:900px){.operator-sub-grid{grid-template-columns:1fr}.exec-period-compact{display:block;padding:7px 8px}.exec-period-compact .filter-section-title{margin-bottom:5px}.exec-period-compact .exec-periods{overflow-x:auto}.operator-sub-grid{grid-template-columns:1fr;gap:6px}.operator-sub-card{padding:9px}.operator-sub-value{font-size:19px}.operator-chart{height:190px;gap:8px;padding:10px 6px 18px}.operator-chart-track{height:120px;width:34px}.operator-chart-name{font-size:9px}.operator-chart-value{font-size:10px}.device-value-only{min-height:120px}.device-value-only .device-date-label{font-size:9px}}
-
-/* Operator sub-category — compact horizontal cards on desktop */
-#page-overview .operator-sub-grid,
-#page-overview .operator-grid,
-#page-overview .sub-operator-grid{
-  display:grid;
-  grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:8px;
-  align-items:stretch;
-}
-
-@media (min-width: 769px){
-  #page-overview .operator-sub-grid > *,
-  #page-overview .operator-grid > *,
-  #page-overview .sub-operator-grid > *{
-    min-width:0;
-  }
-}
-
-@media (max-width: 768px){
-  #page-overview .operator-sub-grid,
-  #page-overview .operator-grid,
-  #page-overview .sub-operator-grid{
-    grid-template-columns:1fr;
-  }
-}
-
-
-/* V13 — Vertical liquid capsule KPI */
-#page-overview .exec-kpi{
-  padding-right:78px;
-  overflow:hidden;
-}
-#page-overview .exec-kpi .liquid-capsule{
-  position:absolute;
-  right:13px;
-  top:45px;
-  width:38px;
-  height:92px;
-  margin:0;
-  padding:0;
-  border:2px solid #c7d8eb;
-  border-radius:22px;
-  background:linear-gradient(180deg,#f8fbff 0%,#eef4fa 100%);
-  overflow:hidden;
-  box-shadow:inset 0 1px 5px rgba(30,80,140,.10),0 2px 5px rgba(20,70,130,.06);
-  z-index:2;
-}
-#page-overview .exec-kpi .liquid-capsule > span{
-  position:absolute;
-  left:0;
-  bottom:0;
-  width:100%;
-  height:0;
-  min-height:0;
-  background:linear-gradient(180deg,#2f93ff 0%,#087bea 55%,#0566c9 100%);
-  border-radius:20px 20px 17px 17px;
-  transition:height .8s ease;
-  box-shadow:inset 0 4px 8px rgba(255,255,255,.28);
-}
-#page-overview .exec-kpi .liquid-capsule > span::before{
-  content:"";
-  position:absolute;
-  left:5px;
-  right:5px;
-  top:-3px;
-  height:8px;
-  border-radius:50%;
-  background:rgba(255,255,255,.42);
-}
-#page-overview .kpi-liquid-percent{
-  position:absolute;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index:3;
-  font-size:9px;
-  line-height:1;
-  font-weight:900;
-  color:#fff;
-  text-shadow:0 1px 2px rgba(0,45,100,.55);
-  pointer-events:none;
-}
-#page-overview .exec-kpi .kpi-percent{display:none}
-
-/* Achievement color states */
-#page-overview .liquid-capsule.liquid-good > span{
-  background:linear-gradient(180deg,#37d48a 0%,#16b96b 55%,#0c9b59 100%);
-}
-#page-overview .liquid-capsule.liquid-warn > span{
-  background:linear-gradient(180deg,#ffc24d 0%,#f39b20 55%,#db7f00 100%);
-}
-#page-overview .liquid-capsule.liquid-bad > span{
-  background:linear-gradient(180deg,#ff6876 0%,#f13b4c 55%,#d92b3b 100%);
-}
-
-@media(max-width:900px){
-  #page-overview .exec-kpi{
-    padding-right:64px;
-  }
-  #page-overview .exec-kpi .liquid-capsule{
-    right:9px;
-    top:40px;
-    width:32px;
-    height:78px;
-  }
-  #page-overview .kpi-liquid-percent{
-    font-size:8px;
-  }
-}
-
-
-/* V14 — Liquid capsule also applied to horizontal operator sub-cards */
-#page-overview .operator-sub-card{position:relative;overflow:hidden;}
-#page-overview .operator-sub-main{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0;}
-#page-overview .operator-sub-main>div:first-child{min-width:0;}
-#page-overview .operator-liquid-capsule{
-  position:relative;flex:0 0 38px;width:38px;height:82px;
-  border:2px solid #c7d8eb;border-radius:21px;
-  background:linear-gradient(180deg,#f8fbff 0%,#eef4fa 100%);
-  overflow:hidden;box-shadow:inset 0 1px 5px rgba(30,80,140,.10),0 2px 5px rgba(20,70,130,.06);
-}
-#page-overview .operator-liquid-capsule>span{
-  position:absolute;left:0;bottom:0;width:100%;height:0;min-height:0;
-  border-radius:19px 19px 16px 16px;transition:height .8s ease;
-  box-shadow:inset 0 4px 8px rgba(255,255,255,.28);
-}
-#page-overview .operator-liquid-capsule>span:before{
-  content:"";position:absolute;left:5px;right:5px;top:-3px;height:8px;border-radius:50%;background:rgba(255,255,255,.42);
-}
-#page-overview .operator-liquid-percent{
-  position:absolute!important;left:50%!important;top:50%!important;right:auto!important;bottom:auto!important;
-  transform:translate(-50%,-50%)!important;width:100%!important;margin:0!important;padding:0!important;
-  display:block!important;text-align:center!important;font-size:9px!important;line-height:1!important;
-  font-weight:900!important;color:#fff!important;text-shadow:0 1px 2px rgba(0,45,100,.6);
-  z-index:5;pointer-events:none;
-}
-#page-overview .operator-liquid-capsule.liquid-good>span{background:linear-gradient(180deg,#37d48a 0%,#16b96b 55%,#0c9b59 100%);}
-#page-overview .operator-liquid-capsule.liquid-warn>span{background:linear-gradient(180deg,#ffc24d 0%,#f39b20 55%,#db7f00 100%);}
-#page-overview .operator-liquid-capsule.liquid-bad>span{background:linear-gradient(180deg,#ff6876 0%,#f13b4c 55%,#d92b3b 100%);}
-/* Keep the main KPI percentage truly centered inside its capsule. */
-#page-overview .exec-kpi .kpi-liquid-percent{
-  position:absolute!important;left:50%!important;top:50%!important;right:auto!important;bottom:auto!important;
-  transform:translate(-50%,-50%)!important;width:100%!important;height:auto!important;inset:auto!important;
-  display:block!important;text-align:center!important;margin:0!important;padding:0!important;
-}
-@media(max-width:900px){
-  #page-overview .operator-liquid-capsule{flex-basis:32px;width:32px;height:72px;}
-  #page-overview .operator-liquid-percent{font-size:8px!important;}
-}
-
-
-/* V15 — achievement liquid colors:
-   0–50 red | 51–80 orange | 81–90 yellow | 91+ green */
-#page-overview .liquid-capsule.liquid-bad > span,
-#page-overview .operator-liquid-capsule.liquid-bad > span{
-  background:linear-gradient(180deg,#ff6876 0%,#f13b4c 55%,#d92b3b 100%) !important;
-}
-#page-overview .liquid-capsule.liquid-warn > span,
-#page-overview .operator-liquid-capsule.liquid-warn > span{
-  background:linear-gradient(180deg,#ffb84d 0%,#f28c18 55%,#db7100 100%) !important;
-}
-#page-overview .liquid-capsule.liquid-yellow > span,
-#page-overview .operator-liquid-capsule.liquid-yellow > span{
-  background:linear-gradient(180deg,#ffe66b 0%,#f8c928 55%,#e5aa00 100%) !important;
-}
-#page-overview .liquid-capsule.liquid-good > span,
-#page-overview .operator-liquid-capsule.liquid-good > span{
-  background:linear-gradient(180deg,#4be39a 0%,#16b96b 55%,#0c9b59 100%) !important;
-}
-
-
-/* V16 — card background fill follows ESTIMATION %, not achievement */
-#page-overview .exec-kpi,
-#page-overview .operator-sub-card{
-  position:relative;
-  overflow:hidden;
-  isolation:isolate;
-}
-
-/* Soft liquid layer inside the card */
-#page-overview .exec-kpi::after,
-#page-overview .operator-sub-card::after{
-  content:"";
-  position:absolute;
-  left:0;
-  right:0;
-  bottom:0;
-  height:0%;
-  z-index:-1;
-  opacity:.20;
-  border-radius:45% 55% 0 0 / 18px 24px 0 0;
-  transition:height .9s ease, background .3s ease;
-  background:linear-gradient(180deg,#2f93ff,#087bea);
-}
-
-/* A second subtle wave gives the fill a liquid/background feel */
-#page-overview .exec-kpi::before,
-#page-overview .operator-sub-card::before{
-  content:"";
-  position:absolute;
-  left:-8%;
-  width:116%;
-  bottom:0;
-  height:0%;
-  z-index:-1;
-  opacity:.10;
-  border-radius:50% 50% 0 0;
-  transition:height .9s ease, background .3s ease;
-  background:#087bea;
-}
-
-/* Estimation bands */
-#page-overview .est-fill-bad::after,
-#page-overview .est-fill-bad::before{
-  background:linear-gradient(180deg,#ff6876,#f13b4c 55%,#d92b3b);
-}
-#page-overview .est-fill-warn::after,
-#page-overview .est-fill-warn::before{
-  background:linear-gradient(180deg,#ffb84d,#f28c18 55%,#db7100);
-}
-#page-overview .est-fill-yellow::after,
-#page-overview .est-fill-yellow::before{
-  background:linear-gradient(180deg,#ffe66b,#f8c928 55%,#e5aa00);
-}
-#page-overview .est-fill-good::after,
-#page-overview .est-fill-good::before{
-  background:linear-gradient(180deg,#4be39a,#16b96b 55%,#0c9b59);
-}
-
-/* Keep content above the fill */
-#page-overview .exec-kpi > *,
-#page-overview .operator-sub-card > *{
-  position:relative;
-  z-index:2;
-}
-
-/* Hide the old liquid capsules in V16 */
-#page-overview .exec-kpi .liquid-capsule,
-#page-overview .operator-liquid-capsule{
-  display:none !important;
-}
-
-/* Slightly stronger readability over filled background */
-#page-overview .exec-kpi.est-filled,
-#page-overview .operator-sub-card.est-filled{
-  border-color:rgba(8,123,234,.28);
+@media(max-width:480px){
+  #page-overview .ov2-salesall{grid-template-columns:1.25fr .75fr .75fr}.ov2-sales-title{font-size:16px!important}.ov2-kicker{font-size:9px}.ov2-target{font-size:10px!important}.ov2-ring{width:68px!important;height:68px!important}.ov2-ring-value{font-size:14px}
+  #page-overview .ov2-cat-name{font-size:10px}.ov2-mini-ring{width:56px!important;height:56px!important}.ov2-mini-ring-value{font-size:12px}.ov2-mini-ring-label{font-size:7px}.ov2-meta-value{font-size:9px}.ov2-cat-target{font-size:8px}
+  #page-overview .ov2-section-title{font-size:13px}.ov2-section-sub{font-size:8px}.ov2-control{height:26px;font-size:9px}.ov2-rank-row{grid-template-columns:18px 1fr 60px 40px}.ov2-rank-name,.ov2-rank-value{font-size:8px}
 }
 
 </style>
@@ -2260,78 +1872,101 @@ html,body{
 
       <!-- ================= OVERVIEW ================= -->
 
-      <div id="page-overview" class="page">
+      <div id="page-overview" class="page overview-v2">
 
-        <div class="exec-head">
+        <div class="page-head">
           <div>
-            <div class="exec-kicker">EXECUTIVE SALES PERFORMANCE</div>
             <h1 class="page-title">Overview</h1>
             <div class="page-subtitle">Ringkasan performa SES SMB • data H-1</div>
           </div>
-          <div class="exec-date">📅 <span id="overviewMonth"></span></div>
+          <div class="month-badge">📅 <span id="overviewMonth"></span></div>
         </div>
 
-        <div class="ero-motto exec-motto">
-          <div class="ero-motto-title">🔥 HAI KALIAN SEMUA ERO SMB!</div>
-          <div class="ero-motto-text" id="eroMottoText">Jualan yang semangat ya! 💪🔥</div>
+        <div class="ov2-period">
+          <div class="ov2-period-label">📅 Periode</div>
+          <button class="filter-btn" onclick="setPeriodMode('lastweek',this)">Minggu Lalu</button>
+          <button class="filter-btn" onclick="setPeriodMode('week',this)">Minggu Ini</button>
+          <button class="filter-btn active" onclick="setPeriodMode('month',this)">Bulan Ini</button>
+          <button class="filter-btn" onclick="setPeriodMode('year',this)">Tahun Ini</button>
+          <button class="filter-btn" onclick="setPeriodMode('custom',this)">Custom</button>
         </div>
 
-        <div class="exec-filter card exec-period-compact">
-          <div class="filter-section-title">📅 Periode</div>
-          <div class="filters exec-periods">
-            <button class="filter-btn" onclick="setPeriodMode('lastweek',this)">Minggu Lalu</button>
-            <button class="filter-btn" onclick="setPeriodMode('week',this)">Minggu Ini</button>
-            <button class="filter-btn active" onclick="setPeriodMode('month',this)">Bulan Ini</button>
-            <button class="filter-btn" onclick="setPeriodMode('year',this)">Tahun Ini</button>
-            <button class="filter-btn" onclick="setPeriodMode('custom',this)">Custom</button>
+        <div id="customPeriodBox" class="ov2-custom">
+          <div><label>Tanggal Mulai</label><input type="date" id="customStartDate"></div>
+          <div><label>Tanggal Akhir</label><input type="date" id="customEndDate"></div>
+          <button class="btn primary" onclick="applyCustomPeriod()">Terapkan</button>
+        </div>
+
+        <!-- SALES ALL — fokus utama -->
+        <div class="card ov2-salesall">
+          <div>
+            <div class="ov2-kicker">Performance Overview</div>
+            <div class="ov2-sales-title">📊 SALES ALL</div>
+            <div class="ov2-target">Target <b id="overviewTarget">Rp 0</b></div>
           </div>
-          <div id="customPeriodBox" class="custom-period-box" style="display:none">
-            <div><label>Tanggal Mulai</label><input type="date" id="customStartDate"></div>
-            <div><label>Tanggal Akhir</label><input type="date" id="customEndDate"></div>
-            <button class="btn primary" onclick="applyCustomPeriod()">Terapkan</button>
+          <div class="ov2-ring" id="overviewAchRing" style="--p:0%;">
+            <div class="ov2-ring-content"><div class="ov2-ring-value" id="overviewAch">0%</div><div class="ov2-ring-label">Achievement</div></div>
+          </div>
+          <div class="ov2-ring" id="overviewEstRing" style="--p:0%;">
+            <div class="ov2-ring-content"><div class="ov2-ring-value" id="overviewEstPercent">0%</div><div class="ov2-ring-label">Estimasi</div></div>
           </div>
         </div>
 
-        <div class="exec-kpi-grid">
-          <div class="exec-kpi kpi-main"><div class="kpi-icon">▥</div><div class="kpi-label">SALES ALL</div><div class="kpi-value" id="overviewActual">Rp 0</div><div class="kpi-target">dari target <b id="overviewTarget">Rp 0</b></div><div class="kpi-progress liquid-capsule"><span id="overviewProgress"></span><b class="kpi-liquid-percent" id="overviewAch">0%</b></div><div class="kpi-foot"><span>Estimasi</span><b id="overviewEst">Rp 0</b><em id="overviewEstPercent">0%</em></div><div class="kpi-foot danger"><span>Kekurangan</span><b id="overviewShort">Rp 0</b></div></div>
-          <div class="exec-kpi"><div class="kpi-icon">▣</div><div class="kpi-label">DEVICE</div><div class="kpi-value" id="deviceActual">Rp 0</div><div class="kpi-target">dari target <b id="deviceTarget">Rp 0</b></div><div class="kpi-progress liquid-capsule"><span id="deviceProgress"></span><b class="kpi-liquid-percent" id="deviceAch">0%</b></div><div class="kpi-foot"><span>Estimasi</span><b id="deviceEst">Rp 0</b><em id="deviceEstPercent">0%</em></div><div class="kpi-foot danger"><span>Kekurangan</span><b id="deviceShort">Rp 0</b></div></div>
-          <div class="exec-kpi"><div class="kpi-icon">◉</div><div class="kpi-label">ACCESSORIES</div><div class="kpi-value" id="accActual">Rp 0</div><div class="kpi-target">dari target <b id="accTarget">Rp 0</b></div><div class="kpi-progress liquid-capsule"><span id="accProgress"></span><b class="kpi-liquid-percent" id="accAch">0%</b></div><div class="kpi-foot"><span>Estimasi</span><b id="accEst">Rp 0</b><em id="accEstPercent">0%</em></div><div class="kpi-foot danger"><span>Kekurangan</span><b id="accShort">Rp 0</b></div></div>
-          <div class="exec-kpi"><div class="kpi-icon">◆</div><div class="kpi-label">SCP</div><div class="kpi-value" id="repairActual">Rp 0</div><div class="kpi-target">dari target <b id="repairTarget">Rp 0</b></div><div class="kpi-progress liquid-capsule"><span id="repairProgress"></span><b class="kpi-liquid-percent" id="repairAch">0%</b></div><div class="kpi-foot"><span>Estimasi</span><b id="repairEst">Rp 0</b><em id="repairEstPercent">0%</em></div><div class="kpi-foot danger"><span>Kekurangan</span><b id="repairShort">Rp 0</b></div></div>
-          <div class="exec-kpi"><div class="kpi-icon">⌁</div><div class="kpi-label">OPERATOR</div><div class="kpi-value" id="operatorActual">Rp 0</div><div class="kpi-target">dari target <b id="operatorTarget">Rp 0</b></div><div class="kpi-progress liquid-capsule"><span id="operatorProgress"></span><b class="kpi-liquid-percent" id="operatorAch">0%</b></div><div class="kpi-foot"><span>Estimasi</span><b id="operatorEst">Rp 0</b><em id="operatorEstPercent">0%</em></div><div class="kpi-foot danger"><span>Kekurangan</span><b id="operatorShort">Rp 0</b></div></div>
+        <!-- KATEGORI -->
+        <div class="ov2-section">
+          <div class="ov2-section-head">
+            <div><div class="ov2-section-title">📦 Pencapaian per Kategori</div><div class="ov2-section-sub">Target • Achievement • Estimasi</div></div>
+          </div>
+          <div class="ov2-cat-grid">
+            <div class="card ov2-cat-card" data-overview-cat="Device">
+              <div class="ov2-cat-icon">📱</div><div class="ov2-cat-name">Device</div>
+              <div class="ov2-mini-ring" id="ov2DeviceAchRing" style="--p:0%;--ring:#087bea"><div class="ov2-mini-ring-content"><div class="ov2-mini-ring-value" id="deviceAch">0%</div><div class="ov2-mini-ring-label">ACH</div></div></div>
+              <div class="ov2-mini-ring" id="ov2DeviceEstRing" style="--p:0%;--ring:#63aaf5"><div class="ov2-mini-ring-content"><div class="ov2-mini-ring-value" id="deviceEstPercent">0%</div><div class="ov2-mini-ring-label">EST</div></div></div>
+              <div class="ov2-cat-target">Target <b id="deviceTarget">Rp 0</b></div>
+            </div>
+            <div class="card ov2-cat-card" data-overview-cat="Accessories">
+              <div class="ov2-cat-icon">🎧</div><div class="ov2-cat-name">Accessories</div>
+              <div class="ov2-mini-ring" id="ov2AccAchRing" style="--p:0%;--ring:#16a66a"><div class="ov2-mini-ring-content"><div class="ov2-mini-ring-value" id="accAch">0%</div><div class="ov2-mini-ring-label">ACH</div></div></div>
+              <div class="ov2-mini-ring" id="ov2AccEstRing" style="--p:0%;--ring:#16b878"><div class="ov2-mini-ring-content"><div class="ov2-mini-ring-value" id="accEstPercent">0%</div><div class="ov2-mini-ring-label">EST</div></div></div>
+              <div class="ov2-cat-target">Target <b id="accTarget">Rp 0</b></div>
+            </div>
+            <div class="card ov2-cat-card" data-overview-cat="Repair Contract">
+              <div class="ov2-cat-icon">🛡️</div><div class="ov2-cat-name">SCP</div>
+              <div class="ov2-mini-ring" id="ov2RepairAchRing" style="--p:0%;--ring:#8a97aa"><div class="ov2-mini-ring-content"><div class="ov2-mini-ring-value" id="repairAch">0%</div><div class="ov2-mini-ring-label">ACH</div></div></div>
+              <div class="ov2-mini-ring" id="ov2RepairEstRing" style="--p:0%;--ring:#9ba6b6"><div class="ov2-mini-ring-content"><div class="ov2-mini-ring-value" id="repairEstPercent">0%</div><div class="ov2-mini-ring-label">EST</div></div></div>
+              <div class="ov2-cat-target">Target <b id="repairTarget">Rp 0</b></div>
+            </div>
+            <div class="card ov2-cat-card" data-overview-cat="Operator">
+              <div class="ov2-cat-icon">📡</div><div class="ov2-cat-name">Operator</div>
+              <div class="ov2-mini-ring" id="ov2OperatorAchRing" style="--p:0%;--ring:#f05b5b"><div class="ov2-mini-ring-content"><div class="ov2-mini-ring-value" id="operatorAch">0%</div><div class="ov2-mini-ring-label">ACH</div></div></div>
+              <div class="ov2-mini-ring" id="ov2OperatorEstRing" style="--p:0%;--ring:#f06b6b"><div class="ov2-mini-ring-content"><div class="ov2-mini-ring-value" id="operatorEstPercent">0%</div><div class="ov2-mini-ring-label">EST</div></div></div>
+              <div class="ov2-cat-target">Target <b id="operatorTarget">Rp 0</b></div>
+            </div>
+          </div>
         </div>
 
-        <div class="exec-grid grid-main">
-          <div class="card exec-chart-card wide"><div class="exec-card-head"><span>⌁</span><div><b>Operator by Sub Kategori</b><small>Target • Pencapaian • Estimasi • Est % • Gap</small></div></div><div class="operator-sub-grid" id="overviewOperatorSubGrid">
-            <div class="operator-sub-card operator-indosat"><div class="operator-sub-head"><span>◉</span><div><b>Indosat</b><small>Operator</small></div></div><div class="operator-sub-main"><div><div class="operator-sub-value" id="overviewIndosatActual">Rp 0</div><div class="operator-sub-target">Target <b id="overviewIndosatTarget">Rp 0</b></div></div><div class="operator-liquid-capsule liquid-bad" id="overviewIndosatProgress"><span></span><b class="operator-liquid-percent" id="overviewIndosatAch">0%</b></div></div><div class="operator-sub-row"><span>Estimasi</span><b id="overviewIndosatEst">Rp 0</b><em id="overviewIndosatEstPercent">0%</em></div><div class="operator-sub-row gap"><span>Gap</span><b id="overviewIndosatGap">Rp 0</b></div></div>
-            <div class="operator-sub-card operator-xl"><div class="operator-sub-head"><span>ⓧ</span><div><b>XL</b><small>Operator</small></div></div><div class="operator-sub-main"><div><div class="operator-sub-value" id="overviewXLActual">Rp 0</div><div class="operator-sub-target">Target <b id="overviewXLTarget">Rp 0</b></div></div><div class="operator-liquid-capsule liquid-bad" id="overviewXLProgress"><span></span><b class="operator-liquid-percent" id="overviewXLAch">0%</b></div></div><div class="operator-sub-row"><span>Estimasi</span><b id="overviewXLEst">Rp 0</b><em id="overviewXLEstPercent">0%</em></div><div class="operator-sub-row gap"><span>Gap</span><b id="overviewXlGap">Rp 0</b></div></div>
-            <div class="operator-sub-card operator-telkomsel"><div class="operator-sub-head"><span>⌁</span><div><b>Telkomsel</b><small>Operator</small></div></div><div class="operator-sub-main"><div><div class="operator-sub-value" id="overviewTelkomselActual">Rp 0</div><div class="operator-sub-target">Target <b id="overviewTelkomselTarget">Rp 0</b></div></div><div class="operator-liquid-capsule liquid-bad" id="overviewTelkomselProgress"><span></span><b class="operator-liquid-percent" id="overviewTelkomselAch">0%</b></div></div><div class="operator-sub-row"><span>Estimasi</span><b id="overviewTelkomselEst">Rp 0</b><em id="overviewTelkomselEstPercent">0%</em></div><div class="operator-sub-row gap"><span>Gap</span><b id="overviewTelkomselGap">Rp 0</b></div></div>
-          </div></div>
-          <div class="card exec-chart-card"><div class="exec-card-head"><span>▥</span><div><b>Sales by Series</b><small>Device • Actual</small></div></div><div id="overviewSeriesChart" class="svg-chart"></div></div>
-          <div class="card exec-chart-card"><div class="exec-card-head"><span>◔</span><div><b>Kontribusi Kategori</b><small>Nilai sales</small></div></div><div id="overviewContributionChart" class="donut-chart"></div></div>
+        <!-- OPERATOR SUB CATEGORY -->
+        <div class="ov2-section">
+          <div class="ov2-section-head"><div><div class="ov2-section-title">📡 Operator — Sub Kategori</div><div class="ov2-section-sub">Achievement & estimasi %</div></div></div>
+          <div class="ov2-op-grid">
+            <div class="card ov2-op-card"><div class="ov2-op-top"><span class="ov2-op-name">Indosat</span><span class="ov2-op-target">Target <b id="indosatTarget">Rp 0</b></span></div><div class="ov2-op-bars"><div><div class="ov2-bar-label"><span>Achievement</span><b id="indosatAch">0%</b></div><div class="ov2-bar"><div id="indosatAchBar" class="ov2-bar-fill" style="width:0%"></div></div></div><div><div class="ov2-bar-label"><span>Estimasi</span><b id="indosatEstPercent">0%</b></div><div class="ov2-bar"><div id="indosatEstBar" class="ov2-bar-fill est" style="width:0%"></div></div></div></div></div>
+            <div class="card ov2-op-card"><div class="ov2-op-top"><span class="ov2-op-name">XL</span><span class="ov2-op-target">Target <b id="xlTarget">Rp 0</b></span></div><div class="ov2-op-bars"><div><div class="ov2-bar-label"><span>Achievement</span><b id="xlAch">0%</b></div><div class="ov2-bar"><div id="xlAchBar" class="ov2-bar-fill" style="width:0%"></div></div></div><div><div class="ov2-bar-label"><span>Estimasi</span><b id="xlEstPercent">0%</b></div><div class="ov2-bar"><div id="xlEstBar" class="ov2-bar-fill est" style="width:0%"></div></div></div></div></div>
+            <div class="card ov2-op-card"><div class="ov2-op-top"><span class="ov2-op-name">Telkomsel</span><span class="ov2-op-target">Target <b id="telkomselTarget">Rp 0</b></span></div><div class="ov2-op-bars"><div><div class="ov2-bar-label"><span>Achievement</span><b id="telkomselAch">0%</b></div><div class="ov2-bar"><div id="telkomselAchBar" class="ov2-bar-fill" style="width:0%"></div></div></div><div><div class="ov2-bar-label"><span>Estimasi</span><b id="telkomselEstPercent">0%</b></div><div class="ov2-bar"><div id="telkomselEstBar" class="ov2-bar-fill est" style="width:0%"></div></div></div></div></div>
+          </div>
         </div>
 
-        <div class="exec-grid grid-mid">
-          <div class="card exec-chart-card"><div class="exec-card-head"><span>👥</span><div><b>Estimasi % by ERO</b><small>Posisi estimasi terhadap target</small></div><select id="topEroCategory" class="top-ero-filter" onchange="renderTopERO();renderOverviewCharts()"><option value="Sales All">Sales All</option><option value="Device">Device</option><option value="Accessories">Accessories</option><option value="Operator">Operator</option></select></div><div id="overviewEroChart" class="ero-bars"></div></div>
-          <div class="card exec-chart-card"><div class="exec-card-head"><span>🏆</span><div><b>Top 3 ERO (Est %)</b><small>Performa terbaik</small></div><a href="javascript:void(0)" onclick="showPage('top')">Lihat Semua →</a></div><div id="overviewTop3" class="mini-podium"></div></div>
-          <div class="card exec-chart-card"><div class="exec-card-head"><span>🎯</span><div><b>Progress Target Sales All</b><small>Actual H-1 & estimasi</small></div></div><div id="overviewGauge" class="gauge-wrap"></div></div>
+        <!-- TOP 10 PRODUCT & BRAND -->
+        <div class="ov2-top-grid ov2-section">
+          <div class="card ov2-top-card">
+            <div class="ov2-section-head"><div style="display:flex;align-items:center;gap:8px;min-width:0"><select id="overviewProductMetric" class="ov2-control" onchange="renderOverviewTop10()"><option value="value">By Value</option><option value="qty">By Qty</option></select><div><div class="ov2-section-title">📦 Top 10 Produk</div><div class="ov2-section-sub">Ranking produk pada periode terpilih</div></div></div></div>
+            <div id="overviewTopProducts" class="ov2-ranking"></div>
+          </div>
+          <div class="card ov2-top-card">
+            <div class="ov2-section-head"><div style="display:flex;align-items:center;gap:8px;min-width:0"><select id="overviewBrandMetric" class="ov2-control" onchange="renderOverviewTop10()"><option value="value">By Value</option><option value="qty">By Qty</option></select><div><div class="ov2-section-title">🏷️ Top 10 Brand</div><div class="ov2-section-sub">Brand berdasarkan nama produk</div></div></div></div>
+            <div id="overviewTopBrands" class="ov2-ranking"></div>
+          </div>
         </div>
 
-        <div class="exec-grid grid-bottom">
-          <div class="card exec-chart-card wide"><div class="exec-card-head"><span>▥</span><div><b>Sales by Series Trend</b><small>Device • harian</small></div></div><div id="overviewSeriesTrend" class="svg-chart"></div></div>
-          <div class="card exec-chart-card"><div class="exec-card-head"><span>▥</span><div><b>Pencapaian per Kategori</b><small>Actual / target / est %</small></div></div><div id="overviewCategoryPerformance"></div></div>
-        </div>
-
-        <div class="exec-grid grid-bottom2">
-          <div class="card exec-chart-card wide"><div class="exec-card-head"><span>⚠</span><div><b>ERO Terendah (Est %)</b><small>Per kategori</small></div></div><div id="overviewLowest"></div></div>
-          <div class="insight-stack"><div class="card insight-card"><div class="exec-card-head"><span>💡</span><div><b>Insight Hari Ini</b></div></div><div id="overviewInsight"></div></div><div class="card action-card"><div class="exec-card-head"><span>✓</span><div><b>Action Plan</b></div></div><div id="overviewAction"></div></div></div>
-        </div>
-
-        <div class="legacy-overview-data" aria-hidden="true">
-          <span id="indosatTarget"></span><span id="indosatActual"></span><span id="indosatEst"></span><span id="indosatEstPercent"></span><span id="indosatShort"></span><span id="indosatAch"></span>
-          <span id="xlTarget"></span><span id="xlActual"></span><span id="xlEst"></span><span id="xlEstPercent"></span><span id="xlShort"></span><span id="xlAch"></span>
-          <span id="telkomselTarget"></span><span id="telkomselActual"></span><span id="telkomselEst"></span><span id="telkomselEstPercent"></span><span id="telkomselShort"></span><span id="telkomselAch"></span>
-          <span id="topSalesHighlight"></span><span id="bestCategoryHighlight"></span><span id="quickActionHighlight"></span>
-        </div>
       </div>
 
 
@@ -2372,8 +2007,6 @@ html,body{
           <div class="store-kpi"><div class="label">ACHIEVEMENT</div><div class="value" id="storeAchKpi">0%</div></div>
           <div class="store-kpi"><div class="label">ESTIMASI H-1</div><div class="value" id="storeEstKpi">Rp0</div></div>
         </div>
-
-        <div id="storeEroChart"></div>
 
         <div class="store-week-title">Breakdown Target per Sales</div>
         <div class="page-subtitle" style="margin-bottom:8px">Setiap sales dapat melihat target, actual H-1, estimasi dan kekurangan per kategori.</div>
@@ -3321,11 +2954,6 @@ async function loadAll(){
       renderSalesPerformance();
       renderStore();
       renderOutlook();
-
-      // SALES_MASTER selesai dimuat setelah dashboard.
-      // Render ulang Overview agar chart ERO / Top 3 yang membutuhkan
-      // salesList tidak kosong pada first load.
-      renderOverview();
       if(currentPage === "top") renderTopEROPage();
       if(currentPage === "summary") renderSummary();
 
@@ -3539,432 +3167,157 @@ function toggleSidebar(){
 
 
 /* =====================================================
-   OVERVIEW
+   OVERVIEW — MINIMAL V2
 ===================================================== */
 
-
-function normalizeOverviewSubcategory_(x){
-  const vals=[x.operator,x.operatorName,x.subCategory,x.subcategory,x.series,x.productSeries,x.seriesName];
-  return vals.map(v=>String(v||'').trim()).find(v=>v)||'';
-}
-function overviewFilteredTransactions(){
-  const tx=(dashboardData&&dashboardData.transactions)||[];
-  const ero=(document.getElementById('overviewEroFilter')||{}).value||'ALL';
-  const cat='ALL';
-  const sub=(document.getElementById('overviewSubcategoryFilter')||{}).value||'ALL';
-  return tx.filter(x=>{
-    if(ero!=='ALL' && String(x.salesId)!==String(ero)) return false;
-    if(cat!=='ALL' && String(x.category||'')!==cat) return false;
-    if(sub!=='ALL'){
-      const v=normalizeOverviewSubcategory_(x).toLowerCase();
-      const wanted=sub.toLowerCase();
-      if(v!==wanted && !v.includes(wanted) && !wanted.includes(v)) return false;
-    }
-    return true;
-  });
-}
-function updateOverviewFilterOptions(){
-  const cat='ALL';
-  const el=document.getElementById('overviewSubcategoryFilter'); if(!el)return;
-  let opts=['ALL'];
-  if(cat==='Device') opts=['ALL','Series A','Series S','Series Z','Series Tab'];
-  if(cat==='Operator') opts=['ALL','Indosat','XL','Telkomsel'];
-  el.innerHTML=opts.map(x=>`<option value="${escapeHtml(x)}">${x==='ALL'?'Semua Sub Kategori':escapeHtml(x)}</option>`).join('');
-  const label=el.closest('div')?.querySelector('label');
-  if(label) label.textContent=cat==='Operator'?'Sub Kategori Operator':cat==='Device'?'Series Device':'Sub Kategori';
-}
-function resetOverviewFilters(){
-  const c=document.getElementById('overviewCategoryFilter'), s=document.getElementById('overviewSubcategoryFilter'), e=document.getElementById('overviewEroFilter');
-  if(c)c.value='ALL'; updateOverviewFilterOptions(); if(s)s.value='ALL'; if(e)e.value='ALL';
-  const top=document.getElementById('topEroCategory'); if(top)top.value='Sales All';
-  renderOverviewCharts();
-}
-function populateOverviewEros(){
-  const el=document.getElementById('overviewEroFilter'); if(!el||!salesList)return;
-  const cur=el.value||'ALL';
-  el.innerHTML='<option value="ALL">Semua ERO</option>'+salesList.map(s=>`<option value="${escapeHtml(String(s.id))}">${escapeHtml(s.name||'-')}</option>`).join('');
-  if([...el.options].some(o=>o.value===cur))el.value=cur;
-}
-function svgLineChart(elId, points, estPoints){
-  const el=document.getElementById(elId); if(!el)return;
-  const w=700,h=220,p=28; const vals=points.concat(estPoints||[]).map(Number); const max=Math.max(1,...vals)*1.12;
-  const x=i=>p+(i*(w-p*2))/Math.max(1,points.length-1); const y=v=>h-p-(v/max)*(h-p*2);
-  let svg=`<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><g stroke="#e7edf5" stroke-width="1">`;
-  for(let i=0;i<5;i++){let yy=p+i*(h-p*2)/4;svg+=`<line x1="${p}" y1="${yy}" x2="${w-p}" y2="${yy}"/>`;} svg+='</g>';
-  const bars=points.map((v,i)=>{const yy=y(v);return `<rect x="${x(i)-7}" y="${yy}" width="14" height="${h-p-yy}" rx="2" fill="#73b5f5" opacity=".78"/>`;}).join('');
-  const line=(estPoints||[]).map((v,i)=>`${x(i)},${y(v)}`).join(' ');
-  const dots=(estPoints||[]).map((v,i)=>`<circle cx="${x(i)}" cy="${y(v)}" r="2.5" fill="#087bea"/>`).join('');
-  svg+=bars+`<polyline fill="none" stroke="#087bea" stroke-width="2.5" points="${line}"/>${dots}`;
-  svg+=`<line x1="${p}" y1="${h-p}" x2="${w-p}" y2="${h-p}" stroke="#b9c8dc"/>`;
-  el.innerHTML=svg+'</svg>';
-}
-function renderOverviewTrend(tx){
-  const dates=[]; const map={}; tx.forEach(x=>{const d=String(x.date||x.transactionDate||x.tanggal||'').slice(0,10); if(!d)return; map[d]=(map[d]||0)+Number(x.amount||0);});
-  Object.keys(map).sort().forEach(d=>dates.push(d));
-  const actual=dates.map(d=>map[d]); const days=Number(dashboardData.daysPassed||dates.length||1); const periodDays=Number(dashboardData.daysInMonth||days); const total=actual.reduce((a,b)=>a+b,0); const run=dates.map((_,i)=>total/(actual.length||1)*(i+1));
-  const vals=actual.length?actual:[0]; const estLine=vals.map((_,i)=>total/(Math.max(1,actual.length))*(i+1));
-  svgLineChart('overviewTrendChart',vals,estLine);
-}
-function getDeviceSeriesKey(value){
-  const values = value && typeof value === 'object'
-    ? [
-        value.series,
-        value.productSeries,
-        value.seriesName,
-        value.subcategory,
-        value.subCategory,
-        value.product
-      ]
-    : [value];
-
-  for(const v of values){
-    const r=String(v||'').trim().toLowerCase();
-    if(!r) continue;
-    if(r.includes('tab')) return 'Tab';
-    if(r.includes('fold') || r.includes('flip')) return 'Series Z';
-    if(r.includes('series z') || /(^|\b)z\s*\d/.test(r)) return 'Series Z';
-    if(r.includes('series a') || /(^|\b)a\s*\d/.test(r) || r.includes('galaxy a')) return 'Series A';
-    if(r.includes('series s') || /(^|\b)s\s*\d/.test(r) || r.includes('galaxy s')) return 'Series S';
-  }
-  return null;
-}
-function renderOverviewSeries(tx){
-  const keys=['Series S','Series Z','Series A','Tab']; const colors=['#087bea','#5d7fe8','#f08a24','#16a765']; const sums={}; keys.forEach(k=>sums[k]=0);
-  tx.filter(x=>String(x.category||'')==='Device').forEach(x=>{const k=getDeviceSeriesKey(x);if(k)sums[k]+=Number(x.amount||0);});
-  const max=Math.max(1,...keys.map(k=>Math.abs(sums[k]))); const w=520,h=220,p=28,bw=48,gap=65; let svg=`<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><line x1="${p}" y1="${h-p}" x2="${w-p}" y2="${h-p}" stroke="#b9c8dc"/>`;
-  keys.forEach((k,i)=>{const bh=Math.max(2,Math.abs(sums[k])/max*(h-p*2-20)),x=p+20+i*(bw+gap),y=h-p-bh;svg+=`<rect x="${x}" y="${y}" width="${bw}" height="${bh}" rx="5" fill="${colors[i]}" opacity=".9"/><text x="${x+bw/2}" y="${y-7}" text-anchor="middle" font-size="10" font-weight="800" fill="#17356f">${overviewMoney(sums[k])}</text><text x="${x+bw/2}" y="${h-8}" text-anchor="middle" font-size="9" fill="#50627f">${k==='Tab'?'Tab':k.replace('Series ','')+' Series'}</text>`;});
-  document.getElementById('overviewSeriesChart').innerHTML=svg+'</svg>';
-}
-function renderOverviewSeriesTrend(tx){
-  const keys=['Series S','Series Z','Series A','Tab']; const maps={}; keys.forEach(k=>maps[k]={}); tx.filter(x=>String(x.category||'')==='Device').forEach(x=>{const k=getDeviceSeriesKey(x);if(k){const d=String(x.date||'').slice(0,10);if(d)maps[k][d]=(maps[k][d]||0)+Number(x.amount||0);}});
-  const dates=[...new Set(keys.flatMap(k=>Object.keys(maps[k])))].sort(); const w=700,h=220,p=28,max=Math.max(1,...keys.flatMap(k=>dates.map(d=>maps[k][d]||0))); const colors=['#173f91','#6f3ce5','#f08a24','#16a765']; let svg=`<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><g stroke="#e7edf5">`;
-  for(let i=0;i<5;i++){let y=p+i*(h-p*2)/4;svg+=`<line x1="${p}" y1="${y}" x2="${w-p}" y2="${y}"/>`;}svg+='</g>';
-  keys.forEach((k,j)=>{const pts=dates.map((d,i)=>`${p+i*(w-p*2)/Math.max(1,dates.length-1)},${h-p-(maps[k][d]||0)/max*(h-p*2)}`).join(' ');svg+=`<polyline fill="none" stroke="${colors[j]}" stroke-width="2" points="${pts}"/>`;}); document.getElementById('overviewSeriesTrend').innerHTML=svg+'</svg>';
-}
-function renderOverviewEroChart(){
-  const cat=(document.getElementById('topEroCategory')||{}).value||'Sales All'; const days=Number(dashboardData.daysPassed||0); const dim=Number(dashboardData.daysInMonth||days||1);
-  const rows=salesList.map(s=>{const actual=getStoreSalesCategoryActual_(s.id,cat,'ALL');const target=getStoreSalesTarget_(s.id,cat);const est=days>0?actual/days*dim:0;return {name:s.name,estPct:target>0?est/target*100:0};}).filter(x=>x.estPct>0||true).sort((a,b)=>b.estPct-a.estPct);
-  const max=Math.max(100,...rows.map(x=>x.estPct)); document.getElementById('overviewEroChart').innerHTML=rows.map(r=>{const h=Math.min(100,r.estPct/max*100);const cls=r.estPct>=100?'good':r.estPct>=90?'warn':'bad';return `<div class="ero-bar-item"><div class="ero-bar-value">${Math.round(r.estPct)}%</div><div class="ero-bar-track"><div class="ero-bar-fill ${cls}" style="height:${h}%"></div></div><div class="ero-bar-name">${escapeHtml(r.name||'-')}</div></div>`;}).join('');
-}
-function renderOverviewTop3(){
-  const cat=(document.getElementById('topEroCategory')||{}).value||'Sales All'; const days=Number(dashboardData.daysPassed||0); const dim=Number(dashboardData.daysInMonth||days||1);
-  const rows=salesList.map(s=>{const a=getStoreSalesCategoryActual_(s.id,cat,'ALL'),t=getStoreSalesTarget_(s.id,cat),e=days>0?a/days*dim:0;return {name:s.name,estPct:t>0?e/t*100:0};}).sort((a,b)=>b.estPct-a.estPct).slice(0,3); const medals=['🥇','🥈','🥉']; document.getElementById('overviewTop3').innerHTML=rows.map((r,i)=>`<div class="pod"><div class="pod-medal">${medals[i]}</div><div class="pod-rank">#${i+1}</div><div class="pod-name">${escapeHtml(r.name||'-')}</div><div class="pod-est ${r.estPct>=100?'good':r.estPct<50?'bad':''}">${Math.round(r.estPct)}%</div></div>`).join('');
-}
-function renderOverviewContribution(tx){
-  const cats=[['Device','#087bea'],['Accessories','#63aef5'],['Repair Contract','#9eafc5'],['Operator','#dce3ec']]; const vals=cats.map(c=>tx.filter(x=>String(x.category||'')===c[0]).reduce((a,x)=>a+Number(x.amount||0),0));const total=vals.reduce((a,b)=>a+b,0);let acc=0,stops=[];vals.forEach((v,i)=>{const pct=total?v/total*100:0;stops.push(`${cats[i][1]} ${acc}% ${acc+pct}%`);acc+=pct;}); document.getElementById('overviewContributionChart').innerHTML=`<div class="donut" style="background:conic-gradient(${stops.join(',')||'#e8edf4 0 100%'})"><div class="donut-center">${overviewMoney(total)}<small>Sales All</small></div></div><div class="donut-list">${cats.map((c,i)=>`<div class="donut-row"><i class="donut-swatch" style="background:${c[1]}"></i>${c[0]} <b style="margin-left:auto">${total?Math.round(vals[i]/total*100):0}%</b></div>`).join('')}</div>`;}
-function renderOverviewGauge(){const a=Number(dashboardData.totalActual||0),t=Number(dashboardData.targetAll||0),p=t>0?Math.min(100,a/t*100):0;document.getElementById('overviewGauge').innerHTML=`<div class="gauge" style="--p:${p}%"></div><div class="gauge-center"><strong>${Math.round(p)}%</strong><small>Achievement</small></div>`;}
-function renderOverviewCategoryPerformance(){const cats=['Device','Accessories','Repair Contract','Operator'];document.getElementById('overviewCategoryPerformance').innerHTML=cats.map(c=>{const x=(dashboardData.categories||{})[c]||{};const est=Number(x.estimationPercent||0);return `<div class="category-performance-row"><span class="cat-name">${c==='Repair Contract'?'SCP':c}</span><div class="cat-track"><div class="cat-fill" style="width:${Math.min(100,est)}%"></div></div><span class="cat-est">${Math.round(est)}%</span></div>`}).join('');}
-function renderOverviewLowest(){const cat='ALL';const cats=cat==='ALL'?['Sales All','Device','Accessories','Indosat','XL','Telkomsel']:[cat==='Repair Contract'?'SCP':cat];const days=Number(dashboardData.daysPassed||0),dim=Number(dashboardData.daysInMonth||days||1);let html='<table class="lowest-table"><thead><tr><th>KATEGORI</th><th>ERO</th><th>ACTUAL</th><th>EST%</th><th>GAP EST</th></tr></thead><tbody>';cats.forEach(c=>{const base=c==='Sales All'?'Sales All':c;const rows=salesList.map(s=>{let a=getStoreSalesCategoryActual_(s.id,base,'ALL');let t=getStoreSalesTarget_(s.id,base);if(['Indosat','XL','Telkomsel'].includes(c)){a=getStoreSalesCategoryActual_(s.id,'Operator',c);t=getStoreSalesTarget_(s.id,c);}const e=days>0?a/days*dim:0;return {name:s.name,a,t,p:t>0?e/t*100:0,g:Math.max(t-e,0)};}).filter(r=>r.t>0).sort((a,b)=>a.p-b.p)[0];if(rows)html+=`<tr><td>${c}</td><td>${escapeHtml(rows.name)}</td><td>${eroMoney(rows.a)}</td><td>${Math.round(rows.p)}%</td><td>${eroMoney(rows.g)}</td></tr>`;});document.getElementById('overviewLowest').innerHTML=html+'</tbody></table>';}
-function renderOverviewInsights(){const est=Math.round(Number(dashboardData.estimationPercent||0));const cats=Object.entries(dashboardData.categories||{}).filter(([k,v])=>Number(v.target||0)>0).sort((a,b)=>Number(a[1].estimationPercent||0)-Number(b[1].estimationPercent||0));const focus=cats.slice(0,2).map(x=>x[0]==='Repair Contract'?'SCP':x[0]).join(' & ');const top=salesList.map(s=>{const a=getStoreSalesCategoryActual_(s.id,'Sales All','ALL'),t=getStoreSalesTarget_(s.id,'Sales All'),e=(dashboardData.daysPassed||1)>0?a/(dashboardData.daysPassed||1)*(dashboardData.daysInMonth||1):0;return {name:s.name,p:t?e/t*100:0};}).sort((a,b)=>b.p-a.p)[0];document.getElementById('overviewInsight').innerHTML=`<ul class="insight-list"><li>Estimasi Sales All saat ini <b>${est}%</b>.</li><li>Fokus kategori <b>${focus||'prioritas utama'}</b> untuk mengejar target.</li><li>${escapeHtml(top?.name||'ERO terbaik')} memimpin dengan estimasi <b>${Math.round(top?.p||0)}%</b>.</li><li>Gunakan grafik ERO untuk melihat posisi tim secara visual.</li></ul>`;document.getElementById('overviewAction').innerHTML='<ul class="action-list"><li>Push penjualan Device dan flagship.</li><li>Optimalkan aktivasi Operator.</li><li>Tingkatkan attach rate Accessories.</li><li>Follow up ERO dengan estimasi &lt; 100%.</li><li>Review target mingguan dan eksekusi campaign.</li></ul>';}
-function renderOverviewOperatorChart(){
-  const op=dashboardData.operators||{};
-  const keys=['Indosat','XL','Telkomsel'];
-  const rows=keys.map(k=>{const o=op[k]||{};const target=Number(o.target||0);const actual=Number(o.actual||0);const est=Number(o.estimation||0);const ep=target>0?est/target*100:0;return {k,actual,target,est,ep};});
-  const max=Math.max(100,...rows.map(x=>x.ep));
-  const colors=['#f39b20','#087bea','#f13b4c'];
-  document.getElementById('overviewOperatorChart').innerHTML=rows.map((r,i)=>{const h=Math.min(100,r.ep/max*100);return `<div class="operator-chart-item"><div class="operator-chart-value">${Math.round(r.ep)}%</div><div class="operator-chart-track"><div class="operator-chart-fill" style="height:${h}%;background:${colors[i]}"></div></div><div class="operator-chart-name">${r.k}</div></div>`;}).join('');
-}
-
-function renderOverviewCharts(){if(!dashboardData)return;populateOverviewEros();const tx=overviewFilteredTransactions();renderOverviewSeries(tx);renderOverviewSeriesTrend(tx);renderOverviewEroChart();renderOverviewTop3();renderOverviewContribution(tx);renderOverviewGauge();renderOverviewCategoryPerformance();renderOverviewLowest();renderOverviewInsights();}
-
-function getOverviewPeriodLabel(){
-  if(periodMode==='custom' && customStartDate && customEndDate) return `${customStartDate} – ${customEndDate}`;
-  const labels={month:'Bulan Ini',week:'Minggu Ini',lastweek:'Minggu Lalu',year:'Tahun Ini'};
-  return labels[periodMode]||'Periode terpilih';
-}
-
 function renderOverview(){
+  if(!dashboardData) return;
+  const d=dashboardData;
+  setText("overviewMonth", formatMonth(d.period || getCurrentPeriod()));
 
-  if(!dashboardData)
-    return;
+  setText("overviewTarget", overviewMoney(d.targetAll));
+  setHtml("overviewAch", percent(d.achievement));
+  setHtml("overviewEstPercent", percent(d.estimationPercent));
+  setOverviewRing_("overviewAchRing", d.achievement);
+  setOverviewRing_("overviewEstRing", d.estimationPercent);
 
-  const d =
-    dashboardData;
+  renderOverviewCategoryV2_("Device","device","ov2DeviceAchRing","ov2DeviceEstRing");
+  renderOverviewCategoryV2_("Accessories","acc","ov2AccAchRing","ov2AccEstRing");
+  renderOverviewCategoryV2_("Repair Contract","repair","ov2RepairAchRing","ov2RepairEstRing");
+  renderOverviewCategoryV2_("Operator","operator","ov2OperatorAchRing","ov2OperatorEstRing");
 
-  const month =
-    d.period || getCurrentPeriod();
-
-  setText(
-    "overviewMonth",
-    formatMonth(month)
-  );
-
-  setText(
-    "overviewActual",
-    overviewMoney(d.totalActual)
-  );
-
-  setText(
-    "overviewTarget",
-    overviewMoney(d.targetAll)
-  );
-
-  setText(
-    "overviewEst",
-    overviewMoney(d.estimation)
-  );
-
-  setHtml(
-    "overviewEstPercent",
-    percent(d.estimationPercent)
-  );
-
-  setText(
-    "overviewShort",
-    overviewMoney(d.shortfall)
-  );
-
-  setHtml(
-    "overviewAch",
-    percent(d.achievement)
-  );
-
-  setLiquidCapsule("overviewProgress", d.achievement);
-  setOverviewEstimationFills(d);
-
-
-  renderCategory(
-    "Device",
-    "device"
-  );
-
-  renderCategory(
-    "Accessories",
-    "acc"
-  );
-
-  renderCategory(
-    "Repair Contract",
-    "repair"
-  );
-
-  renderCategory(
-    "Operator",
-    "operator"
-  );
-
-
-  const op =
-    d.operators || {};
-
-  const renderOperator = (key, prefix) => {
-    const o = op[key] || {};
-    const actual = Number(o.actual || 0);
-    const target = Number(o.target || 0);
-    const estimation = Number(o.estimation || 0);
-    const shortfall = Math.max(target - actual, 0);
-
-    setText(prefix + "Target", overviewMoney(target));
-    setText(prefix + "Actual", overviewMoney(actual));
-    setText(prefix + "Est", overviewMoney(estimation));
-    setHtml(prefix + "EstPercent", percent(
-      o.estimationPercent != null
-        ? Number(o.estimationPercent)
-        : (target > 0 ? estimation / target * 100 : 0)
-    ));
-    setText(prefix + "Short", overviewMoney(shortfall));
-
-    setHtml(prefix + "Ach", percent(
-      o.achievement != null
-        ? Number(o.achievement)
-        : (target > 0 ? actual / target * 100 : 0)
-    ));
-  };
-
-  renderOperator("Indosat", "indosat");
-  renderOperator("XL", "xl");
-  renderOperator("Telkomsel", "telkomsel");
-
-  const subCards=[['Indosat','overviewIndosat'],['XL','overviewXL'],['Telkomsel','overviewTelkomsel']];
-  subCards.forEach(([key,prefix])=>{
-    const o=op[key]||{}; const target=Number(o.target||0); const actual=Number(o.actual||0); const est=Number(o.estimation||0);
-    setText(prefix+'Actual',overviewMoney(actual));
-    setText(prefix+'Target',overviewMoney(target));
-    const ach = o.achievement!=null ? Number(o.achievement) : (target?actual/target*100:0);
-    setHtml(prefix+'Ach',percent(ach));
-    const progressId = prefix==='indosat' ? 'overviewIndosatProgress' : prefix==='xl' ? 'overviewXLProgress' : 'overviewTelkomselProgress';
-    setOperatorLiquidCapsule(progressId,ach);
-    const opCard=document.getElementById(progressId)?.closest(".operator-sub-card");
-    if(opCard) setEstimationCardFill(opCard, o.estimation!=null ? Number(o.estimation) : (o.estPercent!=null ? Number(o.estPercent) : 0));
-    setText(prefix+'Est',overviewMoney(est));
-    setHtml(prefix+'EstPercent',percent(o.estimationPercent!=null?Number(o.estimationPercent):(target?est/target*100:0)));
-    setText(prefix+'Gap',overviewMoney(Math.max(target-actual,0)));
+  const op=d.operators||{};
+  [
+    ["Indosat","indosat"],
+    ["XL","xl"],
+    ["Telkomsel","telkomsel"]
+  ].forEach(function(pair){
+    const name=pair[0], prefix=pair[1], o=op[name]||{};
+    const ach=Number(o.achievement||0);
+    const estPct=o.estimationPercent!=null?Number(o.estimationPercent):0;
+    setText(prefix+"Target",overviewMoney(Number(o.target||0)));
+    setHtml(prefix+"Ach",percent(ach));
+    setHtml(prefix+"EstPercent",percent(estPct));
+    const ab=document.getElementById(prefix+"AchBar");
+    const eb=document.getElementById(prefix+"EstBar");
+    if(ab)ab.style.width=Math.min(Math.max(ach,0),100)+"%";
+    if(eb)eb.style.width=Math.min(Math.max(estPct,0),100)+"%";
   });
-  renderPerformanceHighlight();
-  updateOverviewFilterOptions();
-  renderOverviewCharts();
+
+  renderOverviewTop10();
 }
 
-
-
-function setOperatorLiquidCapsule(id,value){
+function setOverviewRing_(id,value){
   const el=document.getElementById(id);
   if(!el)return;
-  const pct=Number(value||0), fill=Math.max(0,Math.min(pct,100));
-  const span=el.querySelector('span');
-  if(span) span.style.height=fill+"%";
-  el.classList.remove("liquid-good","liquid-warn","liquid-yellow","liquid-bad");
-  if(pct>=91) el.classList.add("liquid-good");
-  else if(pct>=81) el.classList.add("liquid-yellow");
-  else if(pct>=51) el.classList.add("liquid-warn");
-  else el.classList.add("liquid-bad");
+  const p=Math.max(0,Math.min(Number(value||0),100));
+  el.style.setProperty("--p",p+"%");
 }
 
-
-function setEstimationCardFill(el, estimation){
-  if(!el) return;
-  const pct=Number(estimation||0);
-  const fill=Math.max(0,Math.min(pct,100));
-  el.classList.remove("est-fill-bad","est-fill-warn","est-fill-yellow","est-fill-good","est-filled");
-  if(pct>=91) el.classList.add("est-fill-good");
-  else if(pct>=81) el.classList.add("est-fill-yellow");
-  else if(pct>=51) el.classList.add("est-fill-warn");
-  else el.classList.add("est-fill-bad");
-  el.classList.add("est-filled");
-  el.style.setProperty("--est-fill",fill+"%");
-  el.style.setProperty("--estimation-pct",pct+"%");
-  el.style.setProperty("--dummy",fill+"%");
-  el.style.setProperty("contain","paint");
-  el.style.setProperty("background-position","0 0");
-  // CSS custom property is applied to both pseudo-elements through inline stylesheet below.
+function renderOverviewCategoryV2_(category,prefix,achRingId,estRingId){
+  const c=(dashboardData.categories||{})[category];
+  if(!c)return;
+  const ach=Number(c.achievement||0);
+  const estPct=Number(c.estimationPercent||0);
+  setText(prefix+"Target",overviewMoney(c.target));
+  setText(prefix+"Est",overviewMoney(c.estimation));
+  setHtml(prefix+"Ach",percent(ach));
+  setHtml(prefix+"EstPercent",percent(estPct));
+  setOverviewRing_(achRingId,ach);
+  setOverviewRing_(estRingId,estPct);
 }
 
-function setLiquidCapsule(id, value){
-  const el=document.getElementById(id);
-  if(!el) return;
-  const pct=Number(value||0);
-  const fill=Math.max(0,Math.min(pct,100));
-  el.style.height=fill+"%";
-  el.classList.remove("liquid-good","liquid-warn","liquid-yellow","liquid-bad");
-  if(pct>=91) el.classList.add("liquid-good");
-  else if(pct>=81) el.classList.add("liquid-yellow");
-  else if(pct>=51) el.classList.add("liquid-warn");
-  else el.classList.add("liquid-bad");
+function overviewTopMetric_(selectId){
+  const el=document.getElementById(selectId);
+  return el ? el.value : "value";
 }
 
+function overviewEffectiveAmount_(x){
+  return Number(x && x.amount || 0);
+}
 
+function overviewNormalizeProduct_(x){
+  const p=String(x && x.product || "").trim();
+  return p || "Tanpa Nama Produk";
+}
 
-function setOverviewEstimationFills(d){
-  const progressMap=[
-    ["overviewProgress","overview"],
-    ["deviceProgress","device"],
-    ["accProgress","acc"],
-    ["repairProgress","repair"],
-    ["operatorProgress","operator"]
+function overviewBrandFromText_(text){
+  const s=String(text||"").toLowerCase();
+  const rules=[
+    ["samsung", "Samsung"],["galaxy", "Samsung"],["iphone", "Apple"],["ipad", "Apple"],["macbook", "Apple"],["airpods", "Apple"],
+    ["xiaomi", "Xiaomi"],["redmi", "Xiaomi"],["poco", "POCO"],["huawei", "Huawei"],["honor", "Honor"],["oppo", "OPPO"],["vivo", "vivo"],["realme", "realme"],
+    ["anker", "Anker"],["spigen", "Spigen"],["ugreen", "UGREEN"],["baseus", "Baseus"],["jbl", "JBL"],["sony", "Sony"],["tcl", "TCL"],["logitech", "Logitech"]
   ];
-  progressMap.forEach(([pid,prefix])=>{
-    const p=document.getElementById(pid);
-    if(!p) return;
-    const card=p.closest(".exec-kpi");
-    if(card) setEstimationCardFill(card, d[prefix]?.estimation ?? d[prefix]?.est ?? 0);
+  for(const r of rules) if(s.includes(r[0])) return r[1];
+  const words=String(text||"").trim().split(/\s+/).filter(Boolean);
+  return words.length ? words[0] : "Lainnya";
+}
+
+function overviewBuildRanking_(rows,key,metric){
+  const map={};
+  (rows||[]).forEach(function(x){
+    const name=String(key(x)||"").trim();
+    if(!name)return;
+    if(!map[name])map[name]={name:name,value:0,qty:0};
+    map[name].value += overviewEffectiveAmount_(x);
+    map[name].qty += Number(x.qty||0);
   });
+  return Object.keys(map).map(k=>map[k]).sort(function(a,b){
+    const av=metric==="qty"?a.qty:a.value;
+    const bv=metric==="qty"?b.qty:b.value;
+    if(bv!==av)return bv-av;
+    return b.value-a.value;
+  }).slice(0,10);
 }
 
-function renderCategory(category,prefix){
-
-  const c =
-    dashboardData
-      .categories
-      ? dashboardData
-          .categories[category]
-      : null;
-
-  if(!c)
-    return;
-
-  setText(
-    prefix+"Actual",
-    overviewMoney(c.actual)
-  );
-
-  setText(
-    prefix+"Target",
-    overviewMoney(c.target)
-  );
-
-  setHtml(
-    prefix+"Ach",
-    percent(c.achievement)
-  );
-
-  setText(
-    prefix+"Est",
-    overviewMoney(c.estimation)
-  );
-
-  setHtml(
-    prefix+"EstPercent",
-    percent(c.estimationPercent)
-  );
-
-  setText(
-    prefix+"Short",
-    overviewMoney(c.shortfall)
-  );
-  setLiquidCapsule(prefix+"Progress", c.achievement);
-  const card = document.getElementById(prefix+"Card") || document.getElementById(prefix+"Kpi") || document.querySelector('[data-kpi-prefix="'+prefix+'"]');
-  if(card) setEstimationCardFill(card, c.estimation);
-
+function renderOverviewRanking_(elId,rows,metric){
+  const el=document.getElementById(elId);
+  if(!el)return;
+  if(!rows.length){el.innerHTML='<div class="ov2-empty">Belum ada data pada periode ini.</div>';return;}
+  const max=Math.max.apply(null,rows.map(function(x){return metric==="qty"?x.qty:x.value;}))||1;
+  el.innerHTML=rows.map(function(x,i){
+    const v=metric==="qty"?x.qty:x.value;
+    const label=metric==="qty" ? (Math.round(v)+" qty") : overviewMoney(v);
+    const width=Math.min((v/max)*100,100);
+    return '<div class="ov2-rank-row">'+
+      '<div class="ov2-rank-num">#'+(i+1)+'</div>'+
+      '<div class="ov2-rank-name" title="'+escapeHtml(x.name)+'">'+escapeHtml(x.name)+'</div>'+
+      '<div class="ov2-rank-track"><div class="ov2-rank-fill" style="width:'+width+'%"></div></div>'+
+      '<div class="ov2-rank-value">'+label+'</div>'+
+      '</div>';
+  }).join("");
 }
 
-
-
-function renderTopERO(){
-  renderPerformanceHighlight();
+function renderOverviewTop10(){
+  if(!dashboardData)return;
+  const tx=dashboardData.transactions||[];
+  const productMetric=overviewTopMetric_("overviewProductMetric");
+  const brandMetric=overviewTopMetric_("overviewBrandMetric");
+  const products=overviewBuildRanking_(tx,function(x){return overviewNormalizeProduct_(x);},productMetric);
+  const brands=overviewBuildRanking_(tx,function(x){return overviewBrandFromText_(String(x.product||"")||String(x.subcategory||""));},brandMetric);
+  renderOverviewRanking_("overviewTopProducts",products,productMetric);
+  renderOverviewRanking_("overviewTopBrands",brands,brandMetric);
 }
+
+function renderTopERO(){ renderPerformanceHighlight(); }
 
 function renderPerformanceHighlight(){
   if(!dashboardData)return;
-
-  const tx=dashboardData.transactions||[];
   const categoryEl=document.getElementById("topEroCategory");
   const category=categoryEl ? categoryEl.value : "Sales All";
-
   const stats=salesList.map(s=>{
     const actual=getStoreSalesCategoryActual_(s.id,category,"ALL");
     const target=getStoreSalesTarget_(s.id,category);
     return {name:s.name,actual,target,ach:target>0?actual/target*100:0};
-  }).sort((a,b)=>{
-    if(b.ach!==a.ach)return b.ach-a.ach;
-    return b.actual-a.actual;
-  });
-
+  }).sort((a,b)=>b.ach!==a.ach?b.ach-a.ach:b.actual-a.actual);
   const topEl=document.getElementById("topSalesHighlight");
   const top=stats.filter(x=>x.actual>0).slice(0,3);
-  if(topEl){
-    topEl.innerHTML=top.length?top.map((x,i)=>`
-      <div class="highlight-row">
-        <div class="highlight-rank">#${i+1}</div>
-        <div><div class="highlight-name">${escapeHtml(x.name)}</div><div class="highlight-meta">Actual ${overviewMoney(x.actual)}</div></div>
-        <div class="highlight-score">${percent(x.ach)}</div>
-      </div>`).join(""):'<div class="highlight-empty">Belum ada transaksi H-1 untuk diranking.</div>';
-  }
-
-  const cats=["Device","Accessories","Repair Contract","Operator"].map(name=>{
-    const c=(dashboardData.categories||{})[name]||{};
-    return {name,actual:Number(c.actual||0),target:Number(c.target||0),ach:Number(c.achievement||0)};
-  }).sort((a,b)=>b.ach-a.ach);
-
-  const bestEl=document.getElementById("bestCategoryHighlight");
-  const best=cats.find(x=>x.actual>0);
-  if(bestEl){
-    bestEl.innerHTML=best?`
-      <div class="highlight-row">
-        <div class="highlight-rank">★</div>
-        <div><div class="highlight-name">${escapeHtml(best.name)}</div><div class="highlight-meta">Actual ${overviewMoney(best.actual)} • Target ${overviewMoney(best.target)}</div></div>
-        <div class="highlight-score">${percent(best.ach)}</div>
-      </div>`:'<div class="highlight-empty">Belum ada transaksi H-1.</div>';
-  }
-
-  const quickEl=document.getElementById("quickActionHighlight");
-  const focus=cats.filter(x=>x.target>0).sort((a,b)=>a.ach-b.ach)[0];
-  if(quickEl){
-    quickEl.innerHTML=focus?`
-      <div class="highlight-action">
-        <div><div class="highlight-action-main">Kejar ${escapeHtml(focus.name)}</div><div class="highlight-meta">Time Gone ${Math.round(Number(dashboardData.timeGone||0))}%</div></div>
-        <div class="highlight-action-value">${overviewMoney(Math.max(focus.target-focus.actual,0))}</div>
-      </div>`:'<div class="highlight-empty">Target belum tersedia.</div>';
-  }
+  if(topEl)topEl.innerHTML=top.length?top.map((x,i)=>`<div class="highlight-row"><div class="highlight-rank">#${i+1}</div><div><div class="highlight-name">${escapeHtml(x.name)}</div><div class="highlight-meta">Actual ${overviewMoney(x.actual)}</div></div><div class="highlight-score">${percent(x.ach)}</div></div>`).join(""): '<div class="highlight-empty">Belum ada transaksi H-1 untuk diranking.</div>';
+  const cats=["Device","Accessories","Repair Contract","Operator"].map(name=>{const c=(dashboardData.categories||{})[name]||{};return {name,actual:Number(c.actual||0),target:Number(c.target||0),ach:Number(c.achievement||0)};}).sort((a,b)=>b.ach-a.ach);
+  const bestEl=document.getElementById("bestCategoryHighlight"),best=cats.find(x=>x.actual>0);
+  if(bestEl)bestEl.innerHTML=best?`<div class="highlight-row"><div class="highlight-rank">★</div><div><div class="highlight-name">${escapeHtml(best.name)}</div><div class="highlight-meta">Actual ${overviewMoney(best.actual)} • Target ${overviewMoney(best.target)}</div></div><div class="highlight-score">${percent(best.ach)}</div></div>`:'<div class="highlight-empty">Belum ada transaksi H-1.</div>';
+  const quickEl=document.getElementById("quickActionHighlight"),focus=cats.filter(x=>x.target>0).sort((a,b)=>a.ach-b.ach)[0];
+  if(quickEl)quickEl.innerHTML=focus?`<div class="highlight-action"><div><div class="highlight-action-main">Kejar ${escapeHtml(focus.name)}</div><div class="highlight-meta">Time Gone ${Math.round(Number(dashboardData.timeGone||0))}%</div></div><div class="highlight-action-value">${overviewMoney(Math.max(focus.target-focus.actual,0))}</div></div>`:'<div class="highlight-empty">Target belum tersedia.</div>';
 }
 
 /* =====================================================
@@ -4382,62 +3735,7 @@ function renderStore(){
   setText("storeEstKpi",money(est));
 
   renderStoreSalesBreakdown_();
-  renderStoreEROChart_();
   renderStoreWeekly_(tx);
-}
-
-
-function renderStoreEROChart_(){
-  const box=document.getElementById('storeEroChart');
-  if(!box || !dashboardData) return;
-
-  const activeSales=(salesList||[]).filter(s=>String(s.status||'AKTIF').toUpperCase()!=='NONAKTIF');
-  const days=Number(dashboardData.daysPassed||0);
-  const dim=Number(dashboardData.daysInMonth||0);
-  const cat=document.getElementById('storeCategory')?.value||'ALL';
-  const type=document.getElementById('storeType')?.value||'ALL';
-
-  const rows=activeSales.map(s=>{
-    const target=getStoreSalesTarget_(s.id,cat);
-    const actual=getStoreSalesCategoryActual_(s.id,cat,type==='ALL'?'ALL':type);
-    const est=days>0?actual/days*dim:0;
-    const ach=target>0?actual/target*100:0;
-    const estPct=target>0?est/target*100:0;
-    return {name:s.name||'-', ach, estPct};
-  }).sort((a,b)=>b.estPct-a.estPct);
-
-  if(!rows.length){
-    box.innerHTML='<div class="store-ero-chart-card"><div class="store-ero-empty">Belum ada sales aktif.</div></div>';
-    return;
-  }
-
-  const max=Math.max(100,...rows.map(r=>r.estPct),1);
-  const label=cat==='Operator' && type!=='ALL'
-    ? `Estimasi % ERO • ${escapeHtml(type)}`
-    : `Estimasi % ERO • ${escapeHtml(cat==='ALL'?'Sales All':cat)}`;
-
-  box.innerHTML=`
-    <div class="store-ero-chart-card">
-      <div class="store-ero-chart-head">
-        <div>
-          <div class="store-ero-chart-title">Performance ERO — Estimasi %</div>
-          <div class="store-ero-chart-sub">${label} • berdasarkan H-1</div>
-        </div>
-        <div class="store-ero-chart-sub">Target 100%</div>
-      </div>
-      <div class="store-ero-bars">
-        ${rows.map(r=>{
-          const width=Math.min((Math.max(r.estPct,0)/max)*100,100);
-          const cls=r.estPct>=100?'good':(r.estPct>=90?'warn':'low');
-          return `
-            <div class="store-ero-bar-row">
-              <div class="store-ero-bar-name" title="${escapeHtml(r.name)}">${escapeHtml(r.name)}</div>
-              <div class="store-ero-track"><div class="store-ero-fill ${cls}" style="width:${width}%"></div></div>
-              <div class="store-ero-pct">${eroPercent(r.estPct)}</div>
-            </div>`;
-        }).join('')}
-      </div>
-    </div>`;
 }
 
 function getStoreSalesCategoryActual_(salesId, category, type){
@@ -6469,18 +5767,6 @@ function showToast(message){
 }
 
 </script>
-
-
-<style id="estimationFillDynamic">
-#page-overview .exec-kpi.est-filled::after,
-#page-overview .operator-sub-card.est-filled::after{
-  height:var(--est-fill,0%);
-}
-#page-overview .exec-kpi.est-filled::before,
-#page-overview .operator-sub-card.est-filled::before{
-  height:calc(var(--est-fill,0%) + 8px);
-}
-</style>
 
 </body>
 </html>
