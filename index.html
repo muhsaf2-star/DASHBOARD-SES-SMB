@@ -1642,6 +1642,9 @@ html,body{
 ===================================================== */
 #page-overview.overview-v2{max-width:100%;}
 #page-overview .ov2-period{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+#page-overview .ov2-value-basis{display:flex;align-items:center;gap:6px;margin-left:auto}
+#page-overview .ov2-value-basis-label{font-size:10px;font-weight:700;color:#62708a}
+#page-overview .ov2-value-basis select{height:30px;padding:0 9px;border:1px solid #cfdced;background:#fff;border-radius:8px;color:#173b7c;font-size:10px;font-weight:800;outline:none}
 #page-overview .ov2-period-label{font-size:12px;font-weight:700;color:#123b86;display:flex;align-items:center;gap:6px;margin-right:2px}
 #page-overview .ov2-period .filter-btn{font-size:11px;padding:7px 11px;border-radius:9px}
 #page-overview .ov2-custom{display:none;align-items:end;gap:8px;padding:10px 12px;background:#f7faff;border:1px solid #dbe8fb;border-radius:12px;margin-bottom:12px}
@@ -1682,7 +1685,7 @@ html,body{
   #page-overview .ov2-sales-title{font-size:18px}.ov2-target{font-size:11px!important}.ov2-ring{width:78px!important;height:78px!important}.ov2-ring::after{inset:7px!important}.ov2-ring-value{font-size:16px}.ov2-ring-label{font-size:8px}
   #page-overview .ov2-cat-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.ov2-cat-card{padding:10px 7px 9px!important}.ov2-mini-ring{width:62px!important;height:62px!important}.ov2-mini-ring::after{inset:6px!important}.ov2-mini-ring-value{font-size:14px}
   #page-overview .ov2-op-grid{grid-template-columns:1fr;gap:7px}.ov2-op-card{padding:10px!important}.ov2-top-grid{grid-template-columns:1fr;gap:8px}.ov2-rank-row{grid-template-columns:20px 1fr 70px 45px;gap:5px}.ov2-rank-name,.ov2-rank-value{font-size:9px}.ov2-rank-track{height:8px}
-  #page-overview .ov2-period{gap:5px}.ov2-period .filter-btn{padding:6px 8px!important;font-size:10px!important}
+  #page-overview .ov2-period{gap:5px}.ov2-period .filter-btn{padding:6px 8px!important;font-size:10px!important}.ov2-value-basis{margin-left:0;width:100%;justify-content:flex-start}.ov2-value-basis select{height:28px}
 }
 @media(max-width:480px){
   #page-overview .ov2-salesall{grid-template-columns:1.25fr .75fr .75fr}.ov2-sales-title{font-size:16px!important}.ov2-kicker{font-size:9px}.ov2-target{font-size:10px!important}.ov2-ring{width:68px!important;height:68px!important}.ov2-ring-value{font-size:14px}
@@ -1889,6 +1892,14 @@ html,body{
           <button class="filter-btn active" onclick="setPeriodMode('month',this)">Bulan Ini</button>
           <button class="filter-btn" onclick="setPeriodMode('year',this)">Tahun Ini</button>
           <button class="filter-btn" onclick="setPeriodMode('custom',this)">Custom</button>
+        </div>
+
+        <div class="ov2-value-basis">
+          <span class="ov2-value-basis-label">VALUE</span>
+          <select id="overviewValueBasis" onchange="setOverviewValueBasis(this.value)">
+            <option value="noTax">No Tax</option>
+            <option value="withTax">With Tax</option>
+          </select>
         </div>
 
         <div id="customPeriodBox" class="ov2-custom">
@@ -2622,6 +2633,7 @@ const API_KEY =
 let currentUser = null;
 
 let dashboardData = null;
+let overviewValueBasis = "noTax";
 
 let salesList = [];
 
@@ -3170,31 +3182,107 @@ function toggleSidebar(){
    OVERVIEW — MINIMAL V2
 ===================================================== */
 
+function setOverviewValueBasis(value){
+  overviewValueBasis = value === "withTax" ? "withTax" : "noTax";
+  renderOverview();
+}
+
+function getOverviewValueLabel_(){
+  return overviewValueBasis === "withTax" ? "With Tax" : "No Tax";
+}
+
+function overviewRawValue_(x){
+  if(!x) return 0;
+  const v = overviewValueBasis === "withTax" ? x.valueWithTax : x.valueNoTax;
+  return Number(v || 0);
+}
+
+function overviewEffectiveAmount_(x){
+  const amount=overviewRawValue_(x);
+  if(!isFinite(amount) || amount===0) return 0;
+  const cat=String(x && x.category || "").trim().toLowerCase();
+  const sub=String(x && x.subcategory || "").trim().toLowerCase();
+  const product=String(x && x.product || "").trim().toLowerCase();
+  const value=(sub+" "+product);
+  if(cat === "device") {
+    const valid = sub.indexOf("series a")>=0 || sub.indexOf("a series")>=0 || /(^|\s)a\d/.test(value) || value.indexOf("galaxy a")>=0 ||
+      sub.indexOf("series s")>=0 || sub.indexOf("s series")>=0 || /(^|\s)s\d/.test(value) || value.indexOf("galaxy s")>=0 ||
+      sub.indexOf("series z")>=0 || sub.indexOf("z series")>=0 || /(^|\s)z\w/.test(value) || value.indexOf("fold")>=0 || value.indexOf("flip")>=0 || value.indexOf("galaxy z")>=0 ||
+      sub.indexOf("series tab")>=0 || sub.indexOf("tab series")>=0 || sub.indexOf("tab")>=0 || value.indexOf("galaxy tab")>=0;
+    return valid ? amount : 0;
+  }
+  if(cat === "operator") {
+    return ["indosat","xl","telkomsel"].indexOf(sub)>=0 ? amount : 0;
+  }
+  return amount;
+}
+
+function overviewCalc_(rows,target,daysPassed,projectionDays,isProjection){
+  const actual=(rows||[]).reduce((s,x)=>s+overviewEffectiveAmount_(x),0);
+  const t=Number(target||0);
+  const est=isProjection && daysPassed>0 ? actual/daysPassed*projectionDays : actual;
+  return {
+    actual:actual,
+    target:t,
+    achievement:t>0?actual/t*100:0,
+    estimation:est,
+    estimationPercent:t>0?est/t*100:0
+  };
+}
+
+function getOverviewStats_(){
+  const d=dashboardData||{};
+  const tx=d.transactions||[];
+  const daysPassed=Number(d.daysPassed||0);
+  const projectionDays=Number(d.daysInMonth||daysPassed||0);
+  const isProjection=d.periodMode !== "lastweek" && d.periodMode !== "custom";
+  const stats={};
+  stats.all=overviewCalc_(tx,d.targetAll,daysPassed,projectionDays,isProjection);
+  stats.categories={};
+  ["Device","Accessories","Repair Contract","Operator"].forEach(function(category){
+    const rows=tx.filter(function(x){return String(x.category||"").trim().toLowerCase()===category.toLowerCase() || (category==="Accessories" && String(x.category||"").trim().toLowerCase()==="acc") || (category==="Repair Contract" && ["repair contract","repaircontract","rc"].indexOf(String(x.category||"").trim().toLowerCase())>=0);});
+    const c=(d.categories||{})[category]||{};
+    stats.categories[category]=overviewCalc_(rows,c.target,daysPassed,projectionDays,isProjection);
+  });
+  stats.operators={};
+  ["Indosat","XL","Telkomsel"].forEach(function(operator){
+    const rows=tx.filter(function(x){return String(x.subcategory||"").trim().toLowerCase()===operator.toLowerCase();});
+    const o=(d.operators||{})[operator]||{};
+    stats.operators[operator]=overviewCalc_(rows,o.target,daysPassed,projectionDays,isProjection);
+  });
+  return stats;
+}
+
 function renderOverview(){
   if(!dashboardData) return;
   const d=dashboardData;
+  const stats=getOverviewStats_();
   setText("overviewMonth", formatMonth(d.period || getCurrentPeriod()));
+  const basisEl=document.getElementById("overviewValueBasis");
+  if(basisEl) basisEl.value=overviewValueBasis;
+  const basis=getOverviewValueLabel_();
+  const targetText=overviewMoney(stats.all.target);
+  setText("overviewTarget",targetText);
+  setHtml("overviewAch",percent(stats.all.achievement));
+  setHtml("overviewEstPercent",percent(stats.all.estimationPercent));
+  setOverviewRing_("overviewAchRing",stats.all.achievement);
+  setOverviewRing_("overviewEstRing",stats.all.estimationPercent);
+  const title=document.querySelector("#page-overview .ov2-sales-title");
+  if(title) title.innerHTML="📊 SALES ALL <span style=\"font-size:9px;font-weight:700;color:#4770a8;background:#eef6ff;border:1px solid #d8e9fb;border-radius:999px;padding:3px 7px\">"+basis+"</span>";
 
-  setText("overviewTarget", overviewMoney(d.targetAll));
-  setHtml("overviewAch", percent(d.achievement));
-  setHtml("overviewEstPercent", percent(d.estimationPercent));
-  setOverviewRing_("overviewAchRing", d.achievement);
-  setOverviewRing_("overviewEstRing", d.estimationPercent);
+  renderOverviewCategoryV2_("Device","device","ov2DeviceAchRing","ov2DeviceEstRing",stats.categories.Device);
+  renderOverviewCategoryV2_("Accessories","acc","ov2AccAchRing","ov2AccEstRing",stats.categories.Accessories);
+  renderOverviewCategoryV2_("Repair Contract","repair","ov2RepairAchRing","ov2RepairEstRing",stats.categories["Repair Contract"]);
+  renderOverviewCategoryV2_("Operator","operator","ov2OperatorAchRing","ov2OperatorEstRing",stats.categories.Operator);
 
-  renderOverviewCategoryV2_("Device","device","ov2DeviceAchRing","ov2DeviceEstRing");
-  renderOverviewCategoryV2_("Accessories","acc","ov2AccAchRing","ov2AccEstRing");
-  renderOverviewCategoryV2_("Repair Contract","repair","ov2RepairAchRing","ov2RepairEstRing");
-  renderOverviewCategoryV2_("Operator","operator","ov2OperatorAchRing","ov2OperatorEstRing");
-
-  const op=d.operators||{};
   [
     ["Indosat","indosat"],
     ["XL","xl"],
     ["Telkomsel","telkomsel"]
   ].forEach(function(pair){
-    const name=pair[0], prefix=pair[1], o=op[name]||{};
+    const name=pair[0], prefix=pair[1], o=stats.operators[name]||{};
     const ach=Number(o.achievement||0);
-    const estPct=o.estimationPercent!=null?Number(o.estimationPercent):0;
+    const estPct=Number(o.estimationPercent||0);
     setText(prefix+"Target",overviewMoney(Number(o.target||0)));
     setHtml(prefix+"Ach",percent(ach));
     setHtml(prefix+"EstPercent",percent(estPct));
@@ -3214,8 +3302,7 @@ function setOverviewRing_(id,value){
   el.style.setProperty("--p",p+"%");
 }
 
-function renderOverviewCategoryV2_(category,prefix,achRingId,estRingId){
-  const c=(dashboardData.categories||{})[category];
+function renderOverviewCategoryV2_(category,prefix,achRingId,estRingId,c){
   if(!c)return;
   const ach=Number(c.achievement||0);
   const estPct=Number(c.estimationPercent||0);
@@ -3230,10 +3317,6 @@ function renderOverviewCategoryV2_(category,prefix,achRingId,estRingId){
 function overviewTopMetric_(selectId){
   const el=document.getElementById(selectId);
   return el ? el.value : "value";
-}
-
-function overviewEffectiveAmount_(x){
-  return Number(x && x.amount || 0);
 }
 
 function overviewNormalizeProduct_(x){
