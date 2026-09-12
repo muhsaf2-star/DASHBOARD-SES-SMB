@@ -1713,6 +1713,52 @@ html,body{
   .ov2-ero-axis{margin-left:111px;margin-right:54px}
 }
 
+
+/* =========================================================
+   MOBILE RANKING CARDS — 1 KOLOM
+   Sales by ERO / Top Produk / Top Brand
+   ========================================================= */
+@media(max-width:700px){
+  #page-overview .ov2-top-grid,
+  #page-overview .ov2-ero-grid{
+    grid-template-columns:1fr !important;
+    width:100% !important;
+  }
+
+  #page-overview .ov2-top-card,
+  #page-overview .ov2-ero-chart-card{
+    width:100% !important;
+    min-width:0 !important;
+  }
+
+  #page-overview .ov2-ranking,
+  #page-overview .ov2-ero-chart{
+    width:100% !important;
+  }
+
+  #page-overview .ov2-rank-row{
+    grid-template-columns:20px minmax(0,1fr) 72px 48px !important;
+    width:100% !important;
+  }
+
+  #page-overview .ov2-rank-name,
+  #page-overview .ov2-rank-value{
+    min-width:0 !important;
+  }
+}
+
+@media(max-width:480px){
+  #page-overview .ov2-top-card,
+  #page-overview .ov2-ero-chart-card{
+    padding:11px 10px !important;
+  }
+
+  #page-overview .ov2-rank-row{
+    grid-template-columns:18px minmax(0,1fr) 62px 42px !important;
+    gap:5px !important;
+  }
+}
+
 </style>
 </head>
 
