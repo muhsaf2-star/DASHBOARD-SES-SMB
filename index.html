@@ -1608,6 +1608,37 @@ html,body{
 }
 .outlook-card table{min-width:760px;}
 .outlook-card th,.outlook-card td{padding:7px 8px;font-size:10.5px;}
+
+/* OUTLOOK — PREMIUM CONTRIBUTION BY SERIES */
+.outlook-contribution-card{overflow:hidden;}
+.outlook-contribution-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:10px 12px 0;}
+.outlook-section-title-clean{padding:0;background:transparent;border:0;}
+.outlook-contribution-subtitle{font-size:9px;color:#718096;margin-top:2px;}
+.outlook-contribution-filters{display:flex;gap:4px;background:#f3f7fc;border:1px solid #dce6f2;border-radius:9px;padding:3px;flex-wrap:wrap;justify-content:flex-end;}
+.outlook-contrib-filter{border:0;background:transparent;color:#4a6078;font-size:10px;font-weight:700;padding:7px 10px;border-radius:7px;cursor:pointer;white-space:nowrap;}
+.outlook-contrib-filter.active{background:#087bea;color:#fff;box-shadow:0 2px 6px rgba(8,123,234,.2);}
+.outlook-contribution-month-wrap{display:flex;align-items:center;gap:5px;width:max-content;margin:7px 12px 0 auto;padding:5px 8px;border:1px solid #d8e3ef;border-radius:7px;background:#fff;}
+.outlook-contribution-month-wrap span{font-size:12px;}
+.outlook-contribution-month-wrap select{border:0;outline:0;background:transparent;font-size:10px;font-weight:700;color:#17324d;cursor:pointer;}
+.outlook-contribution-chart{min-height:340px;display:flex;align-items:center;justify-content:center;padding:2px 14px 14px;}
+.outlook-donut-svg{width:min(100%,520px);height:auto;overflow:visible;}
+.outlook-donut-label{font-family:Arial,Helvetica,sans-serif;fill:#fff;text-anchor:middle;pointer-events:none;}
+.outlook-donut-label-name{font-size:13px;font-weight:700;}
+.outlook-donut-label-pct{font-size:22px;font-weight:900;}
+.outlook-donut-center-small{font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:700;fill:#718096;text-anchor:middle;}
+.outlook-donut-center-value{font-family:Arial,Helvetica,sans-serif;font-size:19px;font-weight:900;fill:#17324d;text-anchor:middle;}
+.outlook-donut-empty{font-size:11px;color:#718096;text-align:center;padding:50px 0;}
+@media(max-width:700px){
+  .outlook-contribution-head{display:block;}
+  .outlook-contribution-filters{margin-top:7px;width:max-content;max-width:100%;}
+  .outlook-contribution-month-wrap{margin:7px 0 0 auto;}
+  .outlook-contribution-chart{min-height:280px;padding:0 5px 8px;}
+  .outlook-donut-label-name{font-size:11px;}
+  .outlook-donut-label-pct{font-size:18px;}
+  .outlook-donut-center-small{font-size:9px;}
+  .outlook-donut-center-value{font-size:15px;}
+}
+
 @media(max-width:700px){
   table{min-width:720px;}
   th{font-size:9px;padding:7px 5px;}
@@ -2510,18 +2541,23 @@ html,body{
           </table>
         </div>
 
-        <div class="table-card outlook-card">
-          <div class="outlook-section-title">CONTRIBUTION BY SERIES — DEVICE</div>
-          <table>
-            <thead>
-              <tr>
-                <th>SERIES</th>
-                <th>ACTUAL</th>
-                <th>CONTRIBUSI</th>
-              </tr>
-            </thead>
-            <tbody id="outlookSeriesContributionTable"></tbody>
-          </table>
+        <div class="table-card outlook-card outlook-contribution-card">
+          <div class="outlook-contribution-head">
+            <div>
+              <div class="outlook-section-title outlook-section-title-clean">CONTRIBUTION BY SERIES — DEVICE</div>
+              <div class="outlook-contribution-subtitle">Kontribusi Device berdasarkan periode</div>
+            </div>
+            <div class="outlook-contribution-filters">
+              <button type="button" class="outlook-contrib-filter active" id="outlookContribMonthBtn" onclick="setOutlookContributionPeriod_('month')">Bulan</button>
+              <button type="button" class="outlook-contrib-filter" id="outlookContribThisWeekBtn" onclick="setOutlookContributionPeriod_('week')">Minggu Ini</button>
+              <button type="button" class="outlook-contrib-filter" id="outlookContribLastWeekBtn" onclick="setOutlookContributionPeriod_('lastweek')">Minggu Lalu</button>
+            </div>
+          </div>
+          <div class="outlook-contribution-month-wrap" id="outlookContributionMonthWrap">
+            <span>📅</span>
+            <select id="outlookContributionMonth" onchange="renderOutlookContribution_()"></select>
+          </div>
+          <div id="outlookSeriesContributionChart" class="outlook-contribution-chart"></div>
         </div>
 
         <div class="table-card outlook-card">
@@ -4296,6 +4332,155 @@ function outlookWeekLabel_(w){
   return "W"+String(weekNo).padStart(2,"0");
 }
 
+let outlookContributionPeriod_ = "month";
+
+function outlookContributionDateOnly_(v){
+  if(!v) return null;
+  const raw=String(v).slice(0,10);
+  if(/^\d{4}-\d{2}-\d{2}$/.test(raw)){
+    const d=new Date(raw+"T00:00:00");
+    return isNaN(d.getTime())?null:d;
+  }
+  const d=new Date(v);
+  return isNaN(d.getTime())?null:new Date(d.getFullYear(),d.getMonth(),d.getDate());
+}
+
+function outlookContributionFmtDate_(d){
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
+
+function outlookContributionMonthKey_(d){
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");
+}
+
+function outlookContributionMonthLabel_(key){
+  const d=new Date(key+"-01T00:00:00");
+  if(isNaN(d.getTime())) return key;
+  return d.toLocaleDateString("id-ID",{month:"long",year:"numeric"});
+}
+
+function outlookContributionMonday_(d){
+  const x=new Date(d); x.setHours(0,0,0,0);
+  const day=x.getDay();
+  x.setDate(x.getDate()+(day===0?-6:1-day));
+  return x;
+}
+
+function outlookContributionRange_(){
+  const today=new Date(); today.setHours(0,0,0,0);
+  const yesterday=new Date(today); yesterday.setDate(yesterday.getDate()-1);
+  if(outlookContributionPeriod_==="week"){
+    return {start:outlookContributionMonday_(today),end:yesterday};
+  }
+  if(outlookContributionPeriod_==="lastweek"){
+    const start=outlookContributionMonday_(today); start.setDate(start.getDate()-7);
+    const end=new Date(start); end.setDate(end.getDate()+6);
+    return {start:start,end:end};
+  }
+  const key=document.getElementById("outlookContributionMonth")?.value || outlookContributionMonthKey_(today);
+  const md=new Date(key+"-01T00:00:00");
+  if(isNaN(md.getTime())) return {start:new Date(today.getFullYear(),today.getMonth(),1),end:yesterday};
+  const start=new Date(md.getFullYear(),md.getMonth(),1);
+  let end=new Date(md.getFullYear(),md.getMonth()+1,0);
+  if(md.getFullYear()===today.getFullYear() && md.getMonth()===today.getMonth()) end=yesterday;
+  return {start:start,end:end};
+}
+
+function outlookContributionBuildMonthOptions_(){
+  const el=document.getElementById("outlookContributionMonth");
+  if(!el) return;
+  const previous=el.value;
+  const months={};
+  const now=new Date(); now.setHours(0,0,0,0);
+  months[outlookContributionMonthKey_(now)]=true;
+  (allTransactionsCache||[]).forEach(function(x){
+    const d=outlookContributionDateOnly_(x.date || x.tanggal || x.trxDate || x.transactionDate);
+    if(d) months[outlookContributionMonthKey_(d)]=true;
+  });
+  const keys=Object.keys(months).sort().reverse();
+  el.innerHTML=keys.map(function(k){return `<option value="${k}">${escapeHtml(outlookContributionMonthLabel_(k))}</option>`;}).join("");
+  if(keys.indexOf(previous)>=0) el.value=previous;
+  else el.value=outlookContributionMonthKey_(now);
+}
+
+function setOutlookContributionPeriod_(mode){
+  outlookContributionPeriod_=mode;
+  ["Month","ThisWeek","LastWeek"].forEach(function(s){
+    const b=document.getElementById("outlookContrib"+s+"Btn");
+    if(b) b.classList.remove("active");
+  });
+  const id=mode==="month"?"outlookContribMonthBtn":mode==="week"?"outlookContribThisWeekBtn":"outlookContribLastWeekBtn";
+  const btn=document.getElementById(id); if(btn) btn.classList.add("active");
+  const wrap=document.getElementById("outlookContributionMonthWrap");
+  if(wrap) wrap.style.display=mode==="month"?"flex":"none";
+  renderOutlookContribution_();
+}
+
+function outlookContributionEscape_(v){
+  return typeof escapeHtml==="function" ? escapeHtml(v) : String(v).replace(/[&<>"']/g,function(c){return ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;", "'":"&#39;"})[c];});
+}
+
+function outlookContributionCompact_(value){
+  const n=Number(value||0), abs=Math.abs(n), sign=n<0?"-":"";
+  const fmt=v=>Math.round(v).toLocaleString("id-ID");
+  if(abs>=1000000000) return "Rp "+sign+fmt(abs/1000000000)+" M";
+  if(abs>=1000000) return "Rp "+sign+fmt(abs/1000000)+" jt";
+  if(abs>=1000) return "Rp "+sign+fmt(abs/1000)+" rb";
+  return "Rp "+sign+Math.round(abs).toLocaleString("id-ID");
+}
+
+function renderOutlookContribution_(){
+  const chart=document.getElementById("outlookSeriesContributionChart");
+  if(!chart) return;
+  outlookContributionBuildMonthOptions_();
+  const range=outlookContributionRange_();
+  const start=range.start, end=range.end;
+  const seriesNames=["Series A","Series S","Series Z","Series Tab"];
+  const colors=["#087bea","#20b965","#ff9418","#7048e8"];
+  const rows=seriesNames.map(function(series){
+    let value=0;
+    (allTransactionsCache||[]).forEach(function(x){
+      const d=outlookContributionDateOnly_(x.date || x.tanggal || x.trxDate || x.transactionDate);
+      if(!d || d<start || d>end) return;
+      if(String(x.category||"").trim().toLowerCase()!=="device") return;
+      if(normalizeSeriesClient_(x)!==series) return;
+      value+=effectiveClientAmount_(x);
+    });
+    return {name:series,value:Math.max(0,value)};
+  });
+  const total=rows.reduce(function(s,r){return s+r.value;},0);
+  if(total<=0){
+    chart.innerHTML='<div class="outlook-donut-empty">Belum ada data Device pada periode ini.</div>';
+    return;
+  }
+
+  const cx=260, cy=210, outer=150, inner=82, gap=0.055;
+  let angle=-Math.PI/2;
+  const parts=[];
+  rows.forEach(function(r,i){
+    const pct=r.value/total;
+    const a0=angle+gap/2, a1=angle+pct*2*Math.PI-gap/2;
+    const mid=angle+pct*Math.PI;
+    angle+=pct*2*Math.PI;
+    const off=14;
+    const ox=Math.cos(mid)*off, oy=Math.sin(mid)*off;
+    const x0=cx+ox, y0=cy+oy;
+    function point(rad,a){return [x0+Math.cos(a)*rad,y0+Math.sin(a)*rad];}
+    const p1=point(outer,a0), p2=point(outer,a1), p3=point(inner,a1), p4=point(inner,a0);
+    const large=(a1-a0)>Math.PI?1:0;
+    const path=`M ${p1[0].toFixed(2)} ${p1[1].toFixed(2)} A ${outer} ${outer} 0 ${large} 1 ${p2[0].toFixed(2)} ${p2[1].toFixed(2)} L ${p3[0].toFixed(2)} ${p3[1].toFixed(2)} A ${inner} ${inner} 0 ${large} 0 ${p4[0].toFixed(2)} ${p4[1].toFixed(2)} Z`;
+    const labelRad=(outer+inner)/2;
+    const lx=x0+Math.cos(mid)*labelRad, ly=y0+Math.sin(mid)*labelRad;
+    const pctText=Math.round(pct*100)+"%";
+    parts.push(`<path d="${path}" fill="${colors[i]}" stroke="#fff" stroke-width="3" filter="url(#outlookDonutShadow)"/>`);
+    if(pct>=0.075){
+      parts.push(`<text x="${lx.toFixed(1)}" y="${(ly-3).toFixed(1)}" class="outlook-donut-label outlook-donut-label-name">${outlookContributionEscape_(r.name)}</text>`);
+      parts.push(`<text x="${lx.toFixed(1)}" y="${(ly+22).toFixed(1)}" class="outlook-donut-label outlook-donut-label-pct">${pctText}</text>`);
+    }
+  });
+  chart.innerHTML=`<svg class="outlook-donut-svg" viewBox="0 0 520 420" role="img" aria-label="Contribution Device by Series">\n    <defs><filter id="outlookDonutShadow" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="5" stdDeviation="5" flood-opacity=".18"/></filter></defs>\n    ${parts.join("")}\n    <circle cx="260" cy="210" r="78" fill="#fff" opacity=".96"/>\n    <text x="260" y="201" class="outlook-donut-center-small">TOTAL DEVICE</text>\n    <text x="260" y="226" class="outlook-donut-center-value">${outlookContributionCompact_(total)}</text>\n  </svg>`;
+}
+
 function renderOutlook(){
   if(!dashboardData) return;
 
@@ -4402,18 +4587,7 @@ function renderOutlook(){
     return {name:series, vals:vals, wow:prev!==0?(curr-prev)/prev*100:null, gap:curr-prev};
   });
 
-  const latestDeviceTotal=seriesRows.reduce(function(s,r){return s+r.vals[2];},0);
-  const seriesContribEl=document.getElementById("outlookSeriesContributionTable");
-  if(seriesContribEl){
-    seriesContribEl.innerHTML=seriesRows.map(function(r){
-      const contribution=latestDeviceTotal!==0?(r.vals[2]/latestDeviceTotal*100):0;
-      return `<tr>
-        <td><b>${escapeHtml(r.name)}</b></td>
-        <td class="money">${outlookMoney_(r.vals[2])}</td>
-        <td>${percent(contribution)}</td>
-      </tr>`;
-    }).join("");
-  }
+  renderOutlookContribution_();
 
   const seriesEl=document.getElementById("outlookSeriesTable");
   if(seriesEl){
