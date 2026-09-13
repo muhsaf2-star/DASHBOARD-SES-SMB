@@ -1628,6 +1628,38 @@ html,body{
 .outlook-donut-center-small{font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:700;fill:#718096;text-anchor:middle;}
 .outlook-donut-center-value{font-family:Arial,Helvetica,sans-serif;font-size:19px;font-weight:900;fill:#17324d;text-anchor:middle;}
 .outlook-donut-empty{font-size:11px;color:#718096;text-align:center;padding:50px 0;}
+/* OVERVIEW — CONTRIBUTION BY SERIES */
+.overview-contribution-card{overflow:hidden;}
+.overview-contribution-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:10px 12px 0;}
+.overview-contribution-title{font-size:11px;font-weight:800;color:#17324d;}
+.overview-contribution-subtitle{font-size:9px;color:#718096;margin-top:2px;}
+.overview-contribution-controls{display:flex;align-items:center;gap:5px;flex-wrap:wrap;justify-content:flex-end;}
+.overview-contribution-filters,.overview-contribution-metric{display:flex;gap:3px;background:#f3f7fc;border:1px solid #dce6f2;border-radius:9px;padding:3px;}
+.overview-contribution-filter,.overview-contribution-metric button{border:0;background:transparent;color:#4a6078;font-size:10px;font-weight:700;padding:7px 9px;border-radius:7px;cursor:pointer;white-space:nowrap;}
+.overview-contribution-filter.active,.overview-contribution-metric button.active{background:#087bea;color:#fff;box-shadow:0 2px 6px rgba(8,123,234,.2);}
+.overview-contribution-month-wrap{display:flex;align-items:center;gap:5px;width:max-content;margin:7px 12px 0 auto;padding:5px 8px;border:1px solid #d8e3ef;border-radius:7px;background:#fff;}
+.overview-contribution-month-wrap span{font-size:12px;}
+.overview-contribution-month-wrap select{border:0;outline:0;background:transparent;font-size:10px;font-weight:700;color:#17324d;cursor:pointer;}
+.overview-contribution-chart{min-height:360px;display:flex;align-items:center;justify-content:center;padding:0 14px 14px;}
+.overview-donut-svg{width:min(100%,560px);height:auto;overflow:visible;}
+.overview-donut-label{font-family:Arial,Helvetica,sans-serif;fill:#fff;text-anchor:middle;pointer-events:none;}
+.overview-donut-label-name{font-size:13px;font-weight:700;}
+.overview-donut-label-pct{font-size:23px;font-weight:900;}
+.overview-donut-center-small{font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:700;fill:#718096;text-anchor:middle;}
+.overview-donut-center-value{font-family:Arial,Helvetica,sans-serif;font-size:20px;font-weight:900;fill:#17324d;text-anchor:middle;}
+.overview-donut-empty{font-size:11px;color:#718096;text-align:center;padding:50px 0;}
+@media(max-width:700px){
+  .overview-contribution-head{display:block;}
+  .overview-contribution-controls{margin-top:7px;width:100%;justify-content:flex-start;}
+  .overview-contribution-filter,.overview-contribution-metric button{font-size:9px;padding:7px 8px;}
+  .overview-contribution-month-wrap{margin:7px 0 0 auto;}
+  .overview-contribution-chart{min-height:290px;padding:0 3px 8px;}
+  .overview-donut-label-name{font-size:11px;}
+  .overview-donut-label-pct{font-size:18px;}
+  .overview-donut-center-small{font-size:9px;}
+  .overview-donut-center-value{font-size:15px;}
+}
+
 @media(max-width:700px){
   .outlook-contribution-head{display:block;}
   .outlook-contribution-filters{margin-top:7px;width:max-content;max-width:100%;}
@@ -2328,6 +2360,34 @@ html,body{
           </div>
         </div>
 
+        <!-- CONTRIBUTION BY SERIES — PALING BAWAH OVERVIEW -->
+        <div class="ov2-section">
+          <div class="card overview-contribution-card">
+            <div class="overview-contribution-head">
+              <div>
+                <div class="overview-contribution-title">◔ CONTRIBUTION BY SERIES</div>
+                <div class="overview-contribution-subtitle">Kontribusi penjualan Device berdasarkan Series</div>
+              </div>
+              <div class="overview-contribution-controls">
+                <div class="overview-contribution-filters">
+                  <button type="button" class="overview-contribution-filter active" id="overviewContribMonthBtn" onclick="setOverviewContributionPeriod_('month')">Bulan</button>
+                  <button type="button" class="overview-contribution-filter" id="overviewContribThisWeekBtn" onclick="setOverviewContributionPeriod_('week')">Minggu Ini</button>
+                  <button type="button" class="overview-contribution-filter" id="overviewContribLastWeekBtn" onclick="setOverviewContributionPeriod_('lastweek')">Minggu Lalu</button>
+                </div>
+                <div class="overview-contribution-metric">
+                  <button type="button" class="active" id="overviewContribValueBtn" onclick="setOverviewContributionMetric_('value')">Value</button>
+                  <button type="button" id="overviewContribQtyBtn" onclick="setOverviewContributionMetric_('qty')">Qty</button>
+                </div>
+              </div>
+            </div>
+            <div class="overview-contribution-month-wrap" id="overviewContributionMonthWrap">
+              <span>📅</span>
+              <select id="overviewContributionMonth" onchange="renderOverviewContribution_()"></select>
+            </div>
+            <div id="overviewSeriesContributionChart" class="overview-contribution-chart"></div>
+          </div>
+        </div>
+
       </div>
 
 
@@ -2539,25 +2599,6 @@ html,body{
             </thead>
             <tbody id="outlookDayTable"></tbody>
           </table>
-        </div>
-
-        <div class="table-card outlook-card outlook-contribution-card">
-          <div class="outlook-contribution-head">
-            <div>
-              <div class="outlook-section-title outlook-section-title-clean">CONTRIBUTION BY SERIES — DEVICE</div>
-              <div class="outlook-contribution-subtitle">Kontribusi Device berdasarkan periode</div>
-            </div>
-            <div class="outlook-contribution-filters">
-              <button type="button" class="outlook-contrib-filter active" id="outlookContribMonthBtn" onclick="setOutlookContributionPeriod_('month')">Bulan</button>
-              <button type="button" class="outlook-contrib-filter" id="outlookContribThisWeekBtn" onclick="setOutlookContributionPeriod_('week')">Minggu Ini</button>
-              <button type="button" class="outlook-contrib-filter" id="outlookContribLastWeekBtn" onclick="setOutlookContributionPeriod_('lastweek')">Minggu Lalu</button>
-            </div>
-          </div>
-          <div class="outlook-contribution-month-wrap" id="outlookContributionMonthWrap">
-            <span>📅</span>
-            <select id="outlookContributionMonth" onchange="renderOutlookContribution_()"></select>
-          </div>
-          <div id="outlookSeriesContributionChart" class="outlook-contribution-chart"></div>
         </div>
 
         <div class="table-card outlook-card">
@@ -3849,6 +3890,7 @@ function renderOverview(){
 
   renderOverviewTop10();
   renderOverviewEROCharts();
+  renderOverviewContribution_();
 }
 
 function setOverviewRing_(id,value){
@@ -4332,9 +4374,32 @@ function outlookWeekLabel_(w){
   return "W"+String(weekNo).padStart(2,"0");
 }
 
-let outlookContributionPeriod_ = "month";
+let overviewContributionPeriod_ = "month";
+let overviewContributionMetric_ = "value";
 
-function outlookContributionDateOnly_(v){
+function setOverviewContributionPeriod_(mode){
+  overviewContributionPeriod_=mode;
+  ["Month","ThisWeek","LastWeek"].forEach(function(s){
+    const b=document.getElementById("overviewContrib"+s+"Btn");
+    if(b) b.classList.remove("active");
+  });
+  const id=mode==="month"?"overviewContribMonthBtn":mode==="week"?"overviewContribThisWeekBtn":"overviewContribLastWeekBtn";
+  const btn=document.getElementById(id); if(btn) btn.classList.add("active");
+  const wrap=document.getElementById("overviewContributionMonthWrap");
+  if(wrap) wrap.style.display=mode==="month"?"flex":"none";
+  renderOverviewContribution_();
+}
+
+function setOverviewContributionMetric_(metric){
+  overviewContributionMetric_=metric==="qty"?"qty":"value";
+  ["Value","Qty"].forEach(function(s){
+    const b=document.getElementById("overviewContrib"+s+"Btn");
+    if(b) b.classList.toggle("active",(s==="Qty"?"qty":"value")===overviewContributionMetric_);
+  });
+  renderOverviewContribution_();
+}
+
+function overviewContributionDateOnly_(v){
   if(!v) return null;
   const raw=String(v).slice(0,10);
   if(/^\d{4}-\d{2}-\d{2}$/.test(raw)){
@@ -4345,39 +4410,50 @@ function outlookContributionDateOnly_(v){
   return isNaN(d.getTime())?null:new Date(d.getFullYear(),d.getMonth(),d.getDate());
 }
 
-function outlookContributionFmtDate_(d){
-  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
-}
-
-function outlookContributionMonthKey_(d){
+function overviewContributionMonthKey_(d){
   return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");
 }
 
-function outlookContributionMonthLabel_(key){
+function overviewContributionMonthLabel_(key){
   const d=new Date(key+"-01T00:00:00");
   if(isNaN(d.getTime())) return key;
   return d.toLocaleDateString("id-ID",{month:"long",year:"numeric"});
 }
 
-function outlookContributionMonday_(d){
+function overviewContributionMonday_(d){
   const x=new Date(d); x.setHours(0,0,0,0);
   const day=x.getDay();
   x.setDate(x.getDate()+(day===0?-6:1-day));
   return x;
 }
 
-function outlookContributionRange_(){
+function overviewContributionBuildMonthOptions_(){
+  const el=document.getElementById("overviewContributionMonth");
+  if(!el) return;
+  const previous=el.value;
+  const months={};
+  const now=new Date(); now.setHours(0,0,0,0);
+  months[overviewContributionMonthKey_(now)]=true;
+  (allTransactionsCache||[]).forEach(function(x){
+    const d=overviewContributionDateOnly_(x.date || x.tanggal || x.trxDate || x.transactionDate);
+    if(d) months[overviewContributionMonthKey_(d)]=true;
+  });
+  const keys=Object.keys(months).sort().reverse();
+  el.innerHTML=keys.map(function(k){return `<option value="${escapeAttr(k)}">${escapeHtml(overviewContributionMonthLabel_(k))}</option>`;}).join("");
+  if(keys.indexOf(previous)>=0) el.value=previous;
+  else el.value=overviewContributionMonthKey_(now);
+}
+
+function overviewContributionRange_(){
   const today=new Date(); today.setHours(0,0,0,0);
   const yesterday=new Date(today); yesterday.setDate(yesterday.getDate()-1);
-  if(outlookContributionPeriod_==="week"){
-    return {start:outlookContributionMonday_(today),end:yesterday};
-  }
-  if(outlookContributionPeriod_==="lastweek"){
-    const start=outlookContributionMonday_(today); start.setDate(start.getDate()-7);
+  if(overviewContributionPeriod_==="week") return {start:overviewContributionMonday_(today),end:yesterday};
+  if(overviewContributionPeriod_==="lastweek"){
+    const start=overviewContributionMonday_(today); start.setDate(start.getDate()-7);
     const end=new Date(start); end.setDate(end.getDate()+6);
     return {start:start,end:end};
   }
-  const key=document.getElementById("outlookContributionMonth")?.value || outlookContributionMonthKey_(today);
+  const key=document.getElementById("overviewContributionMonth")?.value || overviewContributionMonthKey_(today);
   const md=new Date(key+"-01T00:00:00");
   if(isNaN(md.getTime())) return {start:new Date(today.getFullYear(),today.getMonth(),1),end:yesterday};
   const start=new Date(md.getFullYear(),md.getMonth(),1);
@@ -4386,41 +4462,7 @@ function outlookContributionRange_(){
   return {start:start,end:end};
 }
 
-function outlookContributionBuildMonthOptions_(){
-  const el=document.getElementById("outlookContributionMonth");
-  if(!el) return;
-  const previous=el.value;
-  const months={};
-  const now=new Date(); now.setHours(0,0,0,0);
-  months[outlookContributionMonthKey_(now)]=true;
-  (allTransactionsCache||[]).forEach(function(x){
-    const d=outlookContributionDateOnly_(x.date || x.tanggal || x.trxDate || x.transactionDate);
-    if(d) months[outlookContributionMonthKey_(d)]=true;
-  });
-  const keys=Object.keys(months).sort().reverse();
-  el.innerHTML=keys.map(function(k){return `<option value="${k}">${escapeHtml(outlookContributionMonthLabel_(k))}</option>`;}).join("");
-  if(keys.indexOf(previous)>=0) el.value=previous;
-  else el.value=outlookContributionMonthKey_(now);
-}
-
-function setOutlookContributionPeriod_(mode){
-  outlookContributionPeriod_=mode;
-  ["Month","ThisWeek","LastWeek"].forEach(function(s){
-    const b=document.getElementById("outlookContrib"+s+"Btn");
-    if(b) b.classList.remove("active");
-  });
-  const id=mode==="month"?"outlookContribMonthBtn":mode==="week"?"outlookContribThisWeekBtn":"outlookContribLastWeekBtn";
-  const btn=document.getElementById(id); if(btn) btn.classList.add("active");
-  const wrap=document.getElementById("outlookContributionMonthWrap");
-  if(wrap) wrap.style.display=mode==="month"?"flex":"none";
-  renderOutlookContribution_();
-}
-
-function outlookContributionEscape_(v){
-  return typeof escapeHtml==="function" ? escapeHtml(v) : String(v).replace(/[&<>"']/g,function(c){return ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;", "'":"&#39;"})[c];});
-}
-
-function outlookContributionCompact_(value){
+function overviewContributionCompact_(value){
   const n=Number(value||0), abs=Math.abs(n), sign=n<0?"-":"";
   const fmt=v=>Math.round(v).toLocaleString("id-ID");
   if(abs>=1000000000) return "Rp "+sign+fmt(abs/1000000000)+" M";
@@ -4429,57 +4471,62 @@ function outlookContributionCompact_(value){
   return "Rp "+sign+Math.round(abs).toLocaleString("id-ID");
 }
 
-function renderOutlookContribution_(){
-  const chart=document.getElementById("outlookSeriesContributionChart");
+function overviewContributionEscape_(v){
+  return typeof escapeHtml==="function" ? escapeHtml(v) : String(v).replace(/[&<>"']/g,function(c){return ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c];});
+}
+
+function renderOverviewContribution_(){
+  const chart=document.getElementById("overviewSeriesContributionChart");
   if(!chart) return;
-  outlookContributionBuildMonthOptions_();
-  const range=outlookContributionRange_();
-  const start=range.start, end=range.end;
+  overviewContributionBuildMonthOptions_();
+  const range=overviewContributionRange_();
   const seriesNames=["Series A","Series S","Series Z","Series Tab"];
   const colors=["#087bea","#20b965","#ff9418","#7048e8"];
   const rows=seriesNames.map(function(series){
     let value=0;
     (allTransactionsCache||[]).forEach(function(x){
-      const d=outlookContributionDateOnly_(x.date || x.tanggal || x.trxDate || x.transactionDate);
-      if(!d || d<start || d>end) return;
+      const d=overviewContributionDateOnly_(x.date || x.tanggal || x.trxDate || x.transactionDate);
+      if(!d || d<range.start || d>range.end) return;
       if(String(x.category||"").trim().toLowerCase()!=="device") return;
       if(normalizeSeriesClient_(x)!==series) return;
-      value+=effectiveClientAmount_(x);
+      value += overviewContributionMetric_==="qty" ? Number(x.qty||0) : overviewEffectiveAmount_(x);
     });
     return {name:series,value:Math.max(0,value)};
   });
-  const total=rows.reduce(function(s,r){return s+r.value;},0);
-  if(total<=0){
-    chart.innerHTML='<div class="outlook-donut-empty">Belum ada data Device pada periode ini.</div>';
-    return;
-  }
+  const total=rows.reduce(function(sum,r){return sum+r.value;},0);
+  if(total<=0){chart.innerHTML='<div class="overview-donut-empty">Belum ada data Device pada periode ini.</div>';return;}
 
-  const cx=260, cy=210, outer=150, inner=82, gap=0.055;
+  const cx=280,cy=215,outer=155,inner=82,gap=0.045;
   let angle=-Math.PI/2;
   const parts=[];
   rows.forEach(function(r,i){
     const pct=r.value/total;
-    const a0=angle+gap/2, a1=angle+pct*2*Math.PI-gap/2;
-    const mid=angle+pct*Math.PI;
+    const a0=angle+gap/2,a1=angle+pct*2*Math.PI-gap/2,mid=angle+pct*Math.PI;
     angle+=pct*2*Math.PI;
-    const off=14;
-    const ox=Math.cos(mid)*off, oy=Math.sin(mid)*off;
-    const x0=cx+ox, y0=cy+oy;
+    const off=15,ox=Math.cos(mid)*off,oy=Math.sin(mid)*off,x0=cx+ox,y0=cy+oy;
     function point(rad,a){return [x0+Math.cos(a)*rad,y0+Math.sin(a)*rad];}
-    const p1=point(outer,a0), p2=point(outer,a1), p3=point(inner,a1), p4=point(inner,a0);
+    const p1=point(outer,a0),p2=point(outer,a1),p3=point(inner,a1),p4=point(inner,a0);
     const large=(a1-a0)>Math.PI?1:0;
     const path=`M ${p1[0].toFixed(2)} ${p1[1].toFixed(2)} A ${outer} ${outer} 0 ${large} 1 ${p2[0].toFixed(2)} ${p2[1].toFixed(2)} L ${p3[0].toFixed(2)} ${p3[1].toFixed(2)} A ${inner} ${inner} 0 ${large} 0 ${p4[0].toFixed(2)} ${p4[1].toFixed(2)} Z`;
-    const labelRad=(outer+inner)/2;
-    const lx=x0+Math.cos(mid)*labelRad, ly=y0+Math.sin(mid)*labelRad;
-    const pctText=Math.round(pct*100)+"%";
-    parts.push(`<path d="${path}" fill="${colors[i]}" stroke="#fff" stroke-width="3" filter="url(#outlookDonutShadow)"/>`);
+    const labelRad=(outer+inner)/2,lx=x0+Math.cos(mid)*labelRad,ly=y0+Math.sin(mid)*labelRad;
+    parts.push(`<path d="${path}" fill="${colors[i]}" stroke="#fff" stroke-width="3" filter="url(#overviewDonutShadow)"/>`);
     if(pct>=0.075){
-      parts.push(`<text x="${lx.toFixed(1)}" y="${(ly-3).toFixed(1)}" class="outlook-donut-label outlook-donut-label-name">${outlookContributionEscape_(r.name)}</text>`);
-      parts.push(`<text x="${lx.toFixed(1)}" y="${(ly+22).toFixed(1)}" class="outlook-donut-label outlook-donut-label-pct">${pctText}</text>`);
+      parts.push(`<text x="${lx.toFixed(1)}" y="${(ly-4).toFixed(1)}" class="overview-donut-label overview-donut-label-name">${overviewContributionEscape_(r.name)}</text>`);
+      parts.push(`<text x="${lx.toFixed(1)}" y="${(ly+22).toFixed(1)}" class="overview-donut-label overview-donut-label-pct">${Math.round(pct*100)}%</text>`);
     }
   });
-  chart.innerHTML=`<svg class="outlook-donut-svg" viewBox="0 0 520 420" role="img" aria-label="Contribution Device by Series">\n    <defs><filter id="outlookDonutShadow" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="5" stdDeviation="5" flood-opacity=".18"/></filter></defs>\n    ${parts.join("")}\n    <circle cx="260" cy="210" r="78" fill="#fff" opacity=".96"/>\n    <text x="260" y="201" class="outlook-donut-center-small">TOTAL DEVICE</text>\n    <text x="260" y="226" class="outlook-donut-center-value">${outlookContributionCompact_(total)}</text>\n  </svg>`;
+  const centerValue=overviewContributionMetric_==="qty"?Math.round(total).toLocaleString("id-ID")+" qty":overviewContributionCompact_(total);
+  chart.innerHTML=`<svg class="overview-donut-svg" viewBox="0 0 560 430" role="img" aria-label="Contribution Device by Series">
+    <defs><filter id="overviewDonutShadow" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="6" stdDeviation="6" flood-opacity=".18"/></filter></defs>
+    ${parts.join("")}
+    <circle cx="280" cy="215" r="78" fill="#fff" opacity=".97"/>
+    <text x="280" y="206" class="overview-donut-center-small">TOTAL DEVICE</text>
+    <text x="280" y="232" class="overview-donut-center-value">${centerValue}</text>
+  </svg>`;
 }
+
+/* Compatibility shim: Contribution is now rendered only in Overview. */
+function renderOutlookContribution_(){ return; }
 
 function renderOutlook(){
   if(!dashboardData) return;
@@ -4586,8 +4633,6 @@ function renderOutlook(){
     const prev=Number(vals[1]||0), curr=Number(vals[2]||0);
     return {name:series, vals:vals, wow:prev!==0?(curr-prev)/prev*100:null, gap:curr-prev};
   });
-
-  renderOutlookContribution_();
 
   const seriesEl=document.getElementById("outlookSeriesTable");
   if(seriesEl){
