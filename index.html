@@ -3362,56 +3362,48 @@ async function loadAll(){
 
   try{
 
-    // Ambil data awal secara paralel. Transaksi disimpan di cache agar
-    // pergantian filter Overview berikutnya tidak perlu request ulang.
-    const results = await Promise.all([
-      api({
-        action:"dashboard",
-        period:getCurrentPeriod(),
-        periodMode: periodMode,
-        startDate: customStartDate,
-        endDate: customEndDate
-      }),
-      api({ action:"sales" }),
-      api({ action:"targets", period:getCurrentPeriod() }),
-      api({ action:"transactions" })
-    ]);
+    // OPTIMASI LOADING:
+    // getDashboard_() sudah mengembalikan sales, targets, dan transactions.
+    // Jadi cukup 1 request awal ke Apps Script, tanpa mengubah UI/rules.
+    const dashboard = await api({
+      action:"dashboard",
+      period:getCurrentPeriod(),
+      periodMode: periodMode,
+      startDate: customStartDate,
+      endDate: customEndDate
+    });
 
-    const dashboard = results[0];
-    const sales = results[1];
-    const targetResult = results[2];
-    const transactionsResult = results[3];
-
-    if(dashboard && dashboard.success){
-      dashboardData = dashboard.data;
+    if(!dashboard || !dashboard.success){
+      throw new Error(
+        dashboard && dashboard.message
+          ? dashboard.message
+          : "Dashboard gagal dimuat"
+      );
     }
 
-    if(transactionsResult && transactionsResult.success){
-      allTransactionsCache = transactionsResult.data || [];
-      // Gunakan cache lengkap untuk perhitungan Overview.
-      if(dashboardData) dashboardData.transactions = allTransactionsCache;
-    }
+    dashboardData = dashboard.data || {};
 
-    if(sales && sales.success){
-      salesList = sales.data || [];
-      renderManageSales();
-      renderInputSales();
-      renderSalesPerformance();
-      renderStore();
-      renderOutlook();
-      if(currentPage === "top") renderTopEROPage();
-      if(currentPage === "summary") renderSummary();
-    }
+    // Ambil seluruh dataset dari response dashboard yang sama.
+    salesList = dashboardData.sales || [];
+    targets = dashboardData.targets || [];
+    allTransactionsCache = dashboardData.transactions || [];
 
-    if(targetResult && targetResult.success){
-      targets = targetResult.data || [];
-      if(dashboardData) syncOverviewTargetsFromGlobal_();
-      renderTargets();
-    }
+    // Pastikan Overview memakai cache transaksi lengkap.
+    dashboardData.transactions = allTransactionsCache;
+
+    renderManageSales();
+    renderInputSales();
+    renderSalesPerformance();
+    renderStore();
+    renderOutlook();
+    if(currentPage === "top") renderTopEROPage();
+    if(currentPage === "summary") renderSummary();
+
+    if(dashboardData) syncOverviewTargetsFromGlobal_();
+    renderTargets();
 
     // Saat refresh, selalu terapkan periode default (Bulan Ini)
     // ke cache transaksi sebelum Overview dirender.
-    // Ini mencegah angka ALL/full data muncul sementara setelah reload.
     applyOverviewPeriodLocal_();
     renderOutlook();
 
