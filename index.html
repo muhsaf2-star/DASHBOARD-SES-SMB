@@ -52,7 +52,7 @@ button{
 
 .sidebar{
   width:272px;
-  background:var(--blue-dark);
+  background:#0b1f3a;
   color:white;
   position:fixed;
   left:0;
@@ -64,6 +64,8 @@ button{
 }
 
 .brand{
+ /* PREMIUM SIDEBAR */
+.brand{
   height:92px;
   padding:25px 24px;
   border-bottom:1px solid rgba(255,255,255,.08);
@@ -73,18 +75,36 @@ button{
 }
 
 .brand-icon{
-  color:#1685ff;
-  font-size:30px;
+  width:38px;
+  height:38px;
+  border-radius:11px;
+  background:linear-gradient(135deg,#0a84ff,#087bea);
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 6px 18px rgba(10,132,255,.28);
+}
+
+.brand-icon svg{
+  width:22px;
+  height:22px;
+  stroke:currentColor;
+  fill:none;
+  stroke-width:2;
+  stroke-linecap:round;
+  stroke-linejoin:round;
 }
 
 .brand-title{
   font-size:15px;
   font-weight:700;
+  letter-spacing:.1px;
 }
 
 .brand-sub{
   font-size:13px;
-  color:#8494a8;
+  color:#9db0c6;
   margin-top:3px;
 }
 
@@ -97,41 +117,63 @@ button{
   width:100%;
   border:0;
   background:transparent;
-  color:#edf4fc;
+  color:#d5dfeb;
   text-align:left;
-  padding:13px 14px;
-  margin-bottom:3px;
-  border-radius:8px;
+  padding:12px 14px;
+  margin-bottom:4px;
+  border-radius:9px;
   font-size:15px;
   font-weight:600;
   display:flex;
   align-items:center;
   gap:13px;
+  cursor:pointer;
+  transition:background .18s ease,color .18s ease,box-shadow .18s ease;
 }
 
 .menu button:hover{
-  background:rgba(255,255,255,.07);
+  background:rgba(255,255,255,.075);
+  color:#fff;
 }
 
 .menu button.active{
-  background:#063b75;
-  color:#1685ff;
+  background:#0a84ff;
+  color:#fff;
+  box-shadow:0 7px 18px rgba(10,132,255,.25);
 }
 
 .menu-icon{
+  width:22px;
+  min-width:22px;
+  height:22px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  color:#a9bdd3;
+}
+
+.menu-icon svg{
   width:20px;
-  text-align:center;
-  font-size:18px;
+  height:20px;
+  stroke:currentColor;
+  fill:none;
+  stroke-width:1.9;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+.menu button.active .menu-icon{
+  color:#fff;
 }
 
 .sidebar-footer{
   padding:18px;
   border-top:1px solid rgba(255,255,255,.08);
-  color:#71849a;
+  color:#8095ad;
   font-size:12px;
 }
 
-/* ================= CONTENT ================= */
+=========== CONTENT ================= */
 
 .main{
   margin-left:272px;
@@ -2023,7 +2065,6 @@ html,body{
 }
 
 </style>
-<h1 class="page-title">Outlook Kategori</h1>
 </head>
 
 <body>
@@ -2081,7 +2122,7 @@ html,body{
 
     <div class="brand">
 
-      <div class="brand-icon">↗</div>
+      <div class="brand-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19 19 5"/><path d="M10 5h9v9"/></svg></div>
 
       <div>
         <div class="brand-title">Sales</div>
@@ -2097,7 +2138,7 @@ html,body{
         class="active"
         onclick="showPage('overview')"
       >
-        <span class="menu-icon">▦</span>
+        <span class="menu-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10.5V20h13v-9.5"/><path d="M9.5 20v-5h5v5"/></svg></span>
         Overview
       </button>
 
@@ -2105,7 +2146,7 @@ html,body{
         id="menu-store"
         onclick="showPage('store')"
       >
-        <span class="menu-icon">♧</span>
+        <span class="menu-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h16l-1-5H5L4 9Z"/><path d="M5 9v11h14V9"/><path d="M9 20v-6h6v6"/><path d="M4 9a3 3 0 0 0 5 2 3 3 0 0 0 6 0 3 3 0 0 0 5-2"/></svg></span>
         Performa ERO
       </button>
 
@@ -2113,7 +2154,7 @@ html,body{
         id="menu-top"
         onclick="showPage('top')"
       >
-        <span class="menu-icon">🏆</span>
+        <span class="menu-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 9 4-7 4 7"/><path d="M6 9h12l-1 4H7L6 9Z"/><path d="M8 13v4h8v-4"/><path d="M5 21h14"/></svg></span>
         Top ERO
       </button>
 
@@ -2121,7 +2162,7 @@ html,body{
         id="menu-summary"
         onclick="showPage('summary')"
       >
-        <span class="menu-icon">▤</span>
+        <span class="menu-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg></span>
         Summary
       </button>
 
@@ -2129,7 +2170,7 @@ html,body{
         id="menu-outlook"
         onclick="showPage('outlook')"
       >
-        <span class="menu-icon">◔</span>
+        <span class="menu-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5"/><path d="M4 19h16"/><path d="m7 15 4-5 3 3 5-7"/><path d="M15 6h4v4"/></svg></span>
         Outlook Kategori
       </button>
 
@@ -2137,7 +2178,7 @@ html,body{
         id="menu-target"
         onclick="showPage('target')"
       >
-        <span class="menu-icon">◎</span>
+        <span class="menu-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><path d="m15.5 8.5 5-5"/><path d="M16 3.5h4.5V8"/></svg></span>
         Target Management
       </button>
 
@@ -2145,7 +2186,7 @@ html,body{
         id="menu-manage"
         onclick="showPage('manage')"
       >
-        <span class="menu-icon">♙</span>
+        <span class="menu-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6m-3-3h6"/></svg></span>
         Manage Sales
       </button>
 
@@ -2562,7 +2603,7 @@ html,body{
       <div id="page-outlook" class="page" style="display:none">
         <div class="page-head">
           <div>
-            
+            <h1 class="page-title">Outlook Kategori</h1>
             <div class="page-subtitle">Week-on-Week kategori & 3 minggu terakhir berdasarkan Sales Name</div>
           </div>
           <div class="month-badge">📊 WoW</div>
