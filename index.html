@@ -2569,7 +2569,13 @@ html,body{
         </div>
 
         <div class="table-card outlook-card">
-          <div class="outlook-section-title">WEEK-ON-WEEK KATEGORI</div>
+          <div class="outlook-section-title" style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
+            <span>WEEK-ON-WEEK KATEGORI</span>
+            <div style="display:flex;gap:4px;background:#f1f5f9;border:1px solid #dbe3ec;border-radius:8px;padding:3px">
+              <button type="button" id="outlookValueBtn" onclick="setOutlookMetric_('value')" style="border:0;border-radius:6px;padding:5px 10px;font-size:12px;font-weight:700;background:#0a84ff;color:#fff;cursor:pointer">Value</button>
+              <button type="button" id="outlookQtyBtn" onclick="setOutlookMetric_('qty')" style="border:0;border-radius:6px;padding:5px 10px;font-size:12px;font-weight:700;background:transparent;color:#52657d;cursor:pointer">Qty</button>
+            </div>
+          </div>
           <table>
             <thead>
               <tr>
@@ -4526,6 +4532,30 @@ function renderOverviewContribution_(){
   </svg>`;
 }
 
+let outlookMetric_ = "value";
+
+function setOutlookMetric_(metric){
+  outlookMetric_ = metric==="qty" ? "qty" : "value";
+  const vb=document.getElementById("outlookValueBtn");
+  const qb=document.getElementById("outlookQtyBtn");
+  if(vb){
+    vb.style.background=outlookMetric_==="value" ? "#0a84ff" : "transparent";
+    vb.style.color=outlookMetric_==="value" ? "#fff" : "#52657d";
+  }
+  if(qb){
+    qb.style.background=outlookMetric_==="qty" ? "#0a84ff" : "transparent";
+    qb.style.color=outlookMetric_==="qty" ? "#fff" : "#52657d";
+  }
+  renderOutlook();
+}
+
+function outlookMetricFormat_(value){
+  if(outlookMetric_==="qty"){
+    return Math.round(Number(value||0)).toLocaleString("id-ID")+" qty";
+  }
+  return outlookMoney_(value);
+}
+
 /* Compatibility shim: Contribution is now rendered only in Overview. */
 function renderOutlookContribution_(){ return; }
 
@@ -4542,33 +4572,101 @@ function renderOutlook(){
     setText("outSerW"+(i+1),label);
   });
 
-  function sumRows(rows){
-    return (rows||[]).reduce(function(sum,x){ return sum + effectiveClientAmount_(x); },0);
+  function outQty_(x){
+    const q=Number(x && (x.qty!=null ? x.qty : (x.quantity!=null ? x.quantity : x.QTY)) || 0);
+    return isFinite(q) ? q : 0;
   }
 
-  const catRows=catNames.map(function(cat){
+  function outMetricValue_(x){
+    return outlookMetric_==="qty" ? outQty_(x) : effectiveClientAmount_(x);
+  }
+
+  function sumRows(rows){
+    return (rows||[]).reduce(function(sum,x){ return sum + outMetricValue_(x); },0);
+  }
+
+  function sameSub_(x, sub){
+    return String(x && x.subcategory || "").trim().toLowerCase() === String(sub).trim().toLowerCase();
+  }
+
+  function outlookAccBucket_(x){
+    const sub=String(x && x.subcategory || "").trim().toLowerCase();
+    const product=String(x && (x.product || x.productName || x.description || x.materialDescription) || "").trim().toLowerCase();
+    const text=sub+" "+product;
+    if(text.indexOf("watch")>=0) return "Watch";
+    if(text.indexOf("buds")>=0) return "Buds";
+    return "Acc Other";
+  }
+
+  function buildOutlookMetricRow_(name, rowsGetter, isSub){
     const vals=weeks.map(function(w){
-      const rows=(w.transactions||[]).filter(function(x){
-        if(cat==="Sales All") return true;
-        return String(x.category||"").trim().toLowerCase()===cat.toLowerCase();
-      });
-      return sumRows(rows);
+      return sumRows(rowsGetter(w));
     });
     while(vals.length<3) vals.unshift(0);
     const prev=Number(vals[1]||0), curr=Number(vals[2]||0);
-    return {name:cat, vals:vals, wow:prev!==0?(curr-prev)/prev*100:null, gap:curr-prev};
+    return {name:name, vals:vals, wow:prev!==0?(curr-prev)/prev*100:null, gap:curr-prev, isSub:!!isSub};
+  }
+
+  const catRows=[];
+  catRows.push(buildOutlookMetricRow_("Sales All",function(w){
+    return w.transactions||[];
+  },false));
+
+  catRows.push(buildOutlookMetricRow_("Device",function(w){
+    return (w.transactions||[]).filter(function(x){
+      return String(x.category||"").trim().toLowerCase()==="device";
+    });
+  },false));
+
+  catRows.push(buildOutlookMetricRow_("Accessories",function(w){
+    return (w.transactions||[]).filter(function(x){
+      return String(x.category||"").trim().toLowerCase()==="accessories";
+    });
+  },false));
+
+  ["Watch","Buds","Acc Other"].forEach(function(bucket){
+    catRows.push(buildOutlookMetricRow_(bucket,function(w){
+      return (w.transactions||[]).filter(function(x){
+        return String(x.category||"").trim().toLowerCase()==="accessories" &&
+               outlookAccBucket_(x)===bucket;
+      });
+    },true));
+  });
+
+  catRows.push(buildOutlookMetricRow_("Repair Contract",function(w){
+    return (w.transactions||[]).filter(function(x){
+      return String(x.category||"").trim().toLowerCase()==="repair contract";
+    });
+  },false));
+
+  catRows.push(buildOutlookMetricRow_("Operator",function(w){
+    return (w.transactions||[]).filter(function(x){
+      return String(x.category||"").trim().toLowerCase()==="operator";
+    });
+  },false));
+
+  ["Indosat","XL","Telkomsel"].forEach(function(operator){
+    catRows.push(buildOutlookMetricRow_(operator,function(w){
+      return (w.transactions||[]).filter(function(x){
+        return String(x.category||"").trim().toLowerCase()==="operator" &&
+               sameSub_(x,operator);
+      });
+    },true));
   });
 
   const catEl=document.getElementById("outlookCategoryTable");
   if(catEl){
     catEl.innerHTML=catRows.map(function(r){
-      return `<tr>
-        <td><b>${escapeHtml(r.name)}</b></td>
-        <td class="money">${outlookMoney_(r.vals[0])}</td>
-        <td class="money">${outlookMoney_(r.vals[1])}</td>
-        <td class="money">${outlookMoney_(r.vals[2])}</td>
+      const nameHtml=r.isSub
+        ? `<span style="display:inline-block;padding-left:18px;color:#64748b;font-weight:600">↳ ${escapeHtml(r.name)}</span>`
+        : `<b>${escapeHtml(r.name)}</b>`;
+      return `<tr class="${r.isSub?'outlook-subrow':''}">
+        <td>${nameHtml}</td>
+        <td class="money">${outlookMetricFormat_(r.vals[0])}</td>
+        <td class="money">${outlookMetricFormat_(r.vals[1])}</td>
+        <td class="money">${outlookMetricFormat_(r.vals[2])}</td>
         <td class="${r.wow===null?'':(r.wow>=0?'wow-up':'wow-down')}">${r.wow===null?"—":outlookPercent_(r.wow)}</td>
-        <td class="${r.gap>=0?'gap-up':'gap-down'}">${outlookMoney_(r.gap)}</td>
+        <td class="${r.gap>=0?'gap-up':'gap-down'}">${outlookMetricFormat_(r.gap)}</td>
       </tr>`;
     }).join("");
   }
