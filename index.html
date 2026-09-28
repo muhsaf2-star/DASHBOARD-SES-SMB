@@ -2022,8 +2022,6 @@ html,body{
   }
 }
 
-
-.outlook-graphic-wrap{display:none;padding:12px 0}.outlook-graphic-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.outlook-graphic-panel{border:1px solid #dbe3ec;border-radius:12px;background:#fff;overflow:hidden}.outlook-graphic-head{display:flex;justify-content:space-between;align-items:center;padding:11px 13px;border-bottom:1px solid #e8edf3;font-size:13px;font-weight:800;color:#19324d}.outlook-graphic-sub{font-size:11px;color:#7a8ca1}.outlook-graphic-body{padding:10px 12px}.outlook-line-card{border:1px solid #edf1f5;border-radius:10px;padding:8px 9px;margin-bottom:7px;background:#fbfdff}.outlook-line-top{display:flex;justify-content:space-between;gap:8px;font-size:12px;font-weight:800;color:#253b53}.outlook-line-sub{color:#64748b}.outlook-line-svg{width:100%;height:58px;display:block}.outlook-line-values{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}.outlook-line-value{font-size:10px;color:#52657d;text-align:center;font-weight:700}.outlook-graphic-filter{border:1px solid #dbe3ec;border-radius:8px;padding:6px 9px;background:#fff;color:#334e68;font-weight:700;font-size:11px}.outlook-ero-list{max-height:620px;overflow:auto}.outlook-ero-row{border:1px solid #edf1f5;border-radius:10px;padding:8px 9px;margin-bottom:7px;background:#fbfdff}.outlook-ero-name{font-size:12px;font-weight:800;color:#253b53;margin-bottom:2px}@media(max-width:760px){.outlook-graphic-grid{grid-template-columns:1fr}.outlook-graphic-head{padding:9px 10px}}
 </style>
 <h1 class="page-title">Outlook Kategori</h1>
 </head>
@@ -2570,13 +2568,12 @@ html,body{
           <div class="month-badge">📊 WoW</div>
         </div>
 
-        <div class="table-card outlook-card" id="outlookCategoryCard">
+        <div class="table-card outlook-card">
           <div class="outlook-section-title" style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
             <span>WEEK-ON-WEEK KATEGORI</span>
             <div style="display:flex;gap:4px;background:#f1f5f9;border:1px solid #dbe3ec;border-radius:8px;padding:3px">
               <button type="button" id="outlookValueBtn" onclick="setOutlookMetric_('value')" style="border:0;border-radius:6px;padding:5px 10px;font-size:12px;font-weight:700;background:#0a84ff;color:#fff;cursor:pointer">Value</button>
               <button type="button" id="outlookQtyBtn" onclick="setOutlookMetric_('qty')" style="border:0;border-radius:6px;padding:5px 10px;font-size:12px;font-weight:700;background:transparent;color:#52657d;cursor:pointer">Qty</button>
-              <button type="button" id="outlookGraphicBtn" onclick="setOutlookGraphic_()" style="border:0;border-radius:6px;padding:5px 10px;font-size:12px;font-weight:700;background:transparent;color:#52657d;cursor:pointer">By Graphic</button>
             </div>
           </div>
           <table>
@@ -2594,13 +2591,7 @@ html,body{
           </table>
         </div>
 
-        <div id="outlookGraphicWrap" class="outlook-graphic-wrap"><div class="outlook-graphic-grid">
-          <div class="outlook-graphic-panel"><div class="outlook-graphic-head"><span>WEEK-ON-WEEK KATEGORI</span><span id="outlookGraphicMetric" class="outlook-graphic-sub">Value</span></div><div class="outlook-graphic-body" id="outlookCategoryGraphic"></div></div>
-          <div class="outlook-graphic-panel"><div class="outlook-graphic-head"><span>WEEK-ON-WEEK BY SERIES — DEVICE</span><span class="outlook-graphic-sub">3 minggu</span></div><div class="outlook-graphic-body" id="outlookSeriesGraphic"></div></div>
-          <div class="outlook-graphic-panel" style="grid-column:1/-1"><div class="outlook-graphic-head"><span>ERO BY SERIES</span><select id="outlookGraphicSeriesSelect" class="outlook-graphic-filter" onchange="renderOutlookGraphic_()"><option>Series A</option><option>Series S</option><option>Series Z</option><option>Series Tab</option></select></div><div class="outlook-graphic-body outlook-ero-list" id="outlookEroSeriesGraphic"></div></div>
-        </div></div>
-
-        <div class="table-card outlook-card" id="outlookDayCard">
+        <div class="table-card outlook-card">
           <div class="outlook-section-title">2 WEEK TERAKHIR — BY DAY</div>
           <div class="page-subtitle" style="margin:0 0 8px">Perbandingan hari yang sama: Senin W35 vs Senin W36, Selasa W35 vs Selasa W36, dan seterusnya.</div>
           <table>
@@ -2617,7 +2608,7 @@ html,body{
           </table>
         </div>
 
-        <div class="table-card outlook-card" id="outlookSeriesCard">
+        <div class="table-card outlook-card">
           <div class="outlook-section-title">WEEK-ON-WEEK BY SERIES — DEVICE</div>
           <table>
             <thead>
@@ -2634,7 +2625,7 @@ html,body{
           </table>
         </div>
 
-        <div class="table-card outlook-card" id="outlookSalesCard">
+        <div class="table-card outlook-card">
           <div class="outlook-section-title">WEEK-ON-WEEK BY SALES NAME</div>
           <table>
             <thead>
@@ -4542,14 +4533,20 @@ function renderOverviewContribution_(){
 }
 
 let outlookMetric_ = "value";
-let outlookGraphicMode_ = false;
-function setOutlookMetric_(metric){ outlookMetric_=metric==="qty"?"qty":"value"; outlookGraphicMode_=false; updateOutlookViewButtons_(); renderOutlook(); }
-function setOutlookGraphic_(){ outlookGraphicMode_=true; updateOutlookViewButtons_(); renderOutlook(); }
-function updateOutlookViewButtons_(){
- const vb=document.getElementById("outlookValueBtn"),qb=document.getElementById("outlookQtyBtn"),gb=document.getElementById("outlookGraphicBtn");
- [[vb,!outlookGraphicMode_&&outlookMetric_==="value"],[qb,!outlookGraphicMode_&&outlookMetric_==="qty"],[gb,outlookGraphicMode_]].forEach(function(a){if(!a[0])return;a[0].style.background=a[1]?"#0a84ff":"transparent";a[0].style.color=a[1]?"#fff":"#52657d"});
- ["outlookCategoryCard","outlookSeriesCard","outlookSalesCard"].forEach(function(id){var e=document.getElementById(id);if(e)e.style.display=outlookGraphicMode_?"none":""});
- var g=document.getElementById("outlookGraphicWrap");if(g)g.style.display=outlookGraphicMode_?"block":"none";
+
+function setOutlookMetric_(metric){
+  outlookMetric_ = metric==="qty" ? "qty" : "value";
+  const vb=document.getElementById("outlookValueBtn");
+  const qb=document.getElementById("outlookQtyBtn");
+  if(vb){
+    vb.style.background=outlookMetric_==="value" ? "#0a84ff" : "transparent";
+    vb.style.color=outlookMetric_==="value" ? "#fff" : "#52657d";
+  }
+  if(qb){
+    qb.style.background=outlookMetric_==="qty" ? "#0a84ff" : "transparent";
+    qb.style.color=outlookMetric_==="qty" ? "#fff" : "#52657d";
+  }
+  renderOutlook();
 }
 
 function outlookMetricFormat_(value){
@@ -4778,37 +4775,6 @@ function renderOutlook(){
       </tr>`;
     }).join("");
   }
-
-
-  updateOutlookViewButtons_();
-  if(outlookGraphicMode_) renderOutlookGraphic_();}
-
-function outlookGraphicFormat_(v){return outlookMetric_==="qty"?Math.round(Number(v||0)).toLocaleString("id-ID")+" qty":outlookMoney_(v);}
-function outlookGraphicLineSvg_(vals,color){var w=330,h=58,p=7,max=Math.max.apply(null,vals.concat([1])),xs=[p,w/2,w-p],ys=vals.map(function(v){return h-p-(Number(v||0)/max)*(h-p*2);}),pts=xs.map(function(x,i){return x.toFixed(1)+","+ys[i].toFixed(1)}).join(" ");return '<svg class="outlook-line-svg" viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="none"><line x1="'+p+'" y1="'+(h-p)+'" x2="'+(w-p)+'" y2="'+(h-p)+'" stroke="#e6edf4"/><polyline points="'+pts+'" fill="none" stroke="'+color+'" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>'+xs.map(function(x,i){return '<circle cx="'+x+'" cy="'+ys[i]+'" r="3.5" fill="'+color+'"/>'}).join('')+'</svg>';}
-function renderOutlookGraphic_(){
- if(!dashboardData)return; var weeks=outlookWeeks_(),labels=weeks.map(outlookWeekLabel_); setText("outlookGraphicMetric",outlookMetric_==="qty"?"Qty":"Value");
- function q(x){var n=Number(x&&(x.qty!=null?x.qty:(x.quantity!=null?x.quantity:x.QTY))||0);return isFinite(n)?n:0} function mv(x){return outlookMetric_==="qty"?q(x):effectiveClientAmount_(x)} function sum(a){return (a||[]).reduce(function(t,x){return t+mv(x)},0)} function cat(x){return String(x.category||"").trim().toLowerCase()} function sub(x,s){return String(x.subcategory||"").trim().toLowerCase()===s.toLowerCase()} function acc(x){var t=String(x.subcategory||x.product||x.productName||x.description||x.materialDescription||"").toLowerCase();return t.indexOf("watch")>=0?"Watch":t.indexOf("buds")>=0?"Buds":"Acc Other"} function ser(x){return normalizeSeriesClient_(x)}
- function mk(name,get,isSub){return {name:name,isSub:!!isSub,vals:weeks.map(function(w){return sum(get(w))})}}
- var cr=[mk("Sales All",function(w){return w.transactions||[]}),mk("Device",function(w){return (w.transactions||[]).filter(function(x){return cat(x)==="device"})}),mk("Accessories",function(w){return (w.transactions||[]).filter(function(x){return cat(x)==="accessories"})}),mk("Watch",function(w){return (w.transactions||[]).filter(function(x){return cat(x)==="accessories"&&acc(x)==="Watch"})},1),mk("Buds",function(w){return (w.transactions||[]).filter(function(x){return cat(x)==="accessories"&&acc(x)==="Buds"})},1),mk("Acc Other",function(w){return (w.transactions||[]).filter(function(x){return cat(x)==="accessories"&&acc(x)==="Acc Other"})},1),mk("Repair Contract",function(w){return (w.transactions||[]).filter(function(x){return cat(x)==="repair contract"})}),mk("Operator",function(w){return (w.transactions||[]).filter(function(x){return cat(x)==="operator"})}),mk("Indosat",function(w){return (w.transactions||[]).filter(function(x){return cat(x)==="operator"&&sub(x,"Indosat")})},1),mk("XL",function(w){return (w.transactions||[]).filter(function(x){return cat(x)==="operator"&&sub(x,"XL")})},1),mk("Telkomsel",function(w){return (w.transactions||[]).filter(function(x){return cat(x)==="operator"&&sub(x,"Telkomsel")})},1)];
- var colors=["#0a84ff","#2563eb","#f59e0b","#f6b35f","#8b5cf6","#ec4899","#16a34a","#ef4444","#fb7185","#a78bfa","#38bdf8"];
- var ce=document.getElementById("outlookCategoryGraphic");if(ce)ce.innerHTML=cr.map(function(r,i){return '<div class="outlook-line-card"><div class="outlook-line-top"><span class="'+(r.isSub?'outlook-line-sub':'')+'">'+(r.isSub?'↳ ':'')+escapeHtml(r.name)+'</span><span>'+outlookGraphicFormat_(r.vals[r.vals.length-1]||0)+'</span></div>'+outlookGraphicLineSvg_(r.vals,colors[i])+'<div class="outlook-line-values">'+r.vals.map(function(v,j){return '<div class="outlook-line-value">'+escapeHtml(labels[j]||('W'+(j+1)))+' · '+outlookGraphicFormat_(v)+'</div>'}).join('')+'</div></div>'}).join('');
- var sn=["Series A","Series S","Series Z","Series Tab"],se=document.getElementById("outlookSeriesGraphic");if(se)se.innerHTML=sn.map(function(n,i){var r=mk(n,function(w){return (w.transactions||[]).filter(function(x){return cat(x)==="device"&&ser(x)===n})});return '<div class="outlook-line-card"><div class="outlook-line-top"><span>'+n+'</span><span>'+outlookGraphicFormat_(r.vals[r.vals.length-1]||0)+'</span></div>'+outlookGraphicLineSvg_(r.vals,colors[i+1])+'<div class="outlook-line-values">'+r.vals.map(function(v,j){return '<div class="outlook-line-value">'+escapeHtml(labels[j]||('W'+(j+1)))+' · '+outlookGraphicFormat_(v)+'</div>'}).join('')+'</div></div>'}).join('');
- var sel=document.getElementById("outlookGraphicSeriesSelect");
- var chosen=sel?sel.value:"Series A";
- var sales=(salesList||[]).filter(function(s){return String(s.status||"AKTIF").toUpperCase()!=="NONAKTIF";});
- var er=sales.map(function(s){
-   return {name:s.name,vals:weeks.map(function(w){
-     return sum((w.transactions||[]).filter(function(x){
-       return String(x.salesId)===String(s.id)&&cat(x)==="device"&&ser(x)===chosen;
-     }));
-   })};
- }).sort(function(a,b){return (b.vals[b.vals.length-1]||0)-(a.vals[a.vals.length-1]||0);});
- var ee=document.getElementById("outlookEroSeriesGraphic");
- if(ee){
-   ee.innerHTML=er.map(function(r,i){
-     return '<div class="outlook-ero-row"><div class="outlook-ero-name">'+(i+1)+'. '+escapeHtml(r.name)+'<span style="float:right">'+outlookGraphicFormat_(r.vals[r.vals.length-1]||0)+'</span></div>'+outlookGraphicLineSvg_(r.vals,colors[i%colors.length])+'<div class="outlook-line-values">'+r.vals.map(function(v,j){return '<div class="outlook-line-value">'+escapeHtml(labels[j]||('W'+(j+1)))+' · '+outlookGraphicFormat_(v)+'</div>';}).join('')+'</div></div>';
-   }).join('')||'<div style="padding:14px;color:#7a8ca1;font-size:12px">Belum ada data ERO untuk series ini.</div>';
- }
 }
 
 /* =====================================================
