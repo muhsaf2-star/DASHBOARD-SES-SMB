@@ -3735,6 +3735,8 @@ async function selectOverviewMonth_(period){
       targetRows=res.data||[];
       overviewTargetsByPeriod_[period]=targetRows;
     }
+    // Target sales-level harus ikut bulan yang dipilih.
+    dashboardData.targets=targetRows;
     const r=overviewPeriodRangeLocal_("month");
     if(!r) throw new Error("Periode bulan tidak valid");
     const filtered=(allTransactionsCache||[]).filter(function(x){
@@ -3789,6 +3791,9 @@ function applyOverviewPeriodLocal_(){
   // Semua kalkulasi periode dilakukan lokal dari cache transaksi.
   // Target Overview mengikuti bulan yang sedang dipilih.
   if(periodMode === "month" && !overviewSelectedMonth_) overviewSelectedMonth_=getCurrentPeriod();
+  if(periodMode === "month" && overviewTargetsByPeriod_[overviewSelectedMonth_]){
+    dashboardData.targets=overviewTargetsByPeriod_[overviewSelectedMonth_];
+  }
   syncOverviewTargetsFromGlobal_();
   dashboardData.periodMode=periodMode;
   dashboardData.startDate=r.startDate;
@@ -4124,6 +4129,19 @@ function overviewCategoryMatch_(x, category){
   return raw === wanted;
 }
 
+function overviewSalesMatches_(x,s){
+  if(!x || !s) return false;
+  const xid=String(x.salesId==null?"":x.salesId).trim();
+  const sid=String(s.id==null?"":s.id).trim();
+  if(xid && sid && xid===sid) return true;
+
+  // Fallback penting: beberapa transaksi menyimpan SALES_NAME dengan benar
+  // tetapi SALES_ID bisa berupa format angka/string yang berbeda.
+  const xn=String(x.salesName==null?"":x.salesName).trim().toLowerCase();
+  const sn=String(s.name==null?"":s.name).trim().toLowerCase();
+  return !!xn && !!sn && xn===sn;
+}
+
 function overviewEstimationByERO_(category){
   const tx=dashboardData && dashboardData.transactions ? dashboardData.transactions : [];
   const daysPassed=Math.max(0,Number(dashboardData.daysPassed||0));
@@ -4131,7 +4149,7 @@ function overviewEstimationByERO_(category){
   const isProjection=dashboardData.periodMode !== "lastweek" && dashboardData.periodMode !== "custom";
   const map={};
   (salesList||[]).filter(function(s){return String(s.status||"AKTIF").toUpperCase()!=="NONAKTIF";}).forEach(function(s){
-    const rows=tx.filter(function(x){return String(x.salesId)===String(s.id) && overviewCategoryMatch_(x,category);});
+    const rows=tx.filter(function(x){return overviewSalesMatches_(x,s) && overviewCategoryMatch_(x,category);});
     const actual=rows.reduce(function(sum,x){return sum+overviewEffectiveAmount_(x);},0);
     const target=getStoreSalesTarget_(s.id,category);
     const est=isProjection && daysPassed>0 ? actual/daysPassed*projectionDays : actual;
@@ -4167,7 +4185,9 @@ function overviewBrandSalesByERO_(brand){
   tx.forEach(function(x){
     const b=overviewBrand_(x);
     if(brand!=="ALL" && b!==brand)return;
-    const sid=String(x.salesId);
+    const sales= (salesList||[]).find(function(s){return overviewSalesMatches_(x,s);});
+    if(!sales)return;
+    const sid=String(sales.id);
     if(!map[sid])return;
     map[sid].value += overviewEffectiveAmount_(x);
   });
@@ -4217,7 +4237,9 @@ function overviewSalesByEROSeries_(series,metric){
     const normalized=normalizeSeriesClient_(x);
     if(!normalized)return;
     if(series!=="ALL" && normalized!==series)return;
-    const sid=String(x.salesId);
+    const sales= (salesList||[]).find(function(s){return overviewSalesMatches_(x,s);});
+    if(!sales)return;
+    const sid=String(sales.id);
     if(!map[sid])return;
     map[sid].value += overviewEffectiveAmount_(x);
     map[sid].qty += Number(x.qty||0);
@@ -4319,9 +4341,7 @@ function getSalesStats(){
 
     const transactions =
       tx.filter(
-        x =>
-          String(x.salesId) ===
-          String(s.id)
+        x => overviewSalesMatches_(x,s)
       );
 
     const actual =
