@@ -5053,8 +5053,18 @@ function renderStore(){
 
 function getStoreSalesCategoryActual_(salesId, category, type){
   const tx=dashboardData.transactions||[];
+  const sales=(salesList||[]).find(function(s){return String(s.id)===String(salesId);});
   return sumStore_(tx.filter(x=>{
-    if(String(x.salesId)!==String(salesId)) return false;
+    // Cocokkan transaksi dengan ID ATAU nama sales.
+    // Ini menghindari transaksi hilang jika SALES_ID di SALES_DATA
+    // tersimpan sebagai format angka/string yang berbeda.
+    if(sales){
+      if(!overviewSalesMatches_(x,sales)) return false;
+    }else if(String(x.salesId)==String(salesId)){
+      // fallback untuk kompatibilitas data lama
+    }else{
+      return false;
+    }
 
     // Sales All = seluruh transaksi valid milik sales tersebut.
     // Jangan mencari category "Sales All" karena SALES_DATA tidak memiliki category itu.
@@ -5083,7 +5093,12 @@ function getStoreSalesCategoryActual_(salesId, category, type){
 }
 
 function getStoreSalesTarget_(salesId, category){
-  const t=(dashboardData.targets||[]).find(x=>String(x.salesId)===String(salesId))||{};
+  const sales=(salesList||[]).find(function(s){return String(s.id)===String(salesId);});
+  const t=(dashboardData.targets||[]).find(function(x){
+    if(String(x.salesId)===String(salesId)) return true;
+    if(sales && String(x.salesName||"").trim().toLowerCase()===String(sales.name||"").trim().toLowerCase()) return true;
+    return false;
+  })||{};
   if(category==='Sales All') return Number(t.targetAll||0);
   if(category==='Device') return Number(t.device||0);
   if(category==='Accessories') return Number(t.accessories||0);
