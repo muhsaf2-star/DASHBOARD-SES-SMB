@@ -3474,10 +3474,26 @@ async function loadAll(){
 
     dashboardData = dashboard.data || {};
 
-    // Ambil seluruh dataset dari response dashboard yang sama.
+    // SALES / TARGET tetap dari dashboard untuk menu lain.
     salesList = dashboardData.sales || [];
     targets = dashboardData.targets || [];
-    allTransactionsCache = dashboardData.transactions || [];
+
+    // OVERVIEW membutuhkan seluruh histori transaksi agar pilihan bulan
+    // (Agustus / September / Oktober / dst.) benar-benar tersedia.
+    // Jangan mengubah GS: ambil dataset lengkap lewat action transactions.
+    let allTxResult = null;
+    try{
+      allTxResult = await api({action:"transactions"});
+    }catch(txErr){
+      allTxResult = null;
+    }
+
+    if(allTxResult && allTxResult.success && Array.isArray(allTxResult.data)){
+      allTransactionsCache = allTxResult.data;
+    }else{
+      allTransactionsCache = dashboardData.transactions || [];
+    }
+
     overviewSelectedMonth_ = getCurrentPeriod();
     overviewTargetsByPeriod_ = {};
     overviewTargetsByPeriod_[getCurrentPeriod()] = targets;
