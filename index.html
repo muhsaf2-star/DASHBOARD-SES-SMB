@@ -5586,12 +5586,33 @@ function topEROCategoryMatch_(x,category){
   return raw===wanted;
 }
 
+function topEROSalesMatches_(x,s){
+  if(!x || !s) return false;
+  // Samakan dengan Performa ERO/Overview: ID ATAU nama sales.
+  const xid=String(x.salesId==null?x.sales_id==null?x.SALES_ID:x.sales_id:x.salesId).trim();
+  const sid=String(s.id==null?s.salesId==null?s.SALES_ID:s.salesId:s.id).trim();
+  if(xid && sid && xid===sid) return true;
+
+  const xname=String(x.salesName==null?x.sales_name==null?x.SALES_NAME:x.sales_name:x.salesName).trim().toLowerCase();
+  const sname=String(s.name==null?s.salesName==null?s.SALES_NAME:s.salesName:s.name).trim().toLowerCase();
+  return !!(xname && sname && xname===sname);
+}
+
 function topEROActual_(tx,salesId,category){
-  return (tx||[]).filter(function(x){return String(x.salesId)===String(salesId)&&topEROCategoryMatch_(x,category);}).reduce(function(sum,x){return sum+Number(x.amount||0);},0);
+  const sales=(salesList||[]).find(function(s){return String(s.id)===String(salesId);});
+  return (tx||[]).filter(function(x){
+    const match=sales ? topEROSalesMatches_(x,sales) : String(x.salesId)===String(salesId);
+    return match && topEROCategoryMatch_(x,category);
+  }).reduce(function(sum,x){return sum+Number(x.amount||x.valueNoTax||x.value||0);},0);
 }
 
 function topEROGetTargetFromRows_(rows,salesId,category){
-  const t=(rows||[]).find(function(x){return String(x.salesId)===String(salesId);})||{};
+  const sales=(salesList||[]).find(function(s){return String(s.id)===String(salesId);});
+  const t=(rows||[]).find(function(x){
+    if(String(x.salesId)==String(salesId)) return true;
+    if(sales && String(x.salesName||'').trim().toLowerCase()===String(sales.name||'').trim().toLowerCase()) return true;
+    return false;
+  })||{};
   if(category==="Sales All")return Number(t.targetAll||0);
   if(category==="Device")return Number(t.device||0);
   if(category==="Accessories")return Number(t.accessories||0);
@@ -5656,7 +5677,7 @@ function topEROQtyCategory_(tx, category){
 function topEROArRows_(kind,tx){
   const active=(salesList||[]).filter(function(s){return String(s.status||"AKTIF").toUpperCase()!=="NONAKTIF";});
   return active.map(function(s){
-    const mine=(tx||[]).filter(function(x){return String(x.salesId)===String(s.id);});
+    const mine=(tx||[]).filter(function(x){return topEROSalesMatches_(x,s);});
     const device=topEROQtyCategory_(mine,"Device");
     let other=0;
     if(kind==="acc") other=topEROQtyCategory_(mine,"Accessories");
